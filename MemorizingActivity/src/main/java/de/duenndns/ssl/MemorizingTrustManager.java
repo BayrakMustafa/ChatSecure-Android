@@ -216,7 +216,7 @@ public class MemorizingTrustManager implements X509TrustManager {
 	/**
 	 * Get a list of all certificate aliases stored in MTM.
 	 *
-	 * @return an {@link java.util.Enumeration} of all certificates
+	 * @return an {@link Enumeration} of all certificates
 	 */
 	public Enumeration<String> getCertificates() {
 		try {
@@ -254,7 +254,7 @@ public class MemorizingTrustManager implements X509TrustManager {
 	 * </p>
 	 * @param alias the certificate's alias as returned by {@link getCertificates}.
 	 *
-	 * @throws java.security.KeyStoreException if the certificate could not be deleted.
+	 * @throws KeyStoreException if the certificate could not be deleted.
 	 */
 	public void deleteCertificate(String alias) throws KeyStoreException {
 		appKeyStore.deleteEntry(alias);
@@ -264,9 +264,9 @@ public class MemorizingTrustManager implements X509TrustManager {
 	/**
 	 * Creates a new hostname verifier supporting user interaction.
 	 *
-	 * <p>This method creates a new {@link javax.net.ssl.HostnameVerifier} that is bound to
-	 * the given instance of {@link de.duenndns.ssl.MemorizingTrustManager}, and leverages an
-	 * existing {@link javax.net.ssl.HostnameVerifier}. The returned verifier performs the
+	 * <p>This method creates a new {@link HostnameVerifier} that is bound to
+	 * the given instance of {@link MemorizingTrustManager}, and leverages an
+	 * existing {@link HostnameVerifier}. The returned verifier performs the
 	 * following steps, returning as soon as one of them succeeds:
 	 *  </p>
 	 *  <ol>
@@ -276,7 +276,7 @@ public class MemorizingTrustManager implements X509TrustManager {
 	 *  <li>Failure on exception.</li>
 	 *  </ol>
 	 *
-	 * @param defaultVerifier the {@link javax.net.ssl.HostnameVerifier} that should perform the actual check
+	 * @param defaultVerifier the {@link HostnameVerifier} that should perform the actual check
 	 * @return a new hostname verifier using the MTM's key store
 	 *
 	 * @throws IllegalArgumentException if the defaultVerifier parameter is null
@@ -450,7 +450,7 @@ public class MemorizingTrustManager implements X509TrustManager {
 			MessageDigest md = MessageDigest.getInstance(digest);
 			md.update(cert.getEncoded());
 			return hexString(md.digest());
-		} catch (CertificateEncodingException e) {
+		} catch (java.security.cert.CertificateEncodingException e) {
 			return e.getMessage();
 		} catch (java.security.NoSuchAlgorithmException e) {
 			return e.getMessage();

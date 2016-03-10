@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
-           xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="menu_cancel_signin" msgid="146078926243968887">"Cancelar inicio de sesión"</string>
     <string name="menu_add_contact" msgid="6315091944808434095">"Agregar contacto"</string>
     <string name="menu_remove_contact" msgid="3306468526492774925">"Eliminar contacto"</string>
@@ -161,23 +161,23 @@
     <string name="msisdn_error" msgid="1477099919088266968">"El número de teléfono no puede leerse de tu tarjeta SIM. Ponte en contacto con tu operador para obtener ayuda."</string>
     <string name="not_signed_in" msgid="8894662143178849906">"Actualmente, no has iniciado sesión."</string>
     <string name="general_error" msgid="2784900425265121080">"Código de error <xliff:g id="CODE">%1$d</xliff:g>"</string>
-    <string-array name="default_smiley_names">
-        <item msgid="1496436377093882868">"Feliz"</item>
-        <item msgid="4535010061202018372">"Triste"</item>
-        <item msgid="9126439186030536335">"Guiñando un ojo"</item>
-        <item msgid="850866187116359823">"Con la lengua afuera"</item>
-        <item msgid="394905071090547502">"Sorprendido"</item>
-        <item msgid="154223719974718360">"Besando"</item>
-        <item msgid="7922997411177141520">"Gritando"</item>
-        <item msgid="2507841103887006866">"En la onda"</item>
-        <item msgid="7305800612774038776">"Dinero en boca"</item>
-        <item msgid="8019801991256267534">"Meter la pata"</item>
-        <item msgid="6054214980935551183">"Avergonzado"</item>
-        <item msgid="6425740366789820735">"Ángel"</item>
-        <item msgid="6790879686860830930">"Indeciso"</item>
-        <item msgid="8487432187298106600">"Llorando"</item>
-        <item msgid="1697327406585784541">"Los labios están cerrados"</item>
-        <item msgid="4623875498872672218">"Riendo"</item>
-        <item msgid="6044435333460205962">"Confundido"</item>
-    </string-array>
+  <string-array name="default_smiley_names">
+    <item msgid="1496436377093882868">"Feliz"</item>
+    <item msgid="4535010061202018372">"Triste"</item>
+    <item msgid="9126439186030536335">"Guiñando un ojo"</item>
+    <item msgid="850866187116359823">"Con la lengua afuera"</item>
+    <item msgid="394905071090547502">"Sorprendido"</item>
+    <item msgid="154223719974718360">"Besando"</item>
+    <item msgid="7922997411177141520">"Gritando"</item>
+    <item msgid="2507841103887006866">"En la onda"</item>
+    <item msgid="7305800612774038776">"Dinero en boca"</item>
+    <item msgid="8019801991256267534">"Meter la pata"</item>
+    <item msgid="6054214980935551183">"Avergonzado"</item>
+    <item msgid="6425740366789820735">"Ángel"</item>
+    <item msgid="6790879686860830930">"Indeciso"</item>
+    <item msgid="8487432187298106600">"Llorando"</item>
+    <item msgid="1697327406585784541">"Los labios están cerrados"</item>
+    <item msgid="4623875498872672218">"Riendo"</item>
+    <item msgid="6044435333460205962">"Confundido"</item>
+  </string-array>
 </resources>

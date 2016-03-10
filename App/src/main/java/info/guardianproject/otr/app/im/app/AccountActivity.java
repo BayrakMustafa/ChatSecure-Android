@@ -35,8 +35,6 @@ import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -55,8 +53,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Locale;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
 import info.guardianproject.otr.IOtrChatSession;
@@ -73,6 +70,10 @@ import info.guardianproject.otr.app.im.provider.Imps.AccountStatusColumns;
 import info.guardianproject.otr.app.im.provider.Imps.CommonPresenceColumns;
 import info.guardianproject.otr.app.im.service.ImServiceConstants;
 import info.guardianproject.util.LogCleaner;
+import info.guardianproject.util.XmppUriHelper;
+
+import java.util.HashMap;
+import java.util.Locale;
 
 public class AccountActivity extends ActionBarActivity {
 
@@ -92,7 +93,6 @@ public class AccountActivity extends ActionBarActivity {
 
     public final static String DEFAULT_SERVER_GOOGLE = "talk.l.google.com";
     public final static String DEFAULT_SERVER_FACEBOOK = "chat.facebook.com";
-    public final static String DEFAULT_SERVER_SHAHMICRO = "im.shahmicro.com";
     public final static String DEFAULT_SERVER_JABBERORG = "hermes2.jabber.org";
     public final static String DEFAULT_SERVER_DUKGO = "dukgo.com";
     public final static String ONION_JABBERCCC = "okj7xc6j2szr2y75.onion";
@@ -107,10 +107,9 @@ public class AccountActivity extends ActionBarActivity {
     EditText mEditPass;
     EditText mEditPassConfirm;
     CheckBox mRememberPass;
-    CheckBox mShowPass;
     CheckBox mUseTor;
     Button mBtnSignIn;
-    //Button mBtnQrDisplay;
+    Button mBtnQrDisplay;
     AutoCompleteTextView mSpinnerDomains;
 
     Button mBtnAdvanced;
@@ -122,11 +121,9 @@ public class AccountActivity extends ActionBarActivity {
     boolean isSignedIn = false;
 
     String mUserName = "";
-    String mDomain = "im.shahmicro.com";
+    String mDomain = "";
     int mPort = 0;
     private String mOriginalUserAccount = "";
-
-    private final static int DEFAULT_PORT = 5222;
 
     IOtrChatSession mOtrChatSession;
     private SignInHelper mSignInHelper;
@@ -198,7 +195,7 @@ public class AccountActivity extends ActionBarActivity {
             mPort = 0;
             final boolean regWithTor = i.getBooleanExtra("useTor", false);
 
-            Cursor cursor = openAccountByUsernameAndDomain(cr); // Dont know what cursor gives
+            Cursor cursor = openAccountByUsernameAndDomain(cr);
             boolean exists = cursor.moveToFirst();
             long accountId;
             if (exists) {
@@ -215,7 +212,6 @@ public class AccountActivity extends ActionBarActivity {
                 return;
 
             } else {
-                Log.d("AccountActivity","Create jabber account without the cursor");
                 mProviderId = helper.createAdditionalProvider(helper.getProviderNames().get(0)); //xmpp FIXME
                 accountId = ImApp.insertOrUpdateAccount(cr, mProviderId, mUserName, pass);
                 mAccountUri = ContentUris.withAppendedId(Imps.Account.CONTENT_URI, accountId);
@@ -230,7 +226,7 @@ public class AccountActivity extends ActionBarActivity {
 
         } else if (Intent.ACTION_INSERT.equals(action)) {
 
-            // This condition renders the form to add an existing Jabber Account
+
             setupUIPre();
 
             mOriginalUserAccount = "";
@@ -287,13 +283,16 @@ public class AccountActivity extends ActionBarActivity {
                     pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
 
             try {
-                mOriginalUserAccount = cursor.getInt(ACCOUNT_USERNAME_COLUMN) + "@"
+                mOriginalUserAccount = cursor.getString(ACCOUNT_USERNAME_COLUMN) + "@"
                                        + settings.getDomain();
                 mEditUserAccount.setText(mOriginalUserAccount);
                 mEditPass.setText(cursor.getString(ACCOUNT_PASSWORD_COLUMN));
                 mRememberPass.setChecked(!cursor.isNull(ACCOUNT_PASSWORD_COLUMN));
                 mUseTor.setChecked(settings.getUseTor());
-              //  mBtnQrDisplay.setVisibility(View.VISIBLE);
+                mBtnQrDisplay.setVisibility(View.VISIBLE);
+                
+                mPort = settings.getPort();
+                
             } finally {
                 settings.close();
                 cursor.close();
@@ -347,7 +346,6 @@ public class AccountActivity extends ActionBarActivity {
         }
 
         mRememberPass = (CheckBox) findViewById(R.id.rememberPassword);
-        mShowPass = (CheckBox) findViewById(R.id.showPassword);
         mUseTor = (CheckBox) findViewById(R.id.useTor);
 
 
@@ -357,28 +355,12 @@ public class AccountActivity extends ActionBarActivity {
             mBtnSignIn.setText(R.string.btn_create_new_account);
 
         mBtnAdvanced = (Button) findViewById(R.id.btnAdvanced);
-      //  mBtnQrDisplay = (Button) findViewById(R.id.btnQR);
+        mBtnQrDisplay = (Button) findViewById(R.id.btnQR);
 
         mRememberPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 updateWidgetState();
-            }
-        });
-
-
-        mShowPass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(!isChecked)
-                {
-                    mEditPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
-
-                }
-                else{
-                    mEditPass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                   ;
-                }
             }
         });
 
@@ -407,17 +389,17 @@ public class AccountActivity extends ActionBarActivity {
         });
 
 
-    /*    mBtnQrDisplay.setOnClickListener(new OnClickListener()
+        mBtnQrDisplay.setOnClickListener(new OnClickListener()
         {
 
             @Override
             public void onClick(View v) {
 
-              // showQR();
+               showQR();
 
             }
 
-        });*/
+        });
 
 
         mBtnSignIn.setOnClickListener(new OnClickListener() {
@@ -600,7 +582,7 @@ public class AccountActivity extends ActionBarActivity {
         String clauses = Imps.Account.USERNAME + " = ? AND " + Imps.ProviderSettings.VALUE + " = ?";
         String args[] = new String[2];
         args[0] = mUserName;
-        args[1] = "im.shahmicro.com";
+        args[1] = mDomain;
 
         String[] projection = { Imps.Account._ID };
         Cursor cursor = cr.query(Imps.Account.BY_DOMAIN_URI, projection, clauses, args, null);
@@ -708,43 +690,12 @@ public class AccountActivity extends ActionBarActivity {
         boolean isGood = true;
         String[] splitAt = userField.trim().split("@");
         mUserName = splitAt[0].toLowerCase(Locale.ENGLISH).replaceAll(USERNAME_VALIDATOR, "");
-        mDomain = "im.shahmicro.com";
-        mPort = 0;
+        mDomain = "";
+        
 
         if (splitAt.length > 1) {
             mDomain = splitAt[1].toLowerCase(Locale.ENGLISH);
-            String[] splitColon = mDomain.split(":");
-            mDomain = splitColon[0].toLowerCase(Locale.ENGLISH);
-            if (splitColon.length > 1) {
-                try {
-                    mPort = Integer.parseInt(splitColon[1]);
-                } catch (NumberFormatException e) {
-                    // TODO move these strings to strings.xml
-                    isGood = false;
-                    Toast.makeText(
-                            AccountActivity.this,
-                            "The port value '" + splitColon[1]
-                                    + "' after the : could not be parsed as a number!",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
         }
-
-        //its okay if domain is null;
-
-//        if (mDomain == null) {
-  //          isGood = false;
-            //Toast.makeText(AccountActivity.this,
-            //	R.string.account_wizard_no_domain_warning,
-            //	Toast.LENGTH_LONG).show();
-    //    }
-        /*//removing requirement of a . in the domain
-        else if (mDomain.indexOf(".") == -1) {
-            isGood = false;
-            //	Toast.makeText(AccountActivity.this,
-            //		R.string.account_wizard_no_root_domain_warning,
-            //	Toast.LENGTH_LONG).show();
-        }*/
 
         return isGood;
     }
@@ -773,9 +724,7 @@ public class AccountActivity extends ActionBarActivity {
         settings.setRequireTls(true);
         settings.setTlsCertVerify(true);
         settings.setAllowPlainAuth(false);
-        settings.setPort(DEFAULT_PORT);
-
-
+        settings.setPort(port);
 
         if (domain.equals("gmail.com")) {
             // Google only supports a certain configuration for XMPP:
@@ -792,16 +741,6 @@ public class AccountActivity extends ActionBarActivity {
             settings.setDoDnsSrv(false);
             settings.setServer(DEFAULT_SERVER_GOOGLE); //set the google connect server
             settings.setDomain(domain);
-        }
-        else if(domain.equals("im.shahmicro.com")){
-            if (settings.getUseTor())
-            {
-                settings.setDoDnsSrv(false);
-                settings.setServer(DEFAULT_SERVER_SHAHMICRO);
-
-            }
-
-            settings.setDomain(DEFAULT_SERVER_SHAHMICRO);
         }
         else if (domain.equals("jabber.org")) {
 
@@ -1133,7 +1072,7 @@ public class AccountActivity extends ActionBarActivity {
                     settings.close();
                 }
 
-                    return null;
+                return null;
               }
 
             @Override
@@ -1170,12 +1109,12 @@ public class AccountActivity extends ActionBarActivity {
         }.execute();
     }
 
- /*   public void showQR ()
+    public void showQR ()
     {
            String localFingerprint = OtrAndroidKeyManagerImpl.getInstance(this).getLocalFingerprint(mOriginalUserAccount);
            String uri = XmppUriHelper.getUri(mOriginalUserAccount, localFingerprint);
            new IntentIntegrator(this).shareText(uri);
-    }*/
+    }
 
     private void setAccountKeepSignedIn(final boolean rememberPass) {
         ContentValues values = new ContentValues();

@@ -65,8 +65,7 @@
               android:textSize="24sp"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="@string/menu_scan"
-             android:visibility="gone"/>
+              android:text="@string/menu_scan" />
          
          
     

@@ -155,7 +155,6 @@
         </menu>
        </item>
    -->
-
     <item android:id="@+id/menu_end_conversation"
         android:title="@string/menu_end_conversation" 
         android:icon="@drawable/ic_menu_close"
@@ -210,28 +209,19 @@
         android:icon="@android:drawable/ic_menu_preferences"
          app:showAsAction="never"
          />
-     <item android:id="@+id/menu_chng_password"
-         android:title="@string/menu_chng_password"
-         />
-     <item
-         android:id="@+id/menu_logout"
-         android:title="@string/menu_logout"
-         android:icon="@drawable/ic_menu_close"
-         app:showAsAction="never"
-         />
   <!-- 
       <item android:id="@+id/menu_view_accounts"
         android:title="@string/menu_add_account"
                 app:showAsAction="never"
         />
        -->
-         <!-- <item android:id="@+id/menu_import_keys"
+          <item android:id="@+id/menu_import_keys"
      
         android:title="@string/menu_import_keys"
                 android:icon="@drawable/ic_menu_key"
                  app:showAsAction="never|withText"
          
-         />-->
+         />
     
      
         </group>

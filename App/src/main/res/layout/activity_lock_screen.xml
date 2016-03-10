@@ -66,25 +66,9 @@
                         android:ems="10"
                         android:hint="@string/lock_screen_passphrase_hint"
                         android:inputType="textPassword" />
-                    <EditText
-                        android:id="@+id/editConfirmPassphrase"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_margin="15dp"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/lock_screen_confirm_passphrase_hint"
-                        android:inputType="textPassword"/>
-                    <CheckBox
-                        android:id="@+id/showPassPhrase"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" 
-                        android:layout_weight="1"
-                        android:hint="@string/lock_screen_show_PassPhrase"/>
-
                 </LinearLayout>
 
-               <LinearLayout
+                <LinearLayout
                     android:id="@+id/flipView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

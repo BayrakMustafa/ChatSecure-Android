@@ -53,10 +53,8 @@ android:layout_height="match_parent" >
      <Button android:id="@+id/btnAddAccount"
 	                android:layout_height="wrap_content"
 	                android:layout_marginTop="5dip"
-	                android:text="@string/menu_add_account"
-                    android:layout_width="match_parent"
+	                android:text="@string/menu_add_account" android:layout_width="match_parent"
 	                android:textColor="#eeeeee"
-                    android:visibility="gone"
 	                />
     
         

@@ -23,6 +23,7 @@ import info.guardianproject.otr.app.im.engine.Presence;
 import info.guardianproject.otr.app.im.plugin.xmpp.auth.GTalkOAuth2;
 import info.guardianproject.otr.app.im.provider.Imps;
 import info.guardianproject.otr.app.im.provider.ImpsErrorInfo;
+import info.guardianproject.otr.app.im.service.ChatSessionAdapter;
 import info.guardianproject.util.DNSUtil;
 import info.guardianproject.util.Debug;
 
@@ -512,6 +513,15 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
             
             RoomInfo roomInfo = null;
 
+            if (chatRoomJid.indexOf("@")==-1)
+            {
+                //let's add a host to that!
+
+                Collection<String> servers = MultiUserChat.getServiceNames(mConnection);
+                chatRoomJid += '@' + servers.iterator().next();
+                
+            }
+            
             Address address = new XmppAddress (chatRoomJid);
 
             try
@@ -547,7 +557,7 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
                     {
                         // Create the room
                         muc.create(nickname);
-                        
+
                     }
                     catch (XMPPException iae)
                     {
@@ -658,6 +668,30 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
                 }
             }
         }
+
+        public String getDefaultMultiUserChatServer ()
+        {
+            try
+            {
+                if (mConnection == null)
+                    return null;
+                
+                Collection<String> servers = MultiUserChat.getServiceNames(mConnection);
+                
+                if (servers == null || servers.isEmpty())
+                    return null;
+                else
+                    return servers.iterator().next();
+            }
+            catch (Exception e)
+            {
+                Log.e(ImApp.LOG_TAG,"error finding MUC",e);
+                
+            }
+            
+            return null;
+        }
+    
 
         @Override
         public void joinChatGroupAsync(Address address) {
@@ -902,9 +936,9 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
                 maybe_reconnect();
 
             } else {
-                debug(TAG, "will not retry");
-                disconnect();
-                disconnected(info);
+               //debug(TAG, "will not retry"); //WE MUST ALWAYS RETRY!
+               // disconnect();
+               // disconnected(info);
             }
 
 
@@ -1011,12 +1045,7 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
             getContactListManager().listenToRoster(mRoster);
 
         }
-        else
-        {
-            disconnect();
-            disconnected(new ImErrorInfo(ImpsErrorInfo.SERVER_UNAVAILABLE,
-                    "not connected on login"));
-        }
+        
 
     }
 
@@ -1154,16 +1183,24 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
                 sslContext.init(null, new javax.net.ssl.TrustManager[] { trustManager },
                         secureRandom);
 
-                sslContext.getDefaultSSLParameters().getCipherSuites();
-
-                if (Build.VERSION.SDK_INT >= 20) {
-
-                    sslContext.getDefaultSSLParameters().setCipherSuites(XMPPCertPins.SSL_IDEAL_CIPHER_SUITES_API_20);
-
-                }
-                else
+                try
                 {
-                    sslContext.getDefaultSSLParameters().setCipherSuites(XMPPCertPins.SSL_IDEAL_CIPHER_SUITES);
+                    sslContext.getDefaultSSLParameters().getCipherSuites();
+
+                    if (Build.VERSION.SDK_INT >= 20) {
+    
+                        sslContext.getDefaultSSLParameters().setCipherSuites(XMPPCertPins.SSL_IDEAL_CIPHER_SUITES_API_20);    
+                    }
+                    else
+                    {
+                        sslContext.getDefaultSSLParameters().setCipherSuites(XMPPCertPins.SSL_IDEAL_CIPHER_SUITES);
+                    }
+                }
+                catch (Exception e)
+                {
+                    //this can happen if the cipher suites aren't available on the devices
+                    debug(TAG, "Error setting ideal cipher suites: " + e);
+                    
                 }
 
 
@@ -1281,15 +1318,15 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
 
                 }
 
-                DeliveryReceipts.DeliveryReceipt dr = (DeliveryReceipts.DeliveryReceipt) smackMessage
+                DeliveryReceipts.DeliveryReceipt drIncoming = (DeliveryReceipts.DeliveryReceipt) smackMessage
                         .getExtension("received", DeliveryReceipts.NAMESPACE);
 
-                if (dr != null) {
+                if (drIncoming != null) {
 
-                    debug(TAG, "got delivery receipt for " + dr.getId());
+                    debug(TAG, "got delivery receipt for " + drIncoming.getId());
                     boolean groupMessage = smackMessage.getType() == org.jivesoftware.smack.packet.Message.Type.groupchat;
                     ChatSession session = findOrCreateSession(address, groupMessage);
-                    session.onMessageReceipt(dr.getId());
+                    session.onMessageReceipt(drIncoming.getId());
                     
                 }
 
@@ -1727,11 +1764,12 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
             
             msgXmpp.setBody(message.getBody());
 
-            sendPacket(msgXmpp);
+            if (message.getID() != null)
+                msgXmpp.setPacketID(message.getID());
+            else
+                message.setID(msgXmpp.getPacketID());
             
-            //set message ID value on internal message
-            message.setID(msgXmpp.getPacketID());
-
+            sendPacket(msgXmpp);            
 
         }
 
@@ -2229,8 +2267,9 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
                 {
                     group.removeEntry(entry);
                     entry = mRoster.getEntry(address);
+                    
                     // Remove from Roster if this is the last group
-                    if (entry != null && entry.getGroups().size() <= 1)
+                    if (entry != null && entry.getGroups() != null && entry.getGroups().size() <= 1)
                         mRoster.removeEntry(entry);
 
                 }
@@ -2525,12 +2564,13 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
         execute(new Runnable() {
             @Override
             public void run() {
-
-                debug(TAG, "network type changed");
-                mNeedReconnect = false;
-                setState(LOGGING_IN, null);
-                reconnect();
-
+                if (mState == SUSPENDED || mState == SUSPENDING)
+                {
+                    debug(TAG, "network type changed");
+                    mNeedReconnect = false;
+                    setState(LOGGING_IN, null);
+                    reconnect();
+                }
             }
         });
 
@@ -2676,12 +2716,20 @@ public class XmppConnection extends ImConnection implements CallbackHandler {
         
         if (state == LOGGED_IN)
         {
+            //update and send new presence packet out
             mUserPresence = new Presence(Presence.AVAILABLE, "", Presence.CLIENT_TYPE_MOBILE);
-            sendPresencePacket();            
+            sendPresencePacket();  
+            
+            //request presence of remote contact for all existing sessions 
+            for (ChatSessionAdapter session : mSessionManager.getAdapter().getActiveChatSessions())
+            {
+                requestPresenceRefresh(session.getAddress());
+            }
+
             mChatGroupManager.reconnectAll();
         }
     }    
-
+    
     public void debug(String tag, String msg) {
         //  if (Log.isLoggable(TAG, Log.DEBUG)) {
         if (Debug.DEBUG_ENABLED) {

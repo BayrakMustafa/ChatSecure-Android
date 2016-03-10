@@ -25,8 +25,8 @@
     <color name="status_popup_text">#ff000000</color>
     <color name="error">#ffcc5555</color>
     
-    <color name="android_green">#ccA4C639</color>
-    <color name="android_green_light">#ccA4C639</color>
+        <color name="android_green">#ccA4C639</color>
+            <color name="android_green_light">#ccA4C639</color>
     <color name="honeycombish_blue">#cc58BAED</color>
     <color name="soft_grey">#CFD8DC</color>
     

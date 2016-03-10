@@ -21,7 +21,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/csbackground"
     android:gravity="center_vertical"
     >
 	  	<LinearLayout android:orientation="horizontal" android:gravity="center_horizontal"
@@ -45,13 +44,13 @@
   		android:scrollbarAlwaysDrawHorizontalTrack="true" 
   		android:layout_gravity="bottom|center_horizontal" 
   		android:gravity="bottom">
-	  <!--  <ImageView android:id="@+id/poweredby"
+	    <ImageView android:id="@+id/poweredby" 
       		android:src="@drawable/logo_poweredby" 
       		android:layout_width="fill_parent" 
       		android:layout_alignParentBottom="true" 
       		android:layout_marginLeft="20dip" 
       		android:layout_marginRight="20dip" 
       		android:layout_height="wrap_content">
-      	</ImageView> -->
+      	</ImageView>
 	</RelativeLayout>
 </LinearLayout>

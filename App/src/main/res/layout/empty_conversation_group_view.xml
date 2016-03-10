@@ -21,8 +21,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="?android:attr/listPreferredItemHeight"
-        android:text=
-            "@string/empty_conversation_group"
+        android:text="@string/empty_conversation_group"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textStyle="normal"
         android:gravity="center_vertical"

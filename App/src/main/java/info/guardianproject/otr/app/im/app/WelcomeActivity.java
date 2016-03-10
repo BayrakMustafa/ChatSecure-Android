@@ -37,10 +37,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import net.hockeyapp.android.UpdateManager;
-
-import java.io.File;
-
 import info.guardianproject.cacheword.CacheWordActivityHandler;
 import info.guardianproject.cacheword.CacheWordService;
 import info.guardianproject.cacheword.ICacheWordSubscriber;
@@ -51,9 +47,10 @@ import info.guardianproject.otr.app.im.engine.ImConnection;
 import info.guardianproject.otr.app.im.provider.Imps;
 import info.guardianproject.otr.app.im.provider.SQLCipherOpenHelper;
 
-/**
- * Splash activity
- */
+import java.io.File;
+
+import net.hockeyapp.android.UpdateManager;
+
 public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubscriber  {
 
     private static final String TAG = "WelcomeActivity";
@@ -63,6 +60,8 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
     private SignInHelper mSignInHelper;
 
     private boolean mDoSignIn = true;
+
+    private ProgressDialog dialog;
 
     static final String[] PROVIDER_PROJECTION = { Imps.Provider._ID, Imps.Provider.NAME,
                                                  Imps.Provider.FULLNAME, Imps.Provider.CATEGORY,
@@ -221,6 +220,9 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
 
         if (mCacheWord != null)
             mCacheWord.disconnect();
+
+        if (dialog != null)
+            dialog.dismiss();
     }
 
     @Override
@@ -235,7 +237,6 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
         mHandler.registerForBroadcastEvents();
 
         int countAvailable = accountsAvailable();
-        Log.d("WelcomeActivity","accounts available=>"+countAvailable);
 
         if (countAvailable == 1) {
             // If just one account is available for auto-signin, go there immediately after service starts trying
@@ -259,7 +260,6 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
 
         if (intent != null && intent.getAction() != null && (!intent.getAction().equals(Intent.ACTION_MAIN)))
         {
-
             handleIntentAPILaunch(intent);
         }
         else
@@ -275,7 +275,6 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
                     }
                 } while (mProviderCursor.moveToNext());
             }
-
             startActivity(new Intent(getBaseContext(), NewChatActivity.class));
             finish();
         }
@@ -405,7 +404,6 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
 
     @Override
     public void onCacheWordOpened() {
-        Log.d("D/WelcomeActivity","CacheWord Opened and logged");
         if (mDoLock) {
             completeShutdown();
             return;
@@ -423,8 +421,7 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
         if (app != null) {
             for (IImConnection conn : app.getActiveConnections()) {
                 try {
-
-                   conn.logout();
+                    conn.logout();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -442,33 +439,6 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
         activity.finish();
     }
 
-
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static void shutdownAndSignOut(Activity activity) {
-       ImApp app = (ImApp) activity.getApplication();
-        if (app != null) {
-            for (IImConnection conn : app.getActiveConnections()) {
-                try {
-                    conn.logout();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        Intent intent = new Intent(activity, AccountActivity.class);
-
-        intent.putExtra("doLock", true);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        if (Build.VERSION.SDK_INT >= 11)
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        activity.startActivity(intent);
-        activity.finish();
-    }
-
-
-
     private void completeShutdown ()
     {
         /* ignore unmount errors and quit ASAP. Threads actively using the VFS will
@@ -479,9 +449,6 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
             e.printStackTrace();
         }
            new AsyncTask<String, Void, String>() {
-
-            private ProgressDialog dialog;
-
 
             @Override
             protected void onPreExecute() {
@@ -558,9 +525,9 @@ public class WelcomeActivity extends ThemeableActivity implements ICacheWordSubs
         boolean internalDbFileUsabe = internalDbFile.isFile() && internalDbFile.canWrite();
 
         boolean externalDbFileUsable = false;
-        File externalDbFile = new File(ChatFileStore.getExternalDbFilePath(this));
         java.io.File externalFilesDir = getExternalFilesDir(null);
         if (externalFilesDir != null) {
+            File externalDbFile = new File(ChatFileStore.getExternalDbFilePath(this));
             externalDbFileUsable = externalDbFile.isFile() && externalDbFile.canWrite();
         }
         final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

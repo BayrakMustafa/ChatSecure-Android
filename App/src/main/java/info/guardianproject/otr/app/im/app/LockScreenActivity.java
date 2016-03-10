@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,8 +18,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -37,6 +33,8 @@ import info.guardianproject.otr.app.im.provider.Imps;
 import info.guardianproject.util.BackgroundBitmapLoaderTask;
 import info.guardianproject.util.Languages;
 
+import java.security.GeneralSecurityException;
+
 public class LockScreenActivity extends ThemeableActivity implements ICacheWordSubscriber {
     private static final String TAG = "LockScreenActivity";
 
@@ -46,14 +44,10 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
 
     private EditText mEnterPassphrase;
     private EditText mNewPassphrase;
-   // private EditText mConfirmNewPassphrase;
+    private EditText mConfirmNewPassphrase;
     private View mViewCreatePassphrase;
     private View mViewEnterPassphrase;
     private ImageButton mLanguageButton;
-    private CheckBox mShowPassphrase;  // edited show password
-    private EditText mConfirmPassphrase; // edited confirm password
-
-
 
     private CacheWordActivityHandler mCacheWord;
     private String mPasswordError;
@@ -68,7 +62,6 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Intent i = getIntent();
 
         mApp = (ImApp)getApplication();
 
@@ -84,14 +77,12 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
         mEnterPassphrase = (EditText) findViewById(R.id.editEnterPassphrase);
 
         mNewPassphrase = (EditText) findViewById(R.id.editNewPassphrase);
-        mShowPassphrase = (CheckBox) findViewById(R.id.showPassPhrase);
-        mConfirmPassphrase = (EditText) findViewById(R.id.editConfirmPassphrase);
-     /*   mConfirmNewPassphrase = (EditText) findViewById(R.id.editConfirmNewPassphrase);
-        //ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper1);
-       // LinearLayout flipView1 = (LinearLayout) findViewById(R.id.flipView1);
-       // LinearLayout flipView2 = (LinearLayout) findViewById(R.id.flipView2);
+        mConfirmNewPassphrase = (EditText) findViewById(R.id.editConfirmNewPassphrase);
+        ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper1);
+        LinearLayout flipView1 = (LinearLayout) findViewById(R.id.flipView1);
+        LinearLayout flipView2 = (LinearLayout) findViewById(R.id.flipView2);
 
-       // mSlider = new TwoViewSlider(vf, flipView1, flipView2, mNewPassphrase, mConfirmNewPassphrase);*/
+        mSlider = new TwoViewSlider(vf, flipView1, flipView2, mNewPassphrase, mConfirmNewPassphrase);
 
         // set up language chooser button
         mLanguageButton = (ImageButton) findViewById(R.id.languageButton);
@@ -118,26 +109,6 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
             }
         });
 
-        if (!mHasBackground) {
-            LinearLayout llRoot = (LinearLayout) findViewById(R.id.llRoot);
-            BackgroundBitmapLoaderTask task = new BackgroundBitmapLoaderTask(this, llRoot);
-            task.execute(R.drawable.csbackground);
-        }
-// Show OR hide Password ....
-        mShowPassphrase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(!isChecked)
-                {
-                    mNewPassphrase.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    mConfirmPassphrase.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                }
-                else{
-                    mNewPassphrase.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    mConfirmPassphrase.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-            }
-        });
     }
 
     @Override
@@ -166,14 +137,9 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
         //do nothing!
     }
 
-    /**
-     * Password Validation
-     * @return
-     */
-
     private boolean newEqualsConfirmation() {
-       // return mNewPassphrase.getText().toString().equals(mConfirmNewPassphrase.getText().toString());
-        return mNewPassphrase.getText().toString().equals(mConfirmPassphrase.getText().toString());
+        return mNewPassphrase.getText().toString()
+                .equals(mConfirmNewPassphrase.getText().toString());
     }
 
     private void showValidationError() {
@@ -189,11 +155,8 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
     }
 
     private void clearNewFields() {
-     /*   mNewPassphrase.getEditableText().clear();
-        mConfirmNewPassphrase.getEditableText().clear();
-        */
         mNewPassphrase.getEditableText().clear();
-        mConfirmPassphrase.getEditableText().clear();
+        mConfirmNewPassphrase.getEditableText().clear();
     }
 
     private boolean isPasswordValid() {
@@ -205,8 +168,7 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
     }
 
     private boolean isConfirmationFieldEmpty() {
-       // return mConfirmNewPassphrase.getText().toString().length() == 0;
-        return mConfirmPassphrase.getText().toString().length() ==0;
+        return mConfirmNewPassphrase.getText().toString().length() == 0;
     }
 
     private void initializeWithPassphrase() {
@@ -242,8 +204,6 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
         }
     }
 
-
-
     private void initializePassphrase() {
         // Passphrase is not set, so allow the user to create one
 
@@ -269,9 +229,7 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
             }
         });
 
-
-
-       mConfirmPassphrase.setOnEditorActionListener(new OnEditorActionListener() {
+        mConfirmNewPassphrase.setOnEditorActionListener(new OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
@@ -290,23 +248,23 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
         mBtnCreate = (Button) findViewById(R.id.btnCreate);
         mBtnCreate.setOnClickListener(new OnClickListener()
         {
-
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 // validate
                 if (!isPasswordValid()) {
                     showValidationError();
                     mSlider.showNewPasswordField();
                 } else if (isConfirmationFieldEmpty() && !isPasswordFieldEmpty()) {
-
-                    Toast.makeText(getApplication().getApplicationContext(), "Confirm Password Field is Empty", Toast.LENGTH_LONG).show();
-             //      mBtnSkip.setVisibility(View.GONE);
-               //    mSlider.showConfirmationField();
-                 //  mBtnCreate.setText(R.string.lock_screen_confirm_passphrase);
-                } else if (!newEqualsConfirmation()) {
+                    mBtnSkip.setVisibility(View.GONE);
+                    mSlider.showConfirmationField();
+                    mBtnCreate.setText(R.string.lock_screen_confirm_passphrase);
+                }
+                else if (!newEqualsConfirmation()) {
                     showInequalityError();
-                } else if (!isConfirmationFieldEmpty() && !isPasswordFieldEmpty()) {
-
+                }
+               else if (!isConfirmationFieldEmpty() && !isPasswordFieldEmpty())
+               {
                     initializeWithPassphrase();
                 }
             }
@@ -320,12 +278,8 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
             @Override
             public void onClick(View v)
             {
-               if(isPasswordFieldEmpty())
-
-                 /*   Intent i = new Intent(LockScreenActivity.this, AccountActivity.class);
-                    startActivity(i);*/
-
-                  initializeWithPassphrase();
+                if (isPasswordFieldEmpty())
+                    initializeWithPassphrase();
 
             }
         });
@@ -492,7 +446,7 @@ public class LockScreenActivity extends ThemeableActivity implements ICacheWordS
 
         if (intent != null)
         {
-            // it starts Welcome Activity here with the same Intent (Acton_main) that was used to start the application
+
             getIntent().removeExtra("originalIntent");
             finish();
 //            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

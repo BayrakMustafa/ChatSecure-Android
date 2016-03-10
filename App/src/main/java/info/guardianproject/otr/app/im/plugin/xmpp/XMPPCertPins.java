@@ -35,13 +35,13 @@ public class XMPPCertPins
      "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
      "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
      "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
-     "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
-     "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+//     "TLS_DHE_DSS_WITH_AES_128_CBC_SHA", //not support in Android 6
+  //   "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
 
-     "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
-     "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
-     "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
-     "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
+//     "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
+ //    "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
+//     "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
+//     "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
      "TLS_RSA_WITH_AES_128_CBC_SHA256",
      "TLS_RSA_WITH_AES_256_CBC_SHA256",
      "TLS_RSA_WITH_AES_128_CBC_SHA",
@@ -56,13 +56,13 @@ public class XMPPCertPins
     "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
     "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
     "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
-    "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
-    "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+   // "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+   // "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
 
-    "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
-    "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
-    "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
-    "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
+ //   "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
+  //  "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
+    //"TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
+   // "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
 
     "TLS_RSA_WITH_AES_128_CBC_SHA",
     "TLS_RSA_WITH_AES_256_CBC_SHA",
@@ -91,14 +91,6 @@ public class XMPPCertPins
         if (PINLIST == null) {
             PINLIST = new ArrayList<String>();
             // generated using http://gitlab.doeg.gy/cpu/jabberpinfetch
-
-            /* bam.yt jabber.org
-            SubjectDN: CN=StartCom Class 1 Primary Intermediate Server CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL
-            IssuerDN: CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL
-            Fingerprint: F691FC87EFB3135354225A10E127E911D1C7F8CF
-            SPKI Pin: 2AAA8980060BCBDA205CE5844DC477EA2A0A7F6D
-             */
-            PINLIST.add("2AAA8980060BCBDA205CE5844DC477EA2A0A7F6D");
 
             /* chat.facebook.com
             SubjectDN: CN=DigiCert High Assurance CA-3, OU=www.digicert.com, O=DigiCert Inc, C=US

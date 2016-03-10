@@ -333,14 +333,13 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         info.guardianproject.otr.app.im.engine.Message msg = new info.guardianproject.otr.app.im.engine.Message(text);
 
         msg.setFrom(mConnection.getLoginUser().getAddress());
-
         msg.setType(Imps.MessageType.OUTGOING);
 
-        mChatSession.sendMessageAsync(msg);
+        int newType = mChatSession.sendMessageAsync(msg);
 
         long now = System.currentTimeMillis();
-        //if (!isGroupChatSession())
-        insertMessageInDb(null, text, now, msg.getType(), 0, msg.getID());
+        
+        insertMessageInDb(null, text, now, newType, 0, msg.getID());
     }
 
     public boolean offerData(String offerId, String url, String type) {
@@ -394,22 +393,20 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             return;
         }
 
+        ArrayList<String> messages = new ArrayList<String>();
+        
         while (c.moveToNext()) {
             String body = c.getString(1);
-            String id = c.getString(2);
-            info.guardianproject.otr.app.im.engine.Message msg = new info.guardianproject.otr.app.im.engine.Message(body);
-            // TODO OTRCHAT move setFrom() to ChatSession.sendMessageAsync()
-            msg.setFrom(mConnection.getLoginUser().getAddress());
-            msg.setID(id);
-            msg.setType(Imps.MessageType.OUTGOING);
-
-            mChatSession.sendMessageAsync(msg);
-
-            updateMessageInDb(id, msg.getType(), System.currentTimeMillis());
-
+            messages.add(body);
         }
-        //c.commitUpdates();
+        
         c.close();
+        
+        removeMessageInDb(Imps.MessageType.POSTPONED);
+        
+        for (String body : messages)
+            sendMessage(body);               
+        
     }
 
     public void registerChatListener(IChatListener listener) {
@@ -637,13 +634,30 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
     int updateMessageInDb(String id, int type, long time) {
 
+        int result = -1;
+        
         Uri.Builder builder = Imps.Messages.OTR_MESSAGES_CONTENT_URI_BY_PACKET_ID.buildUpon();
         builder.appendPath(id);
 
         ContentValues values = new ContentValues(1);
         values.put(Imps.Messages.TYPE, type);
-        values.put(Imps.Messages.DATE, time);
-        return mContentResolver.update(builder.build(), values, null, null);
+        
+        if (time != -1)
+            values.put(Imps.Messages.DATE, time);
+        
+        result = mContentResolver.update(builder.build(), values, null, null);
+        
+        if (result == 0)
+        {
+            builder = Imps.Messages.CONTENT_URI_MESSAGES_BY_PACKET_ID.buildUpon();
+            builder.appendPath(id);
+            
+            result = mContentResolver.update(builder.build(), values, null, null);
+        }
+        
+        
+        return result;
+        
     }
 
 
@@ -813,6 +827,12 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             }
             mRemoteListeners.finishBroadcast();
             mDataHandler.onOtrStatusChanged(status);
+            
+            if (status == SessionStatus.ENCRYPTED)
+            {
+                sendPostponedMessages ();
+            }
+            
         }
 
         @Override

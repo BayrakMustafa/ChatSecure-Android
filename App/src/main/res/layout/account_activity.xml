@@ -29,8 +29,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
-        android:padding="10dp"
-        android:layout_gravity="fill_vertical">
+	    android:padding="10dp" android:layout_gravity="fill_vertical">
 	
 	    <EditText android:id="@+id/edtName"
 	        android:selectAllOnFocus="true"
@@ -54,16 +53,14 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:hint="@string/account_setup_password"
-
-            android:inputType="textPassword"/>
+	        android:selectAllOnFocus="true" android:inputType="textPassword"/>
 	    
 	      <EditText android:id="@+id/edtPassConfirm"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:hint="@string/account_setup_password_confirm"
 	        android:visibility="gone"
-	        android:selectAllOnFocus="true"
-              android:inputType="textPassword"/>
+	        android:selectAllOnFocus="true" android:inputType="textPassword"/>
 	    
 	      
 		<Button android:id="@+id/btnSignIn"
@@ -81,41 +78,38 @@
 	    
 	    
 	    
-	<CheckBox android:id="@+id/rememberPassword"
+	    <CheckBox android:id="@+id/rememberPassword"
 	android:layout_height="wrap_content"
 	android:layout_width="match_parent"
 	android:text="@string/remember_password"
 	android:checked="true"
 	android:paddingTop="3sp"
 	android:paddingBottom="3sp"
-	android:textAppearance="?android:attr/textAppearanceSmall" />
- <CheckBox
-     android:id="@+id/showPassword"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:text="@string/account_show_password"/>
-	<CheckBox android:id="@+id/useTor"
+	android:textAppearance="?android:attr/textAppearanceSmall"
+	
+	 />
+	
+	  <CheckBox android:id="@+id/useTor"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/use_tor"
-            android:paddingTop="3sp"
-	        android:paddingBottom="3sp"
-	        android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="gone"/>
+	
+	android:paddingTop="3sp"
+	android:paddingBottom="3sp"
+	
+	   android:textAppearance="?android:attr/textAppearanceSmall"
+	
+	         />
 	
 	  <Button android:id="@+id/btnAdvanced"
-	          android:layout_height="wrap_content"
-	          android:layout_marginTop="20dip"
-	          android:text="@string/account_setup_advanced_button"
-              android:layout_width="match_parent"
-               android:visibility="gone"/>
-
+	                android:layout_height="wrap_content"
+	                android:layout_marginTop="20dip"
+	                android:text="@string/account_setup_advanced_button" android:layout_width="match_parent"/>
 		  <Button android:id="@+id/btnQR"
-	              android:layout_height="wrap_content"
-	              android:layout_marginTop="3dip"
-	              android:text="@string/menu_sidebar_qr"
-                  android:layout_width="match_parent"
-	              android:visibility="gone"
+	                android:layout_height="wrap_content"
+	                android:layout_marginTop="3dip"
+	                android:text="@string/menu_sidebar_qr" android:layout_width="match_parent"
+	                			android:visibility="gone"
 	                
 	                />
 	  

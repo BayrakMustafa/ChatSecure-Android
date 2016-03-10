@@ -181,7 +181,8 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
         // Fragment might already have been reorged out of the list
         if (position >= 0)
         {
-            if (DEBUG) Log.v(TAG, "Removing item #" + position + ": f=" + object + " v=" + ((Fragment)object).getView());
+            if (DEBUG) Log.v(TAG, "Removing item #" + position + ": f=" + object
+                    + " v=" + ((Fragment)object).getView());
             while (mSavedState.size() <= position) {
                 mSavedState.add(null);
             }
