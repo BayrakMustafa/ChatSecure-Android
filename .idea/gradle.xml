@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AndroidEmojiInputLibrary" />
+            <option value="$PROJECT_DIR$/AndroidPinning" />
+            <option value="$PROJECT_DIR$/App" />
+            <option value="$PROJECT_DIR$/CacheWordLib" />
+            <option value="$PROJECT_DIR$/MemorizingActivity" />
+            <option value="$PROJECT_DIR$/SlidingMenuLibrary" />
+            <option value="$PROJECT_DIR$/TibetanTextLibrary" />
+            <option value="$PROJECT_DIR$/ViewPagerIndicatorLibrary" />
+          </set>
+        </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AndroidEmojiInputLibrary" />
+            <option value="$PROJECT_DIR$/AndroidPinning" />
+            <option value="$PROJECT_DIR$/App" />
+            <option value="$PROJECT_DIR$/CacheWordLib" />
+            <option value="$PROJECT_DIR$/MemorizingActivity" />
+            <option value="$PROJECT_DIR$/SlidingMenuLibrary" />
+            <option value="$PROJECT_DIR$/TibetanTextLibrary" />
+            <option value="$PROJECT_DIR$/ViewPagerIndicatorLibrary" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

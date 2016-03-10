@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '19.1.0'
+    defaultConfig {
+        applicationId 'info.guardianproject.otr.app.im'
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 1411005
+        versionName "14.1.1-RC-5"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            aidl.srcDirs = ['src/main/java']
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile project(':AndroidEmojiInputLibrary')
+    compile project(':AndroidPinning')
+    compile project(':CacheWordLib')
+    compile project(':MemorizingActivity')
+    compile project(':SlidingMenuLibrary')
+    compile project(':TibetanTextLibrary')
+    compile project(':ViewPagerIndicatorLibrary')
+}

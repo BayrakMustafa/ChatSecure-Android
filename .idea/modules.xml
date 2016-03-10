@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidEmojiInputLibrary/AndroidEmojiInputLibrary.iml" filepath="$PROJECT_DIR$/AndroidEmojiInputLibrary/AndroidEmojiInputLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidPinning/AndroidPinning.iml" filepath="$PROJECT_DIR$/AndroidPinning/AndroidPinning.iml" />
+      <module fileurl="file://$PROJECT_DIR$/App/App.iml" filepath="$PROJECT_DIR$/App/App.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CacheWordLib/CacheWordLib.iml" filepath="$PROJECT_DIR$/CacheWordLib/CacheWordLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ChatSecure-Android.iml" filepath="$PROJECT_DIR$/ChatSecure-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MemorizingActivity/MemorizingActivity.iml" filepath="$PROJECT_DIR$/MemorizingActivity/MemorizingActivity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SlidingMenuLibrary/SlidingMenuLibrary.iml" filepath="$PROJECT_DIR$/SlidingMenuLibrary/SlidingMenuLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TibetanTextLibrary/TibetanTextLibrary.iml" filepath="$PROJECT_DIR$/TibetanTextLibrary/TibetanTextLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ViewPagerIndicatorLibrary/ViewPagerIndicatorLibrary.iml" filepath="$PROJECT_DIR$/ViewPagerIndicatorLibrary/ViewPagerIndicatorLibrary.iml" />
+    </modules>
+  </component>
+</project>
