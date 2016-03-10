@@ -5,30 +5,37 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.AutoCompleteTextView;
 
-public class InstantAutoCompleteTextView extends AutoCompleteTextView {
+public class InstantAutoCompleteTextView extends AutoCompleteTextView
+{
 
-    public InstantAutoCompleteTextView(Context context) {
+    public InstantAutoCompleteTextView(Context context)
+    {
         super(context);
     }
 
-    public InstantAutoCompleteTextView(Context arg0, AttributeSet arg1) {
+    public InstantAutoCompleteTextView(Context arg0, AttributeSet arg1)
+    {
         super(arg0, arg1);
     }
 
-    public InstantAutoCompleteTextView(Context arg0, AttributeSet arg1, int arg2) {
+    public InstantAutoCompleteTextView(Context arg0, AttributeSet arg1, int arg2)
+    {
         super(arg0, arg1, arg2);
     }
 
     @Override
-    public boolean enoughToFilter() {
+    public boolean enoughToFilter()
+    {
         return true;
     }
 
     @Override
     protected void onFocusChanged(boolean focused, int direction,
-            Rect previouslyFocusedRect) {
+                                  Rect previouslyFocusedRect)
+    {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
-        if (focused) {
+        if (focused)
+        {
             performFiltering(getText(), 0);
         }
     }

@@ -15,59 +15,59 @@ public class XMPPCertPins
     // Avoid SHA-1
     // Remove RC4, MD5, DES
     public final static String[] SSL_IDEAL_CIPHER_SUITES_API_20 = {
-     "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-     "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-     "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-     "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-     "TLS_DHE_RSA_WITH_AES128_GCM_SHA256",
-     "TLS_DHE_RSA_WITH_AES256_GCM_SHA384",
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+            "TLS_DHE_RSA_WITH_AES128_GCM_SHA256",
+            "TLS_DHE_RSA_WITH_AES256_GCM_SHA384",
 
-     "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-     "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
-     "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
-     "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
-     "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
-     "TLS_DHE_RSA_WITH_AES_256_CBC_SHA384",
+            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
+            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
+            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA384",
 
-     "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-     "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-     "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-     "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
-     "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-     "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
 //     "TLS_DHE_DSS_WITH_AES_128_CBC_SHA", //not support in Android 6
-  //   "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+            //   "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
 
 //     "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
- //    "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
+            //    "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
 //     "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
 //     "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
-     "TLS_RSA_WITH_AES_128_CBC_SHA256",
-     "TLS_RSA_WITH_AES_256_CBC_SHA256",
-     "TLS_RSA_WITH_AES_128_CBC_SHA",
-     "TLS_RSA_WITH_AES_256_CBC_SHA"
+            "TLS_RSA_WITH_AES_128_CBC_SHA256",
+            "TLS_RSA_WITH_AES_256_CBC_SHA256",
+            "TLS_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_RSA_WITH_AES_256_CBC_SHA"
     };
 
     // Follow above rules but as closely as possible but if we have to use RC4, use it last
     public final static String[] SSL_IDEAL_CIPHER_SUITES = {
-    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-    "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-    "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
-    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
-   // "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
-   // "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+            // "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+            // "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
 
- //   "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
-  //  "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
-    //"TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
-   // "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
+            //   "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
+            //  "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
+            //"TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
+            // "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
 
-    "TLS_RSA_WITH_AES_128_CBC_SHA",
-    "TLS_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_RSA_WITH_AES_256_CBC_SHA",
 
-    // UNCOMMENT THIS BLOCK ONLY IF ABSOLUTELY NECESSARY
+            // UNCOMMENT THIS BLOCK ONLY IF ABSOLUTELY NECESSARY
     /*
     "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
     "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
@@ -87,8 +87,10 @@ public class XMPPCertPins
      *
      * @return
      */
-    public static String[] getPinList() {
-        if (PINLIST == null) {
+    public static String[] getPinList()
+    {
+        if (PINLIST == null)
+        {
             PINLIST = new ArrayList<String>();
             // generated using http://gitlab.doeg.gy/cpu/jabberpinfetch
 
@@ -167,7 +169,9 @@ public class XMPPCertPins
 
             // double check there are no duplicates by mistake
             if (PINLIST.size() != new HashSet<String>(PINLIST).size())
+            {
                 throw new SecurityException("PINLIST has duplicate entries!");
+            }
         }
 
         return PINLIST.toArray(new String[PINLIST.size()]);

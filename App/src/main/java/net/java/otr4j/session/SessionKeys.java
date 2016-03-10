@@ -1,13 +1,14 @@
 package net.java.otr4j.session;
 
+import net.java.otr4j.OtrException;
+
 import java.math.BigInteger;
 import java.security.KeyPair;
 
 import javax.crypto.interfaces.DHPublicKey;
 
-import net.java.otr4j.OtrException;
-
-public interface SessionKeys {
+public interface SessionKeys
+{
 
     public static final int Previous = 0;
     public static final int Current = 1;

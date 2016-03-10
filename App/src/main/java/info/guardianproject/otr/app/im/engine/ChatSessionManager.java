@@ -17,35 +17,39 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import info.guardianproject.otr.app.im.service.ChatSessionAdapter;
-import info.guardianproject.otr.app.im.service.ChatSessionManagerAdapter;
-
 import java.util.Hashtable;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import info.guardianproject.otr.app.im.service.ChatSessionAdapter;
+import info.guardianproject.otr.app.im.service.ChatSessionManagerAdapter;
 
 /**
  * The ChatSessionManager keeps track of all current chat sessions and is also
  * responsible to dispatch the new incoming message to the right session.
  */
-public abstract class ChatSessionManager {
+public abstract class ChatSessionManager
+{
 
     private CopyOnWriteArrayList<ChatSessionListener> mListeners;
     private ChatSessionManagerAdapter mAdapter;
 
-    /** Map session to the participant communicate with. */
-    protected Hashtable<String,ChatSession> mSessions;
+    /**
+     * Map session to the participant communicate with.
+     */
+    protected Hashtable<String, ChatSession> mSessions;
 
-    protected ChatSessionManager() {
+    protected ChatSessionManager()
+    {
         mListeners = new CopyOnWriteArrayList<ChatSessionListener>();
-        mSessions = new Hashtable<String,ChatSession>();
+        mSessions = new Hashtable<String, ChatSession>();
     }
 
-    public void setAdapter (ChatSessionManagerAdapter adapter)
+    public void setAdapter(ChatSessionManagerAdapter adapter)
     {
         mAdapter = adapter;
     }
 
-    public ChatSessionManagerAdapter getAdapter ()
+    public ChatSessionManagerAdapter getAdapter()
     {
         return mAdapter;
     }
@@ -56,8 +60,10 @@ public abstract class ChatSessionManager {
      *
      * @param listener the listener
      */
-    public void addChatSessionListener(ChatSessionListener listener) {
-        if ((listener != null) && !mListeners.contains(listener)) {
+    public void addChatSessionListener(ChatSessionListener listener)
+    {
+        if ((listener != null) && !mListeners.contains(listener))
+        {
             mListeners.add(listener);
         }
     }
@@ -67,7 +73,8 @@ public abstract class ChatSessionManager {
      *
      * @param listener the listener to remove.
      */
-    public void removeChatSessionListener(ChatSessionListener listener) {
+    public void removeChatSessionListener(ChatSessionListener listener)
+    {
         mListeners.remove(listener);
     }
 
@@ -77,7 +84,8 @@ public abstract class ChatSessionManager {
      * @param participant the participant.
      * @return the created ChatSession.
      */
-    public ChatSession createChatSession(ImEntity participant, boolean isNewSession) {
+    public ChatSession createChatSession(ImEntity participant, boolean isNewSession)
+    {
 
         String sessionKey = Address.stripResource(participant.getAddress().getAddress());
         ChatSession session = mSessions.get(sessionKey);
@@ -86,11 +94,12 @@ public abstract class ChatSessionManager {
         {
             session = new ChatSession(participant, this);
             ChatSessionAdapter csa = mAdapter.getChatSessionAdapter(session, isNewSession);
-            
-            
-            mSessions.put(sessionKey,session);
 
-            for (ChatSessionListener listener : mListeners) {
+
+            mSessions.put(sessionKey, session);
+
+            for (ChatSessionListener listener : mListeners)
+            {
                 listener.onChatSessionCreated(session);
             }
 
@@ -99,7 +108,7 @@ public abstract class ChatSessionManager {
         {
             ChatSessionAdapter csa = mAdapter.getChatSessionAdapter(session, isNewSession);
             session.setMessageListener(csa.getAdaptee().getMessageListener());
-            
+
         }
 
         return session;
@@ -112,7 +121,8 @@ public abstract class ChatSessionManager {
      *
      * @param session the ChatSession to close.
      */
-    public void closeChatSession(ChatSession session) {
+    public void closeChatSession(ChatSession session)
+    {
         mSessions.remove(session.getParticipant().getAddress().getAddress());
     }
 

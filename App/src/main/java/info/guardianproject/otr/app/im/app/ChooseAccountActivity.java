@@ -17,15 +17,16 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.provider.Imps;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class ChooseAccountActivity extends ThemeableActivity {
+import info.guardianproject.otr.app.im.provider.Imps;
+
+public class ChooseAccountActivity extends ThemeableActivity
+{
     @Override
-    protected void onCreate(Bundle icicle) {
+    protected void onCreate(Bundle icicle)
+    {
         super.onCreate(icicle);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);

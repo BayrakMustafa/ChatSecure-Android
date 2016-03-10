@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#333333" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#333333">
 
     <ImageView
         android:id="@+id/pzs_broken_image_view"
@@ -10,12 +9,12 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:src="@drawable/broken_image_large"
-        android:visibility="invisible" />
+        android:visibility="invisible"/>
 
     <info.guardianproject.otr.app.im.ui.PZSImageView
         android:id="@+id/pzs_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="0dip" />
+        android:padding="0dip"/>
 
 </RelativeLayout>

@@ -8,13 +8,13 @@ package net.java.otr4j.session;
 import java.net.ProtocolException;
 
 /**
- *
  * @author Felix Eckhofer
- *
  */
-public final class OtrAssembler {
+public final class OtrAssembler
+{
 
-    public OtrAssembler() {
+    public OtrAssembler()
+    {
         discard();
     }
 
@@ -47,16 +47,19 @@ public final class OtrAssembler {
      * ?OTR|sender_instance|receiver_instance,k,n,piece-k,
      *
      * @param msgText Message to be processed.
-     *
      * @return String with the accumulated message or null if the message was
-     *         incomplete or malformed
+     * incomplete or malformed
      */
-    public String accumulate(String msgText) throws ProtocolException {
+    public String accumulate(String msgText) throws ProtocolException
+    {
         // if it's a fragment, remove everything before "k,n,piece-k"
-        if (msgText.startsWith(HEAD_FRAGMENT_V2)) {
+        if (msgText.startsWith(HEAD_FRAGMENT_V2))
+        {
             // v2
             msgText = msgText.substring(HEAD_FRAGMENT_V2.length());
-        } else if (msgText.startsWith(HEAD_FRAGMENT_V3)) {
+        }
+        else if (msgText.startsWith(HEAD_FRAGMENT_V3))
+        {
             // v
             msgText = msgText.substring(HEAD_FRAGMENT_V3.length());
 
@@ -65,22 +68,28 @@ public final class OtrAssembler {
             // split the two instance ids
             String[] instances = instancePart[0].split("\\|", 2);
 
-            if (instancePart.length != 2 || instances.length != 2) {
+            if (instancePart.length != 2 || instances.length != 2)
+            {
                 discard();
                 throw new ProtocolException();
             }
 
             int receiverInstance;
-            try {
+            try
+            {
                 receiverInstance = Integer.parseInt(instances[1], 16);
-            } catch (NumberFormatException e) {
+            }
+            catch (NumberFormatException e)
+            {
                 discard();
                 throw new ProtocolException();
             }
 
             // continue with v2 part of fragment
             msgText = instancePart[1];
-        } else {
+        }
+        else
+        {
             // not a fragmented message
             discard();
             return msgText;
@@ -89,45 +98,59 @@ public final class OtrAssembler {
         String[] params = msgText.split(",", 4);
 
         int k, n;
-        try {
+        try
+        {
             k = Integer.parseInt(params[0]);
             n = Integer.parseInt(params[1]);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             discard();
             throw new ProtocolException();
-        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             discard();
             throw new ProtocolException();
         }
 
-        if (k == 0 || n == 0 || k > n || params.length != 4 || params[3].length() != 0) {
+        if (k == 0 || n == 0 || k > n || params.length != 4 || params[3].length() != 0)
+        {
             discard();
             throw new ProtocolException();
         }
 
         msgText = params[2];
 
-        if (k == 1) {
+        if (k == 1)
+        {
             // first fragment
             discard();
             fragmentCur = k;
             fragmentMax = n;
             fragment.append(msgText);
-        } else if (n == fragmentMax && k == fragmentCur + 1) {
+        }
+        else if (n == fragmentMax && k == fragmentCur + 1)
+        {
             // consecutive fragment
             fragmentCur++;
             fragment.append(msgText);
-        } else {
+        }
+        else
+        {
             // out-of-order fragment
             discard();
             throw new ProtocolException();
         }
 
-        if (n == k && n > 0) {
+        if (n == k && n > 0)
+        {
             String result = fragment.toString();
             discard();
             return result;
-        } else {
+        }
+        else
+        {
             return null; // incomplete fragment
         }
     }
@@ -135,7 +158,8 @@ public final class OtrAssembler {
     /**
      * Discard current fragment buffer and reset the counters.
      */
-    public void discard() {
+    public void discard()
+    {
         fragment = new StringBuffer();
         fragmentCur = 0;
         fragmentMax = 0;

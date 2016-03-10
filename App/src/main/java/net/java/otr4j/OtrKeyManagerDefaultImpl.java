@@ -1,5 +1,11 @@
 package net.java.otr4j;
 
+import android.util.Base64;
+
+import net.java.otr4j.crypto.OtrCryptoEngineImpl;
+import net.java.otr4j.crypto.OtrCryptoException;
+import net.java.otr4j.session.SessionID;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,117 +28,151 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import net.java.otr4j.crypto.OtrCryptoEngineImpl;
-import net.java.otr4j.crypto.OtrCryptoException;
-import net.java.otr4j.session.SessionID;
-import android.util.Base64;
 
-
-
-public class OtrKeyManagerDefaultImpl implements OtrKeyManager {
+public class OtrKeyManagerDefaultImpl implements OtrKeyManager
+{
 
     private OtrKeyManagerStore store;
 
-    public OtrKeyManagerDefaultImpl(OtrKeyManagerStore store) {
+    public OtrKeyManagerDefaultImpl(OtrKeyManagerStore store)
+    {
         this.store = store;
     }
 
-    class DefaultPropertiesStore implements OtrKeyManagerStore {
+    class DefaultPropertiesStore implements OtrKeyManagerStore
+    {
         private final Properties properties = new Properties();
         private String filepath;
 
-        public DefaultPropertiesStore(String filepath) throws IOException {
+        public DefaultPropertiesStore(String filepath) throws IOException
+        {
             if (filepath == null || filepath.length() < 1)
+            {
                 throw new IllegalArgumentException();
+            }
             this.filepath = filepath;
             properties.clear();
 
             InputStream in = new BufferedInputStream(new FileInputStream(getConfigurationFile()));
-            try {
+            try
+            {
                 properties.load(in);
-            } finally {
+            }
+            finally
+            {
                 in.close();
             }
         }
 
-        private File getConfigurationFile() throws IOException {
+        private File getConfigurationFile() throws IOException
+        {
             File configFile = new File(filepath);
             if (!configFile.exists())
+            {
                 configFile.createNewFile();
+            }
             return configFile;
         }
 
-        public void setProperty(String id, boolean value) {
+        public void setProperty(String id, boolean value)
+        {
             properties.setProperty(id, "true");
-            try {
+            try
+            {
                 this.store();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
 
-        private void store() throws FileNotFoundException, IOException {
+        private void store() throws FileNotFoundException, IOException
+        {
             OutputStream out = new FileOutputStream(getConfigurationFile());
             properties.store(out, null);
             out.close();
         }
 
-        public void setProperty(String id, byte[] value) {
-            properties.setProperty(id, Base64.encodeToString(value,Base64.NO_WRAP));
-            try {
+        public void setProperty(String id, byte[] value)
+        {
+            properties.setProperty(id, Base64.encodeToString(value, Base64.NO_WRAP));
+            try
+            {
                 this.store();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
 
-        public void removeProperty(String id) {
+        public void removeProperty(String id)
+        {
             properties.remove(id);
 
         }
 
-        public byte[] getPropertyBytes(String id) {
+        public byte[] getPropertyBytes(String id)
+        {
             String value = properties.getProperty(id);
-            return Base64.decode(value,Base64.NO_WRAP);
+            return Base64.decode(value, Base64.NO_WRAP);
         }
 
-        public boolean getPropertyBoolean(String id, boolean defaultValue) {
-            try {
+        public boolean getPropertyBoolean(String id, boolean defaultValue)
+        {
+            try
+            {
                 return Boolean.valueOf(properties.get(id).toString());
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 return defaultValue;
             }
         }
     }
 
-    public OtrKeyManagerDefaultImpl(String filepath) throws IOException {
+    public OtrKeyManagerDefaultImpl(String filepath) throws IOException
+    {
         this.store = new DefaultPropertiesStore(filepath);
     }
 
     private List<OtrKeyManagerListener> listeners = new Vector<OtrKeyManagerListener>();
 
-    public void addListener(OtrKeyManagerListener l) {
-        synchronized (listeners) {
+    public void addListener(OtrKeyManagerListener l)
+    {
+        synchronized (listeners)
+        {
             if (!listeners.contains(l))
+            {
                 listeners.add(l);
+            }
         }
     }
 
-    public void removeListener(OtrKeyManagerListener l) {
-        synchronized (listeners) {
+    public void removeListener(OtrKeyManagerListener l)
+    {
+        synchronized (listeners)
+        {
             listeners.remove(l);
         }
     }
 
-    public void generateLocalKeyPair(SessionID sessionID) {
+    public void generateLocalKeyPair(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return;
+        }
 
         String accountID = sessionID.getLocalUserId();
         KeyPair keyPair;
-        try {
+        try
+        {
             keyPair = KeyPairGenerator.getInstance("DSA").genKeyPair();
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             e.printStackTrace();
             return;
         }
@@ -151,57 +191,79 @@ public class OtrKeyManagerDefaultImpl implements OtrKeyManager {
 
     }
 
-    public String getLocalFingerprint(SessionID sessionID) {
+    public String getLocalFingerprint(SessionID sessionID)
+    {
         KeyPair keyPair = loadLocalKeyPair(sessionID);
 
         if (keyPair == null)
+        {
             return null;
+        }
 
         PublicKey pubKey = keyPair.getPublic();
 
-        try {
+        try
+        {
             return new OtrCryptoEngineImpl().getFingerprint(pubKey);
-        } catch (OtrCryptoException e) {
+        }
+        catch (OtrCryptoException e)
+        {
             e.printStackTrace();
             return null;
         }
     }
 
-    public String getRemoteFingerprint(SessionID sessionID) {
+    public String getRemoteFingerprint(SessionID sessionID)
+    {
         PublicKey remotePublicKey = loadRemotePublicKey(sessionID);
         if (remotePublicKey == null)
+        {
             return null;
-        try {
+        }
+        try
+        {
             return new OtrCryptoEngineImpl().getFingerprint(remotePublicKey);
-        } catch (OtrCryptoException e) {
+        }
+        catch (OtrCryptoException e)
+        {
             e.printStackTrace();
             return null;
         }
     }
 
-    public boolean isVerified(SessionID sessionID) {
+    public boolean isVerified(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return false;
+        }
 
         return this.store.getPropertyBoolean(sessionID.getLocalUserId() + ".publicKey.verified", false);
     }
 
-    public KeyPair loadLocalKeyPair(SessionID sessionID) {
+    public KeyPair loadLocalKeyPair(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return null;
+        }
 
         String accountID = sessionID.getLocalUserId();
         // Load Private Key.
         byte[] b64PrivKey = this.store.getPropertyBytes(accountID + ".privateKey");
         if (b64PrivKey == null)
+        {
             return null;
+        }
 
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(b64PrivKey);
 
         // Load Public Key.
         byte[] b64PubKey = this.store.getPropertyBytes(accountID + ".publicKey");
         if (b64PubKey == null)
+        {
             return null;
+        }
 
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(b64PubKey);
 
@@ -210,14 +272,19 @@ public class OtrKeyManagerDefaultImpl implements OtrKeyManager {
 
         // Generate KeyPair.
         KeyFactory keyFactory;
-        try {
+        try
+        {
             keyFactory = KeyFactory.getInstance("DSA");
             publicKey = keyFactory.generatePublic(publicKeySpec);
             privateKey = keyFactory.generatePrivate(privateKeySpec);
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             e.printStackTrace();
             return null;
-        } catch (InvalidKeySpecException e) {
+        }
+        catch (InvalidKeySpecException e)
+        {
             e.printStackTrace();
             return null;
         }
@@ -225,35 +292,48 @@ public class OtrKeyManagerDefaultImpl implements OtrKeyManager {
         return new KeyPair(publicKey, privateKey);
     }
 
-    public PublicKey loadRemotePublicKey(SessionID sessionID) {
+    public PublicKey loadRemotePublicKey(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return null;
+        }
 
         String userID = sessionID.getRemoteUserId();
 
         byte[] b64PubKey = this.store.getPropertyBytes(userID + ".publicKey");
         if (b64PubKey == null)
+        {
             return null;
+        }
 
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(b64PubKey);
 
         // Generate KeyPair.
         KeyFactory keyFactory;
-        try {
+        try
+        {
             keyFactory = KeyFactory.getInstance("DSA");
             return keyFactory.generatePublic(publicKeySpec);
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             e.printStackTrace();
             return null;
-        } catch (InvalidKeySpecException e) {
+        }
+        catch (InvalidKeySpecException e)
+        {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void savePublicKey(SessionID sessionID, PublicKey pubKey) {
+    public void savePublicKey(SessionID sessionID, PublicKey pubKey)
+    {
         if (sessionID == null)
+        {
             return;
+        }
 
         X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(pubKey.getEncoded());
 
@@ -271,39 +351,58 @@ public class OtrKeyManagerDefaultImpl implements OtrKeyManager {
         }
     }
 
-    public void unverify(SessionID sessionID) {
+    public void unverify(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return;
+        }
 
         if (!isVerified(sessionID))
+        {
             return;
+        }
 
         this.store.removeProperty(sessionID.getRemoteUserId() + ".publicKey.verified");
 
         for (OtrKeyManagerListener l : listeners)
+        {
             l.verificationStatusChanged(sessionID);
+        }
 
     }
 
-    public void verify(SessionID sessionID) {
+    public void verify(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return;
+        }
 
         if (this.isVerified(sessionID))
+        {
             return;
+        }
 
         store.setProperty(sessionID.getRemoteUserId() + ".publicKey.verified", true);
-        
+
         for (OtrKeyManagerListener l : listeners)
+        {
             l.verificationStatusChanged(sessionID);
+        }
     }
 
-    public void remoteVerifiedUs(SessionID sessionID) {
+    public void remoteVerifiedUs(SessionID sessionID)
+    {
         if (sessionID == null)
+        {
             return;
+        }
 
         for (OtrKeyManagerListener l : listeners)
+        {
             l.remoteVerifiedUs(sessionID);
+        }
     }
 
 }

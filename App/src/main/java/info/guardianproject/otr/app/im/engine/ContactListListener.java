@@ -21,7 +21,8 @@ package info.guardianproject.otr.app.im.engine;
  * Interfaces that allows the implementing classes to listen to contact list
  * relative events. Listeners are registered with ContactListManager.
  */
-public interface ContactListListener {
+public interface ContactListListener
+{
     public static final int LIST_CREATED = 1;
     public static final int LIST_DELETED = 2;
     public static final int LIST_LOADED = 3;
@@ -50,18 +51,18 @@ public interface ContactListListener {
      * or loaded, or <li> a contact has been added to or removed from a list, or
      * <li> a contact has been blocked or unblocked </ul>
      *
-     * @param type one of the following values: <ul> <li>{@link #LIST_CREATED}
-     *            list: the newly created list; contact: null <li>
-     *            {@link #LIST_DELETED} list: the delete list; contact: null
-     *            <li>{@link #LIST_LOADED} list: the newly loaded list; contact:
-     *            null <li>{@link #LIST_RENAMED} list: the list renamed;
-     *            contact: null <li>{@link #LIST_CONTACT_ADDED} list: the list
-     *            to which the contact is added, contact: the added contact <li>
-     *            {@link #LIST_CONTACT_REMOVED} list: the list from which the
-     *            contact is removed, contact: the removed contact <li>
-     *            {@link #CONTACT_BLOCKED} list: null, contact: the blocked
-     *            contact <li>{@link #CONTACT_UNBLOCKED} list: null, contact:
-     *            the unblocked contact </ul>
+     * @param type    one of the following values: <ul> <li>{@link #LIST_CREATED}
+     *                list: the newly created list; contact: null <li>
+     *                {@link #LIST_DELETED} list: the delete list; contact: null
+     *                <li>{@link #LIST_LOADED} list: the newly loaded list; contact:
+     *                null <li>{@link #LIST_RENAMED} list: the list renamed;
+     *                contact: null <li>{@link #LIST_CONTACT_ADDED} list: the list
+     *                to which the contact is added, contact: the added contact <li>
+     *                {@link #LIST_CONTACT_REMOVED} list: the list from which the
+     *                contact is removed, contact: the removed contact <li>
+     *                {@link #CONTACT_BLOCKED} list: null, contact: the blocked
+     *                contact <li>{@link #CONTACT_UNBLOCKED} list: null, contact:
+     *                the unblocked contact </ul>
      * @param list
      * @param contact
      */
@@ -78,35 +79,35 @@ public interface ContactListListener {
      * from the server.
      *
      * @param contacts one or more contacts that have updated presence
-     *            information.
+     *                 information.
      */
     public void onContactsPresenceUpdate(Contact[] contacts);
 
     /**
      * @param errorType one of the following values: <ul> <li>
-     *            {@link #ERROR_CREATING_LIST} listName: the name of the list to
-     *            be created; contact: null <li>{@link #ERROR_DELETING_LIST}
-     *            listName: the name of the list to be deleted; contact: null
-     *            <li>{@link #ERROR_LOADING_LIST} listName: the name of the list
-     *            to be loaded, or null if the error occurred while fetching the
-     *            list of contact lists; contact: null <li>
-     *            {@link #ERROR_RENAMING_LIST} listName: the original name of
-     *            the list to be renamed; contact: null <li>
-     *            {@link #ERROR_LOADING_BLOCK_LIST} list: null; contact: null
-     *            <li>{@link #ERROR_RETRIEVING_PRESENCE} <ul> <li>when
-     *            retrieving presence for a list: listName: the name of the
-     *            list, or null, depending on the implementation; contact: null
-     *            <li>when retrieving presence for a contact: listName: the name
-     *            of the list that the contact belongs to, or null, depending on
-     *            the implementation; contact: the contact </ul> <li>
-     *            {@link #ERROR_ADDING_CONTACT} listName: the name of the list
-     *            to which the contact was to be added; contact: the contact to
-     *            add <li>{@link #ERROR_REMOVING_CONTACT} listName: the name of
-     *            the list from which the contact was to be removed; contact:
-     *            the contact to remove <li>{@link #ERROR_BLOCKING_CONTACT}
-     *            list: null; contact: the contact to block <li>
-     *            {@link #ERROR_UNBLOCKING_CONTACT} list: null; contact: the
-     *            contact to be unblocked </ul>
+     *                  {@link #ERROR_CREATING_LIST} listName: the name of the list to
+     *                  be created; contact: null <li>{@link #ERROR_DELETING_LIST}
+     *                  listName: the name of the list to be deleted; contact: null
+     *                  <li>{@link #ERROR_LOADING_LIST} listName: the name of the list
+     *                  to be loaded, or null if the error occurred while fetching the
+     *                  list of contact lists; contact: null <li>
+     *                  {@link #ERROR_RENAMING_LIST} listName: the original name of
+     *                  the list to be renamed; contact: null <li>
+     *                  {@link #ERROR_LOADING_BLOCK_LIST} list: null; contact: null
+     *                  <li>{@link #ERROR_RETRIEVING_PRESENCE} <ul> <li>when
+     *                  retrieving presence for a list: listName: the name of the
+     *                  list, or null, depending on the implementation; contact: null
+     *                  <li>when retrieving presence for a contact: listName: the name
+     *                  of the list that the contact belongs to, or null, depending on
+     *                  the implementation; contact: the contact </ul> <li>
+     *                  {@link #ERROR_ADDING_CONTACT} listName: the name of the list
+     *                  to which the contact was to be added; contact: the contact to
+     *                  add <li>{@link #ERROR_REMOVING_CONTACT} listName: the name of
+     *                  the list from which the contact was to be removed; contact:
+     *                  the contact to remove <li>{@link #ERROR_BLOCKING_CONTACT}
+     *                  list: null; contact: the contact to block <li>
+     *                  {@link #ERROR_UNBLOCKING_CONTACT} list: null; contact: the
+     *                  contact to be unblocked </ul>
      * @param error
      * @param listName
      * @param contact

@@ -55,6 +55,9 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 import info.guardianproject.onionkit.ui.OrbotHelper;
 import info.guardianproject.otr.IOtrChatSession;
 import info.guardianproject.otr.OtrAndroidKeyManagerImpl;
@@ -72,21 +75,19 @@ import info.guardianproject.otr.app.im.service.ImServiceConstants;
 import info.guardianproject.util.LogCleaner;
 import info.guardianproject.util.XmppUriHelper;
 
-import java.util.HashMap;
-import java.util.Locale;
-
-public class AccountActivity extends ActionBarActivity {
+public class AccountActivity extends ActionBarActivity
+{
 
     public static final String TAG = "AccountActivity";
     private static final String ACCOUNT_URI_KEY = "accountUri";
     private long mProviderId = 0;
     private long mAccountId = 0;
     static final int REQUEST_SIGN_IN = RESULT_FIRST_USER + 1;
-    private static final String[] ACCOUNT_PROJECTION = { Imps.Account._ID, Imps.Account.PROVIDER,
-                                                        Imps.Account.USERNAME,
-                                                        Imps.Account.PASSWORD,
-                                                        Imps.Account.KEEP_SIGNED_IN,
-                                                        Imps.Account.LAST_LOGIN_STATE };
+    private static final String[] ACCOUNT_PROJECTION = {Imps.Account._ID, Imps.Account.PROVIDER,
+            Imps.Account.USERNAME,
+            Imps.Account.PASSWORD,
+            Imps.Account.KEEP_SIGNED_IN,
+            Imps.Account.LAST_LOGIN_STATE};
     private static final int ACCOUNT_PROVIDER_COLUMN = 1;
     private static final int ACCOUNT_USERNAME_COLUMN = 2;
     private static final int ACCOUNT_PASSWORD_COLUMN = 3;
@@ -97,7 +98,7 @@ public class AccountActivity extends ActionBarActivity {
     public final static String DEFAULT_SERVER_DUKGO = "dukgo.com";
     public final static String ONION_JABBERCCC = "okj7xc6j2szr2y75.onion";
     public final static String ONION_CALYX = "ijeeynrc6x2uy5ob.onion";
-    
+
     private static final String USERNAME_VALIDATOR = "[^a-z0-9\\.\\-_\\+]";
     //    private static final int ACCOUNT_KEEP_SIGNED_IN_COLUMN = 4;
     //    private static final int ACCOUNT_LAST_LOGIN_STATE = 5;
@@ -133,32 +134,39 @@ public class AccountActivity extends ActionBarActivity {
     private AsyncTask<Void, Void, String> mCreateAccountTask = null;
 
     @Override
-    protected void onCreate(Bundle icicle) {
+    protected void onCreate(Bundle icicle)
+    {
 
         super.onCreate(icicle);
         Intent i = getIntent();
 
-        mApp = (ImApp)getApplication();
+        mApp = (ImApp) getApplication();
 
         String action = i.getAction();
 
         if (i.hasExtra("isSignedIn"))
+        {
             isSignedIn = i.getBooleanExtra("isSignedIn", false);
+        }
 
 
         final ProviderDef provider;
 
         mSignInHelper = new SignInHelper(this);
-        SignInHelper.SignInListener signInListener = new SignInHelper.SignInListener() {
+        SignInHelper.SignInListener signInListener = new SignInHelper.SignInListener()
+        {
             @Override
-            public void connectedToService() {
+            public void connectedToService()
+            {
             }
+
             @Override
-            public void stateChanged(int state, long accountId) {
+            public void stateChanged(int state, long accountId)
+            {
                 if (state == ImConnection.LOGGED_IN)
                 {
-                  //  mSignInHelper.goToAccount(accountId);
-                   // finish();
+                    //  mSignInHelper.goToAccount(accountId);
+                    // finish();
                     isSignedIn = true;
                 }
                 else
@@ -176,15 +184,20 @@ public class AccountActivity extends ActionBarActivity {
 
         Uri uri = i.getData();
         // check if there is account information and direct accordingly
-        if (Intent.ACTION_INSERT_OR_EDIT.equals(action)) {
-            if ((uri == null) || !Imps.Account.CONTENT_ITEM_TYPE.equals(cr.getType(uri))) {
+        if (Intent.ACTION_INSERT_OR_EDIT.equals(action))
+        {
+            if ((uri == null) || !Imps.Account.CONTENT_ITEM_TYPE.equals(cr.getType(uri)))
+            {
                 action = Intent.ACTION_INSERT;
-            } else {
+            }
+            else
+            {
                 action = Intent.ACTION_EDIT;
             }
         }
 
-        if (Intent.ACTION_INSERT.equals(action) && uri.getScheme().equals("ima")) {
+        if (Intent.ACTION_INSERT.equals(action) && uri.getScheme().equals("ima"))
+        {
             ImPluginHelper helper = ImPluginHelper.getInstance(this);
             String authority = uri.getAuthority();
             String[] userpass_host = authority.split("@");
@@ -198,7 +211,8 @@ public class AccountActivity extends ActionBarActivity {
             Cursor cursor = openAccountByUsernameAndDomain(cr);
             boolean exists = cursor.moveToFirst();
             long accountId;
-            if (exists) {
+            if (exists)
+            {
                 accountId = cursor.getLong(0);
                 mAccountUri = ContentUris.withAppendedId(Imps.Account.CONTENT_URI, accountId);
                 pass = cursor.getString(ACCOUNT_PASSWORD_COLUMN);
@@ -211,7 +225,9 @@ public class AccountActivity extends ActionBarActivity {
                 finish();
                 return;
 
-            } else {
+            }
+            else
+            {
                 mProviderId = helper.createAdditionalProvider(helper.getProviderNames().get(0)); //xmpp FIXME
                 accountId = ImApp.insertOrUpdateAccount(cr, mProviderId, mUserName, pass);
                 mAccountUri = ContentUris.withAppendedId(Imps.Account.CONTENT_URI, accountId);
@@ -222,9 +238,9 @@ public class AccountActivity extends ActionBarActivity {
             }
 
 
-
-
-        } else if (Intent.ACTION_INSERT.equals(action)) {
+        }
+        else if (Intent.ACTION_INSERT.equals(action))
+        {
 
 
             setupUIPre();
@@ -245,12 +261,15 @@ public class AccountActivity extends ActionBarActivity {
             }
 
 
-        } else if (Intent.ACTION_EDIT.equals(action)) {
+        }
+        else if (Intent.ACTION_EDIT.equals(action))
+        {
 
 
             setupUIPre();
 
-            if ((uri == null) || !Imps.Account.CONTENT_ITEM_TYPE.equals(cr.getType(uri))) {
+            if ((uri == null) || !Imps.Account.CONTENT_ITEM_TYPE.equals(cr.getType(uri)))
+            {
                 LogCleaner.warn(ImApp.LOG_TAG, "<AccountActivity>Bad data");
                 return;
             }
@@ -259,12 +278,14 @@ public class AccountActivity extends ActionBarActivity {
 
             Cursor cursor = cr.query(uri, ACCOUNT_PROJECTION, null, null, null);
 
-            if (cursor == null) {
+            if (cursor == null)
+            {
                 finish();
                 return;
             }
 
-            if (!cursor.moveToFirst()) {
+            if (!cursor.moveToFirst())
+            {
                 cursor.close();
                 finish();
                 return;
@@ -277,41 +298,46 @@ public class AccountActivity extends ActionBarActivity {
             mProviderId = cursor.getLong(ACCOUNT_PROVIDER_COLUMN);
             provider = mApp.getProvider(mProviderId);
 
-            Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(mProviderId)},null);
+            Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(mProviderId)}, null);
 
             Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
                     pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
 
-            try {
+            try
+            {
                 mOriginalUserAccount = cursor.getString(ACCOUNT_USERNAME_COLUMN) + "@"
-                                       + settings.getDomain();
+                        + settings.getDomain();
                 mEditUserAccount.setText(mOriginalUserAccount);
                 mEditPass.setText(cursor.getString(ACCOUNT_PASSWORD_COLUMN));
                 mRememberPass.setChecked(!cursor.isNull(ACCOUNT_PASSWORD_COLUMN));
                 mUseTor.setChecked(settings.getUseTor());
                 mBtnQrDisplay.setVisibility(View.VISIBLE);
-                
+
                 mPort = settings.getPort();
-                
-            } finally {
+
+            }
+            finally
+            {
                 settings.close();
                 cursor.close();
             }
 
 
-        } else {
+        }
+        else
+        {
             LogCleaner.warn(ImApp.LOG_TAG, "<AccountActivity> unknown intent action " + action);
             finish();
             return;
         }
 
-       setupUIPost();
+        setupUIPost();
 
     }
 
-    private void setupUIPre ()
+    private void setupUIPre()
     {
-        ((ImApp)getApplication()).setAppTheme(this);
+        ((ImApp) getApplication()).setAppTheme(this);
 
         setContentView(R.layout.account_activity);
 
@@ -321,9 +347,11 @@ public class AccountActivity extends ActionBarActivity {
 
 
         mEditUserAccount = (EditText) findViewById(R.id.edtName);
-        mEditUserAccount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mEditUserAccount.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onFocusChange(View v, boolean hasFocus)
+            {
                 checkUserChanged();
             }
         });
@@ -352,25 +380,30 @@ public class AccountActivity extends ActionBarActivity {
         mBtnSignIn = (Button) findViewById(R.id.btnSignIn);
 
         if (mIsNewAccount)
+        {
             mBtnSignIn.setText(R.string.btn_create_new_account);
+        }
 
         mBtnAdvanced = (Button) findViewById(R.id.btnAdvanced);
         mBtnQrDisplay = (Button) findViewById(R.id.btnQR);
 
-        mRememberPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        mRememberPass.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 updateWidgetState();
             }
         });
 
     }
 
-    private void setupUIPost ()
+    private void setupUIPost()
     {
         Intent i = getIntent();
 
-        if (isSignedIn) {
+        if (isSignedIn)
+        {
             mBtnSignIn.setText(getString(R.string.menu_sign_out));
             mBtnSignIn.setBackgroundResource(R.drawable.btn_red);
         }
@@ -380,10 +413,12 @@ public class AccountActivity extends ActionBarActivity {
         mEditUserAccount.addTextChangedListener(mTextWatcher);
         mEditPass.addTextChangedListener(mTextWatcher);
 
-        mBtnAdvanced.setOnClickListener(new OnClickListener() {
+        mBtnAdvanced.setOnClickListener(new OnClickListener()
+        {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 showAdvanced();
             }
         });
@@ -393,18 +428,21 @@ public class AccountActivity extends ActionBarActivity {
         {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
 
-               showQR();
+                showQR();
 
             }
 
         });
 
 
-        mBtnSignIn.setOnClickListener(new OnClickListener() {
+        mBtnSignIn.setOnClickListener(new OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
 
                 checkUserChanged();
 
@@ -424,17 +462,20 @@ public class AccountActivity extends ActionBarActivity {
                 final boolean rememberPass = mRememberPass.isChecked();
                 final boolean isActive = false; // TODO(miron) does this ever need to be true?
                 ContentResolver cr = getContentResolver();
-                final boolean useTor =  mUseTor.isChecked();
+                final boolean useTor = mUseTor.isChecked();
 
                 if (mIsNewAccount)
                 {
                     mDomain = mSpinnerDomains.getText().toString();
                     String fullUser = mEditUserAccount.getText().toString();
 
-                    if (fullUser.indexOf("@")==-1)
+                    if (fullUser.indexOf("@") == -1)
+                    {
                         fullUser += '@' + mDomain;
+                    }
 
-                    if (!parseAccount(fullUser)) {
+                    if (!parseAccount(fullUser))
+                    {
                         mEditUserAccount.selectAll();
                         mEditUserAccount.requestFocus();
                         return;
@@ -446,14 +487,15 @@ public class AccountActivity extends ActionBarActivity {
                 }
                 else
                 {
-                    if (!parseAccount(mEditUserAccount.getText().toString())) {
+                    if (!parseAccount(mEditUserAccount.getText().toString()))
+                    {
                         mEditUserAccount.selectAll();
                         mEditUserAccount.requestFocus();
                         return;
                     }
                     else
                     {
-                        settingsForDomain(mDomain,mPort);//apply final settings
+                        settingsForDomain(mDomain, mPort);//apply final settings
                     }
                 }
 
@@ -475,28 +517,36 @@ public class AccountActivity extends ActionBarActivity {
                     }
                     else
                     {
-                       Toast.makeText(AccountActivity.this, getString(R.string.error_account_password_mismatch), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AccountActivity.this, getString(R.string.error_account_password_mismatch), Toast.LENGTH_SHORT).show();
                     }
                 }
                 else
                 {
-                    if (isSignedIn) {
+                    if (isSignedIn)
+                    {
                         signOut();
                         isSignedIn = false;
-                    } else {
+                    }
+                    else
+                    {
                         setAccountKeepSignedIn(rememberPass);
 
                         if (!mOriginalUserAccount.equals(mUserName + '@' + mDomain)
-                            && shouldShowTermOfUse(brandingRes)) {
-                            confirmTermsOfUse(brandingRes, new DialogInterface.OnClickListener() {
+                                && shouldShowTermOfUse(brandingRes))
+                        {
+                            confirmTermsOfUse(brandingRes, new DialogInterface.OnClickListener()
+                            {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                                public void onClick(DialogInterface dialog, int which)
+                                {
                                     mSignInHelper.signIn(pass, mProviderId, mAccountId, isActive);
                                 }
                             });
-                        } else {
+                        }
+                        else
+                        {
 
-                            boolean hasKey = checkForKey (mUserName + '@' + mDomain);
+                            boolean hasKey = checkForKey(mUserName + '@' + mDomain);
 
                             mSignInHelper.signIn(pass, mProviderId, mAccountId, isActive);
                         }
@@ -513,9 +563,11 @@ public class AccountActivity extends ActionBarActivity {
             }
         });
 
-        mUseTor.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        mUseTor.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 updateUseTor(isChecked);
             }
         });
@@ -534,7 +586,7 @@ public class AccountActivity extends ActionBarActivity {
             mEditUserAccount.setText(newuser);
 
             parseAccount(newuser);
-            settingsForDomain(mDomain,mPort);
+            settingsForDomain(mDomain, mPort);
 
         }
 
@@ -553,7 +605,7 @@ public class AccountActivity extends ActionBarActivity {
 
     }
 
-    private boolean checkForKey (String userid)
+    private boolean checkForKey(String userid)
     {
 
         try
@@ -568,29 +620,33 @@ public class AccountActivity extends ActionBarActivity {
                 return true;
             }
             else
+            {
                 return true;
+            }
         }
         catch (Exception e)
         {
-            Log.e(ImApp.LOG_TAG,"error checking for key",e);
+            Log.e(ImApp.LOG_TAG, "error checking for key", e);
             return false;
         }
 
     }
 
-    private Cursor openAccountByUsernameAndDomain(ContentResolver cr) {
+    private Cursor openAccountByUsernameAndDomain(ContentResolver cr)
+    {
         String clauses = Imps.Account.USERNAME + " = ? AND " + Imps.ProviderSettings.VALUE + " = ?";
         String args[] = new String[2];
         args[0] = mUserName;
         args[1] = mDomain;
 
-        String[] projection = { Imps.Account._ID };
+        String[] projection = {Imps.Account._ID};
         Cursor cursor = cr.query(Imps.Account.BY_DOMAIN_URI, projection, clauses, args, null);
         return cursor;
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
 
         if (mCreateAccountTask != null && (!mCreateAccountTask.isCancelled()))
         {
@@ -598,29 +654,34 @@ public class AccountActivity extends ActionBarActivity {
         }
 
         if (mSignInHelper != null)
+        {
             mSignInHelper.stop();
+        }
 
         super.onDestroy();
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
             checkUserChanged();
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    private void updateUseTor(boolean useTor) {
+    private void updateUseTor(boolean useTor)
+    {
         checkUserChanged();
 
         OrbotHelper orbotHelper = new OrbotHelper(this);
 
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(mProviderId)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(mProviderId)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
-               pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
+                pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
 
         if (useTor && (!orbotHelper.isOrbotInstalled()))
         {
@@ -636,7 +697,7 @@ public class AccountActivity extends ActionBarActivity {
             settings.setUseTor(useTor);
         }
 
-        settingsForDomain(settings.getDomain(),settings.getPort(),settings);
+        settingsForDomain(settings.getDomain(), settings.getPort(), settings);
         settings.close();
     }
 /*
@@ -670,12 +731,14 @@ public class AccountActivity extends ActionBarActivity {
 
     }*/
 
-    private void checkUserChanged() {
+    private void checkUserChanged()
+    {
         if (mEditUserAccount != null)
         {
             String username = mEditUserAccount.getText().toString().trim().toLowerCase();
 
-            if ((!username.equals(mOriginalUserAccount)) && parseAccount(username)) {
+            if ((!username.equals(mOriginalUserAccount)) && parseAccount(username))
+            {
                 //Log.i(TAG, "Username changed: " + mOriginalUserAccount + " != " + username);
                 settingsForDomain(mDomain, mPort);
                 mOriginalUserAccount = username;
@@ -686,14 +749,16 @@ public class AccountActivity extends ActionBarActivity {
 
     }
 
-    boolean parseAccount(String userField) {
+    boolean parseAccount(String userField)
+    {
         boolean isGood = true;
         String[] splitAt = userField.trim().split("@");
         mUserName = splitAt[0].toLowerCase(Locale.ENGLISH).replaceAll(USERNAME_VALIDATOR, "");
         mDomain = "";
-        
 
-        if (splitAt.length > 1) {
+
+        if (splitAt.length > 1)
+        {
             mDomain = splitAt[1].toLowerCase(Locale.ENGLISH);
         }
 
@@ -704,10 +769,11 @@ public class AccountActivity extends ActionBarActivity {
      * If we know the direct XMPP server for a domain, we should turn off DNS lookup
      * because it is slow, error prone, and a way to leak information from third parties
      */
-    void settingsForDomain(String domain,int port) {
+    void settingsForDomain(String domain, int port)
+    {
 
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(mProviderId)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(mProviderId)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
                 pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
@@ -718,7 +784,8 @@ public class AccountActivity extends ActionBarActivity {
 
     }
 
-    private void settingsForDomain(String domain, int port, Imps.ProviderSettings.QueryMap settings) {
+    private void settingsForDomain(String domain, int port, Imps.ProviderSettings.QueryMap settings)
+    {
 
 
         settings.setRequireTls(true);
@@ -726,7 +793,8 @@ public class AccountActivity extends ActionBarActivity {
         settings.setAllowPlainAuth(false);
         settings.setPort(port);
 
-        if (domain.equals("gmail.com")) {
+        if (domain.equals("gmail.com"))
+        {
             // Google only supports a certain configuration for XMPP:
             // http://code.google.com/apis/talk/open_communications.html
 
@@ -742,7 +810,8 @@ public class AccountActivity extends ActionBarActivity {
             settings.setServer(DEFAULT_SERVER_GOOGLE); //set the google connect server
             settings.setDomain(domain);
         }
-        else if (domain.equals("jabber.org")) {
+        else if (domain.equals("jabber.org"))
+        {
 
             if (settings.getUseTor())
             {
@@ -752,7 +821,9 @@ public class AccountActivity extends ActionBarActivity {
 
             settings.setDomain(domain);
 
-        } else if (domain.equals("facebook.com")) {
+        }
+        else if (domain.equals("facebook.com"))
+        {
 
             if (settings.getUseTor())
             {
@@ -763,7 +834,8 @@ public class AccountActivity extends ActionBarActivity {
 
             settings.setDomain(DEFAULT_SERVER_FACEBOOK);
         }
-        else if (domain.equals("jabber.calyxinstitute.org")) {
+        else if (domain.equals("jabber.calyxinstitute.org"))
+        {
 
             if (settings.getUseTor())
             {
@@ -778,7 +850,8 @@ public class AccountActivity extends ActionBarActivity {
 
             settings.setDomain(domain);
         }
-        else if (domain.equals("jabber.ccc.de")) {
+        else if (domain.equals("jabber.ccc.de"))
+        {
 
             if (settings.getUseTor())
             {
@@ -793,7 +866,8 @@ public class AccountActivity extends ActionBarActivity {
 
             settings.setDomain(domain);
         }
-        else {
+        else
+        {
 
             settings.setDomain(domain);
             settings.setPort(port);
@@ -805,7 +879,9 @@ public class AccountActivity extends ActionBarActivity {
 
                 //if Tor is off, and the user has not provided any values here, set to the @domain
                 if (settings.getServer() == null || settings.getServer().length() == 0)
+                {
                     settings.setServer(domain);
+                }
             }
             else if (settings.getServer() == null || settings.getServer().length() == 0)
             {
@@ -819,7 +895,8 @@ public class AccountActivity extends ActionBarActivity {
         settings.requery();
     }
 
-    void confirmTermsOfUse(BrandingResources res, DialogInterface.OnClickListener accept) {
+    void confirmTermsOfUse(BrandingResources res, DialogInterface.OnClickListener accept)
+    {
         SpannableString message = new SpannableString(
                 res.getString(BrandingResourceIDs.STRING_TOU_MESSAGE));
         Linkify.addLinks(message, Linkify.ALL);
@@ -831,23 +908,27 @@ public class AccountActivity extends ActionBarActivity {
                 .show();
     }
 
-    boolean shouldShowTermOfUse(BrandingResources res) {
+    boolean shouldShowTermOfUse(BrandingResources res)
+    {
         return !TextUtils.isEmpty(res.getString(BrandingResourceIDs.STRING_TOU_MESSAGE));
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
         super.onRestoreInstanceState(savedInstanceState);
         mAccountUri = savedInstanceState.getParcelable(ACCOUNT_URI_KEY);
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState)
+    {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ACCOUNT_URI_KEY, mAccountUri);
     }
 
-    void signOutUsingActivity() {
+    void signOutUsingActivity()
+    {
 
         Intent intent = new Intent(AccountActivity.this, SignoutActivity.class);
         intent.setData(mAccountUri);
@@ -858,17 +939,20 @@ public class AccountActivity extends ActionBarActivity {
     private Handler mHandler = new Handler();
     private ImApp mApp = null;
 
-    void signOut() {
+    void signOut()
+    {
         //if you are signing out, then we will deactive "auto" sign in
         ContentValues values = new ContentValues();
         values.put(AccountColumns.KEEP_SIGNED_IN, 0);
         getContentResolver().update(mAccountUri, values, null, null);
 
-        mApp = (ImApp)getApplication();
+        mApp = (ImApp) getApplication();
 
-        mApp.callWhenServiceConnected(mHandler, new Runnable() {
+        mApp.callWhenServiceConnected(mHandler, new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
 
                 signOut(mProviderId, mAccountId);
             }
@@ -876,14 +960,19 @@ public class AccountActivity extends ActionBarActivity {
 
     }
 
-    void signOut(long providerId, long accountId) {
+    void signOut(long providerId, long accountId)
+    {
 
-        try {
+        try
+        {
 
             IImConnection conn = mApp.getConnection(providerId);
-            if (conn != null) {
+            if (conn != null)
+            {
                 conn.logout();
-            } else {
+            }
+            else
+            {
                 // Normally, we can always get the connection when user chose to
                 // sign out. However, if the application crash unexpectedly, the
                 // status will never be updated. Clear the status in this case
@@ -893,15 +982,19 @@ public class AccountActivity extends ActionBarActivity {
                 values.put(AccountStatusColumns.CONNECTION_STATUS, Imps.ConnectionStatus.OFFLINE);
                 String where = AccountStatusColumns.ACCOUNT + "=?";
                 getContentResolver().update(Imps.AccountStatus.CONTENT_URI, values, where,
-                        new String[] { Long.toString(accountId) });
+                        new String[]{Long.toString(accountId)});
             }
-        } catch (RemoteException ex) {
+        }
+        catch (RemoteException ex)
+        {
             Log.e(ImApp.LOG_TAG, "signout: caught ", ex);
-        } finally {
+        }
+        finally
+        {
 
-        //    Toast.makeText(this,
-        //            getString(R.string.signed_out_prompt, this.mEditUserAccount.getText()),
-        //            Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(this,
+            //            getString(R.string.signed_out_prompt, this.mEditUserAccount.getText()),
+            //            Toast.LENGTH_SHORT).show();
             isSignedIn = false;
 
             mBtnSignIn.setText(getString(R.string.sign_in));
@@ -909,35 +1002,40 @@ public class AccountActivity extends ActionBarActivity {
         }
     }
 
-    void createNewaccount (long accountId)
+    void createNewaccount(long accountId)
     {
 
-            ContentValues values = new ContentValues(2);
+        ContentValues values = new ContentValues(2);
 
-            values.put(AccountStatusColumns.PRESENCE_STATUS, CommonPresenceColumns.NEW_ACCOUNT);
-            values.put(AccountStatusColumns.CONNECTION_STATUS, Imps.ConnectionStatus.OFFLINE);
-            String where = AccountStatusColumns.ACCOUNT + "=?";
-            getContentResolver().update(Imps.AccountStatus.CONTENT_URI, values, where,
-                    new String[] { Long.toString(accountId) });
-
+        values.put(AccountStatusColumns.PRESENCE_STATUS, CommonPresenceColumns.NEW_ACCOUNT);
+        values.put(AccountStatusColumns.CONNECTION_STATUS, Imps.ConnectionStatus.OFFLINE);
+        String where = AccountStatusColumns.ACCOUNT + "=?";
+        getContentResolver().update(Imps.AccountStatus.CONTENT_URI, values, where,
+                new String[]{Long.toString(accountId)});
 
 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
 
-        if (requestCode == REQUEST_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_SIGN_IN)
+        {
+            if (resultCode == RESULT_OK)
+            {
 
                 finish();
-            } else {
+            }
+            else
+            {
                 // sign in failed, let's show the screen!
             }
         }
     }
 
-    void updateWidgetState() {
+    void updateWidgetState()
+    {
         boolean goodUsername = mEditUserAccount.getText().length() > 0;
         boolean goodPassword = mEditPass.getText().length() > 0;
         boolean hasNameAndPassword = goodUsername && goodPassword;
@@ -952,7 +1050,8 @@ public class AccountActivity extends ActionBarActivity {
         mEditUserAccount.setEnabled(!isSignedIn);
         mEditPass.setEnabled(!isSignedIn);
 
-        if (!isSignedIn) {
+        if (!isSignedIn)
+        {
             mBtnSignIn.setEnabled(hasNameAndPassword);
             mBtnSignIn.setFocusable(hasNameAndPassword);
         }
@@ -962,33 +1061,38 @@ public class AccountActivity extends ActionBarActivity {
         }
     }
 
-    private final TextWatcher mTextWatcher = new TextWatcher() {
+    private final TextWatcher mTextWatcher = new TextWatcher()
+    {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int before, int after) {
+        public void beforeTextChanged(CharSequence s, int start, int before, int after)
+        {
         }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int after) {
+        public void onTextChanged(CharSequence s, int start, int before, int after)
+        {
             updateWidgetState();
 
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(Editable s)
+        {
 
         }
     };
 
-    private void deleteAccount ()
+    private void deleteAccount()
     {
 
         //need to delete
-        ((ImApp)getApplication()).deleteAccount(mAccountId, mProviderId);
+        ((ImApp) getApplication()).deleteAccount(mAccountId, mProviderId);
 
         finish();
     }
 
-    private void showAdvanced() {
+    private void showAdvanced()
+    {
 
         checkUserChanged();
 
@@ -998,11 +1102,13 @@ public class AccountActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.account_settings_menu, menu);
 
-        if (isEdit) {
+        if (isEdit)
+        {
             //add delete menu option
         }
 
@@ -1010,34 +1116,38 @@ public class AccountActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
 
-        case android.R.id.home:
-            finish();
-            return true;
+            case android.R.id.home:
+                finish();
+                return true;
 
-        case R.id.menu_account_delete:
-            deleteAccount();
-            return true;
+            case R.id.menu_account_delete:
+                deleteAccount();
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void createNewAccount (final String usernameNew, final String passwordNew, final long newAccountId, final boolean useTor)
+    public void createNewAccount(final String usernameNew, final String passwordNew, final long newAccountId, final boolean useTor)
     {
         if (mCreateAccountTask != null && (!mCreateAccountTask.isCancelled()))
         {
             mCreateAccountTask.cancel(true);
         }
 
-        mCreateAccountTask = new AsyncTask<Void, Void, String>() {
+        mCreateAccountTask = new AsyncTask<Void, Void, String>()
+        {
 
             private ProgressDialog dialog;
 
             @Override
-            protected void onPreExecute() {
+            protected void onPreExecute()
+            {
                 dialog = new ProgressDialog(AccountActivity.this);
                 dialog.setCancelable(true);
                 dialog.setMessage(getString(R.string.registering_new_account_));
@@ -1045,48 +1155,56 @@ public class AccountActivity extends ActionBarActivity {
             }
 
             @Override
-            protected String doInBackground(Void... params) {
+            protected String doInBackground(Void... params)
+            {
                 ContentResolver cr = getContentResolver();
-                Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(mProviderId)},null);
+                Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(mProviderId)}, null);
 
                 Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
-                       pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
+                        pCursor, cr, mProviderId, false /* don't keep updated */, null /* no handler */);
 
-                try {
+                try
+                {
                     settings.setUseTor(useTor);
                     settingsForDomain(mDomain, mPort, settings);
 
-                    HashMap<String,String> aParams = new HashMap<String,String>();
+                    HashMap<String, String> aParams = new HashMap<String, String>();
 
                     XmppConnection xmppConn = new XmppConnection(AccountActivity.this);
 
                     xmppConn.initUser(mProviderId, newAccountId);
                     xmppConn.registerAccount(settings, usernameNew, passwordNew, aParams);
                     // settings closed in registerAccount
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     LogCleaner.error(ImApp.LOG_TAG, "error registering new account", e);
 
                     return e.getLocalizedMessage();
-                } finally {
+                }
+                finally
+                {
 
                     settings.close();
                 }
 
                 return null;
-              }
+            }
 
             @Override
-            protected void onPostExecute(String result) {
+            protected void onPostExecute(String result)
+            {
                 super.onPostExecute(result);
 
                 try
                 {
-                    if (dialog != null && dialog.isShowing()) {
+                    if (dialog != null && dialog.isShowing())
+                    {
                         dialog.dismiss();
                         dialog = null;
                     }
                 }
-                catch ( java.lang.IllegalArgumentException iae)
+                catch (java.lang.IllegalArgumentException iae)
                 {
                     //dialog may not be attached to window if Activity was closed
                 }
@@ -1109,14 +1227,15 @@ public class AccountActivity extends ActionBarActivity {
         }.execute();
     }
 
-    public void showQR ()
+    public void showQR()
     {
-           String localFingerprint = OtrAndroidKeyManagerImpl.getInstance(this).getLocalFingerprint(mOriginalUserAccount);
-           String uri = XmppUriHelper.getUri(mOriginalUserAccount, localFingerprint);
-           new IntentIntegrator(this).shareText(uri);
+        String localFingerprint = OtrAndroidKeyManagerImpl.getInstance(this).getLocalFingerprint(mOriginalUserAccount);
+        String uri = XmppUriHelper.getUri(mOriginalUserAccount, localFingerprint);
+        new IntentIntegrator(this).shareText(uri);
     }
 
-    private void setAccountKeepSignedIn(final boolean rememberPass) {
+    private void setAccountKeepSignedIn(final boolean rememberPass)
+    {
         ContentValues values = new ContentValues();
         values.put(AccountColumns.KEEP_SIGNED_IN, rememberPass ? 1 : 0);
         getContentResolver().update(mAccountUri, values, null, null);

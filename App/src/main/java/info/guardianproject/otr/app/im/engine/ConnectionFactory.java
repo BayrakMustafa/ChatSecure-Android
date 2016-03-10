@@ -18,19 +18,24 @@
 package info.guardianproject.otr.app.im.engine;
 
 // import info.guardianproject.otr.app.im.plugin.loopback.LoopbackConnection;
+
+import android.content.Context;
+
+import java.util.Map;
+
 import info.guardianproject.otr.app.im.plugin.ImConfigNames;
 import info.guardianproject.otr.app.im.plugin.xmpp.LLXmppConnection;
 import info.guardianproject.otr.app.im.plugin.xmpp.XmppConnection;
 
-import java.util.Map;
-
-import android.content.Context;
-
-/** The factory used to create an instance of ImConnection. */
-public class ConnectionFactory {
+/**
+ * The factory used to create an instance of ImConnection.
+ */
+public class ConnectionFactory
+{
     private static ConnectionFactory sInstance;
 
-    private ConnectionFactory() {
+    private ConnectionFactory()
+    {
     }
 
     /**
@@ -38,8 +43,10 @@ public class ConnectionFactory {
      *
      * @return the singleton instance.
      */
-    public synchronized static ConnectionFactory getInstance() {
-        if (sInstance == null) {
+    public synchronized static ConnectionFactory getInstance()
+    {
+        if (sInstance == null)
+        {
             sInstance = new ConnectionFactory();
         }
         return sInstance;
@@ -52,9 +59,11 @@ public class ConnectionFactory {
      * @throws IMException if an error occurs during creating a connection.
      */
     public synchronized ImConnection createConnection(Map<String, String> settings, Context context)
-            throws ImException {
+            throws ImException
+    {
         String protocolName = settings.get(ImConfigNames.PROTOCOL_NAME);
-        if ("XMPP".equals(protocolName)) {
+        if ("XMPP".equals(protocolName))
+        {
 
             try
             {
@@ -65,13 +74,15 @@ public class ConnectionFactory {
                 throw new ImException(e.getMessage());
             }
         }
-        if ("LLXMPP".equals(protocolName)) {
+        if ("LLXMPP".equals(protocolName))
+        {
             return new LLXmppConnection(context);
         }
         /*else if ("LOOPBACK".equals(protocolName)) {
-        	return new SMSConnection();
+            return new SMSConnection();
         } */
-        else {
+        else
+        {
             throw new ImException("Unsupported protocol: " + protocolName);
         }
     }

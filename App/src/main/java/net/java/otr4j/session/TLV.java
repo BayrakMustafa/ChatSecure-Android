@@ -1,6 +1,7 @@
 package net.java.otr4j.session;
 
-public class TLV {
+public class TLV
+{
     /* This is just padding for the encrypted message, and should be ignored. */
     public static final int PADDING = 0;
     /* The sender has thrown away his OTR session keys with you */
@@ -16,24 +17,29 @@ public class TLV {
      * beginning */
     public static final int SMP1Q = 0x0007;
 
-    public TLV(int type, byte[] value) {
+    public TLV(int type, byte[] value)
+    {
         this.setType(type);
         this.setValue(value);
     }
 
-    public void setType(int type) {
+    public void setType(int type)
+    {
         this.type = type;
     }
 
-    public int getType() {
+    public int getType()
+    {
         return type;
     }
 
-    public void setValue(byte[] value) {
+    public void setValue(byte[] value)
+    {
         this.value = value;
     }
 
-    public byte[] getValue() {
+    public byte[] getValue()
+    {
         return value;
     }
 

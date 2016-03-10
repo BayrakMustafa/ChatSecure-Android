@@ -16,24 +16,29 @@
  */
 package info.guardianproject.otr.app.im.plugin.loopback;
 
-import info.guardianproject.otr.app.im.R;
+import android.content.Intent;
+import android.os.IBinder;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Intent;
-import android.os.IBinder;
-
-/** Simple example of writing a plug-in for the IM application. */
+/**
+ * Simple example of writing a plug-in for the IM application.
+ */
 //public class LoopbackImPlugin extends Service implements ImPlugin {
-public class LoopbackImPlugin {
+public class LoopbackImPlugin
+{
 
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent)
+    {
         return null;
     }
 
-    /** The implementation of IImPlugin defined through AIDL. */
-    public Map getProviderConfig() {
+    /**
+     * The implementation of IImPlugin defined through AIDL.
+     */
+    public Map getProviderConfig()
+    {
         /*
         HashMap<String, String> config = new HashMap<String, String>();
         // The protocol name MUST be IMPS now.
@@ -47,7 +52,8 @@ public class LoopbackImPlugin {
         return null;
     }
 
-    public Map getResourceMap() {
+    public Map getResourceMap()
+    {
         HashMap<Integer, Integer> resMapping = new HashMap<Integer, Integer>();
         return resMapping;
     }

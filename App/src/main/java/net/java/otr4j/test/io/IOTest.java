@@ -1,12 +1,5 @@
 package net.java.otr4j.test.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
-import java.security.KeyPair;
-
-import javax.crypto.interfaces.DHPublicKey;
-
 import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.io.OtrInputStream;
 import net.java.otr4j.io.OtrOutputStream;
@@ -15,9 +8,18 @@ import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.DHKeyMessage;
 import net.java.otr4j.io.messages.RevealSignatureMessage;
 
-public class IOTest extends junit.framework.TestCase {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
+import java.security.KeyPair;
 
-    public interface EncodedMessageTextSample {
+import javax.crypto.interfaces.DHPublicKey;
+
+public class IOTest extends junit.framework.TestCase
+{
+
+    public interface EncodedMessageTextSample
+    {
 
         public static final String DataMessage1 = "?OTR:AAIDAAAAAAEAAAABAAAAwCcGDemZNMCfOZl4ACf8L2G2G2qXDX6gJxKXBEgOjA7U/lgQJ+UklQzp0txnWqAhQ8HDfmGoMeo5Ez0N8X1xlXq8f3UL/fPrp7X2JW9JHr2fi541oPmtJpLtbSlIA+ri8Y1ptoxTriIyMWsngvSAkwFWb7lcDyJwXsc3ZUVi2xG/6ggdU+XxZe7ow5KfTK0usMIBnAGOfpygel6UBk7UPGRd9rWFaq1JOqkFopcKhar4IMydeaJa3AFbfrrmSYqqowAAAAAAAAABAAAABkOjnTF/CcaT9PEoW1n+hukkVE+RtvCNpSn4AAAAAA==.";
         // From OTR page.
@@ -40,7 +42,8 @@ public class IOTest extends junit.framework.TestCase {
         public static final String PlainText_UTF8 = "Αυτό είναι απλό UTF-8 κείμενο!";
     }
 
-    public void testIOShort() throws Exception {
+    public void testIOShort() throws Exception
+    {
         int source = 10;
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -58,8 +61,9 @@ public class IOTest extends junit.framework.TestCase {
         assertEquals(source, result);
     }
 
-    public void testIOData() throws Exception {
-        byte[] source = new byte[] { 1, 1, 1, 1 };
+    public void testIOData() throws Exception
+    {
+        byte[] source = new byte[]{1, 1, 1, 1};
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         OtrOutputStream oos = new OtrOutputStream(out);
@@ -76,7 +80,8 @@ public class IOTest extends junit.framework.TestCase {
         assertTrue(java.util.Arrays.equals(source, result));
     }
 
-    public void testIOBigInt() throws Exception {
+    public void testIOBigInt() throws Exception
+    {
 
         KeyPair pair = new OtrCryptoEngineImpl().generateDHKeyPair();
         BigInteger source = ((DHPublicKey) pair.getPublic()).getY();
@@ -96,7 +101,8 @@ public class IOTest extends junit.framework.TestCase {
         assertTrue(source.compareTo(result) == 0);
     }
 
-    public void testIODHPublicKey() throws Exception {
+    public void testIODHPublicKey() throws Exception
+    {
         KeyPair pair = new OtrCryptoEngineImpl().generateDHKeyPair();
 
         DHPublicKey source = (DHPublicKey) pair.getPublic();
@@ -116,7 +122,8 @@ public class IOTest extends junit.framework.TestCase {
         assertTrue(source.getY().compareTo(result.getY()) == 0);
     }
 
-    public void testIODHKeyMessage() throws Exception {
+    public void testIODHKeyMessage() throws Exception
+    {
         KeyPair pair = new OtrCryptoEngineImpl().generateDHKeyPair();
 
         DHKeyMessage source = new DHKeyMessage(0, (DHPublicKey) pair.getPublic());
@@ -127,14 +134,17 @@ public class IOTest extends junit.framework.TestCase {
         assertTrue(source.equals(result));
     }
 
-    public void testIORevealSignature() throws Exception {
+    public void testIORevealSignature() throws Exception
+    {
         int protocolVersion = 1;
-        byte[] xEncrypted = new byte[] { 1, 2, 3, 4 };
+        byte[] xEncrypted = new byte[]{1, 2, 3, 4};
         byte[] xEncryptedMAC = new byte[SerializationConstants.TYPE_LEN_MAC];
         for (int i = 0; i < xEncryptedMAC.length; i++)
+        {
             xEncryptedMAC[i] = (byte) i;
+        }
 
-        byte[] revealedKey = new byte[] { 1, 2, 3, 4 };
+        byte[] revealedKey = new byte[]{1, 2, 3, 4};
 
         RevealSignatureMessage source = new RevealSignatureMessage(protocolVersion, xEncrypted,
                 xEncryptedMAC, revealedKey);

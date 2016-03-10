@@ -17,30 +17,31 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import info.guardianproject.otr.OtrDataHandler.Transfer;
 import net.java.otr4j.session.SessionStatus;
+
+import info.guardianproject.otr.OtrDataHandler.Transfer;
 
 /**
  * Interface that allows for implementing classes to listen for new message.
  * Listeners are registered with ChatSession objects.
  */
-public interface MessageListener {
+public interface MessageListener
+{
     /**
      * Calls when a new message has arrived.
      *
      * @param ses the ChatSession.
      * @param msg the incoming message.
-     *
      * @return true if the message was processed correctly, or false
-     *   otherwise (e.g. decryption error)
+     * otherwise (e.g. decryption error)
      */
     public boolean onIncomingMessage(ChatSession ses, Message msg);
 
     /**
      * Calls when an error occurs to send a message.
      *
-     * @param ses the ChatSession.
-     * @param msg the message which was sent.
+     * @param ses   the ChatSession.
+     * @param msg   the message which was sent.
      * @param error the error information.
      */
     public void onSendMessageError(ChatSession ses, Message msg, ImErrorInfo error);
@@ -57,26 +58,28 @@ public interface MessageListener {
      * Called when a message receipt was received.
      *
      * @param ses the ChatSession.
-     * @param id the message ID.
+     * @param id  the message ID.
      */
     public void onIncomingReceipt(ChatSession ses, String id);
 
     /**
      * Called when we determine that the remote supports message delivery
      * receipts.
-     *
+     * <p/>
      * <br>XEP-0184
      *
      * @param ses the ChatSession.
      */
     public void onReceiptsExpected(ChatSession ses);
 
-    /** Called when OTR status changes */
+    /**
+     * Called when OTR status changes
+     */
     public void onStatusChanged(ChatSession session, SessionStatus status);
 
     public void onIncomingDataRequest(ChatSession session, Message msg, byte[] value);
 
     public void onIncomingDataResponse(ChatSession session, Message msg, byte[] value);
 
-    public void onIncomingTransferRequest (Transfer transfer);
+    public void onIncomingTransferRequest(Transfer transfer);
 }

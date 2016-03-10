@@ -7,21 +7,26 @@ package net.java.otr4j.io.messages;
 
 import javax.crypto.interfaces.DHPublicKey;
 
-/** @author George Politis */
-public class DHKeyMessage extends AbstractEncodedMessage {
+/**
+ * @author George Politis
+ */
+public class DHKeyMessage extends AbstractEncodedMessage
+{
 
     // Fields.
     public DHPublicKey dhPublicKey;
 
     // Ctor.
-    public DHKeyMessage(int protocolVersion, DHPublicKey dhPublicKey) {
+    public DHKeyMessage(int protocolVersion, DHPublicKey dhPublicKey)
+    {
         super(MESSAGE_DHKEY, protocolVersion);
         this.dhPublicKey = dhPublicKey;
     }
 
     // Methods.
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         // TODO: Needs work.
@@ -30,19 +35,32 @@ public class DHKeyMessage extends AbstractEncodedMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         DHKeyMessage other = (DHKeyMessage) obj;
-        if (dhPublicKey == null) {
+        if (dhPublicKey == null)
+        {
             if (other.dhPublicKey != null)
+            {
                 return false;
-        } else if (dhPublicKey.getY().compareTo(other.dhPublicKey.getY()) != 0)
+            }
+        }
+        else if (dhPublicKey.getY().compareTo(other.dhPublicKey.getY()) != 0)
+        {
             return false;
+        }
         return true;
     }
 }

@@ -1,7 +1,5 @@
 package info.guardianproject.otr.app.im.service;
 
-import info.guardianproject.otr.app.im.app.NetworkConnectivityListener;
-import info.guardianproject.otr.app.im.provider.Imps;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -13,16 +11,18 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
+
+import info.guardianproject.otr.app.im.app.NetworkConnectivityListener;
+import info.guardianproject.otr.app.im.provider.Imps;
 
 /**
  * This service exists because a foreground service receiving a wakeup alarm from the OS will cause
  * the service process to lose its foreground status and be killed.  This service runs in the UI process instead.
  *
  * @author devrandom
- *
  */
-public class HeartbeatService extends Service {
+public class HeartbeatService extends Service
+{
     public static final String HEARTBEAT_ACTION = "info.guardianproject.otr.app.im.SERVICE.HEARTBEAT";
     public static final String NETWORK_STATE_ACTION = "info.guardianproject.otr.app.im.SERVICE.NETWORK_STATE";
     public static final String NETWORK_STATE_EXTRA = "state";
@@ -43,7 +43,8 @@ public class HeartbeatService extends Service {
 
 
     @Override
-    public void onCreate() {
+    public void onCreate()
+    {
         super.onCreate();
         this.mPendingIntent = PendingIntent.getService(this, 0, new Intent(HEARTBEAT_ACTION, null,
                 this, HeartbeatService.class), 0);
@@ -68,8 +69,9 @@ public class HeartbeatService extends Service {
 
     }
 
-    void startHeartbeat(long interval) {
-        AlarmManager alarmManager = (AlarmManager)this.getSystemService(ALARM_SERVICE);
+    void startHeartbeat(long interval)
+    {
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         alarmManager.cancel(mPendingIntent);
         if (interval > 0)
         {
@@ -79,7 +81,8 @@ public class HeartbeatService extends Service {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         startHeartbeat(0);
         NetworkConnectivityListener.unregisterHandler(mServiceHandler);
         mNetworkConnectivityListener.stopListening();
@@ -88,8 +91,10 @@ public class HeartbeatService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && HEARTBEAT_ACTION.equals(intent.getAction())) {
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        if (intent != null && HEARTBEAT_ACTION.equals(intent.getAction()))
+        {
             startHeartbeat(mHeartbeatInterval);
             startService(mRelayIntent);
         }
@@ -97,22 +102,28 @@ public class HeartbeatService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent arg0) {
+    public IBinder onBind(Intent arg0)
+    {
         return null;
     }
 
-    public static void startBeating(Context context) {
+    public static void startBeating(Context context)
+    {
         context.startService(new Intent(context, HeartbeatService.class));
     }
 
-    public static void stopBeating(Context context) {
+    public static void stopBeating(Context context)
+    {
         context.stopService(new Intent(context, HeartbeatService.class));
     }
 
-    void networkStateChanged() {
+    void networkStateChanged()
+    {
         // Callback may be async
         if (mNetworkConnectivityListener == null)
+        {
             return;
+        }
 
         Intent intent = new Intent(NETWORK_STATE_ACTION, null, this, RemoteImService.class);
         intent.putExtra(NETWORK_INFO_EXTRA, mNetworkConnectivityListener.getNetworkInfo());
@@ -120,33 +131,40 @@ public class HeartbeatService extends Service {
         startService(intent);
     }
 
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler() {
+    private final class ServiceHandler extends Handler
+    {
+        public ServiceHandler()
+        {
         }
 
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-            case EVENT_NETWORK_STATE_CHANGED:
-               // Log.d(TAG, "network");
-                networkStateChanged();
-                break;
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
+                case EVENT_NETWORK_STATE_CHANGED:
+                    // Log.d(TAG, "network");
+                    networkStateChanged();
+                    break;
 
-            default:
+                default:
             }
         }
     }
 
-    private Imps.ProviderSettings.QueryMap getGlobalSettings() {
+    private Imps.ProviderSettings.QueryMap getGlobalSettings()
+    {
 
-            ContentResolver contentResolver = getContentResolver();
+        ContentResolver contentResolver = getContentResolver();
 
-            Cursor cursor = contentResolver.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+        Cursor cursor = contentResolver.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
-            if (cursor == null)
-                return null;
+        if (cursor == null)
+        {
+            return null;
+        }
 
-           return new Imps.ProviderSettings.QueryMap(cursor, contentResolver, Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, true, null);
+        return new Imps.ProviderSettings.QueryMap(cursor, contentResolver, Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, true, null);
 
     }
 }

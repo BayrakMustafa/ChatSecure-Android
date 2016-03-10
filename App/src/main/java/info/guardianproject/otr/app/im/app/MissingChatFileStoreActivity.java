@@ -11,15 +11,17 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import info.guardianproject.otr.app.im.R;
-
 import java.io.File;
 
-public class MissingChatFileStoreActivity extends ThemeableActivity {
+import info.guardianproject.otr.app.im.R;
+
+public class MissingChatFileStoreActivity extends ThemeableActivity
+{
     private static final String TAG = "MissingChatFileStoreActivity";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.missing_chat_file_store);
@@ -29,17 +31,22 @@ public class MissingChatFileStoreActivity extends ThemeableActivity {
         Button deleteChatLogButton = (Button) findViewById(R.id.delete_chat_log);
         Button shutdownAndLockButton = (Button) findViewById(R.id.shutdown_and_exit);
 
-        if (getExternalFilesDir(null) == null) {
+        if (getExternalFilesDir(null) == null)
+        {
             titleTextView.setText(R.string.external_storage_missing_title);
             messageTextView.setText(R.string.external_storage_missing_message);
-        } else {
+        }
+        else
+        {
             titleTextView.setText(R.string.media_store_file_missing_title);
             messageTextView.setText(R.string.media_store_file_missing_message);
         }
-        deleteChatLogButton.setOnClickListener(new OnClickListener() {
+        deleteChatLogButton.setOnClickListener(new OnClickListener()
+        {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 Log.i(TAG, "init try again onClick");
                 Context c = getApplicationContext();
                 new File(ChatFileStore.getInternalDbFilePath(c)).delete();
@@ -51,10 +58,12 @@ public class MissingChatFileStoreActivity extends ThemeableActivity {
                 finish();
             }
         });
-        shutdownAndLockButton.setOnClickListener(new OnClickListener() {
+        shutdownAndLockButton.setOnClickListener(new OnClickListener()
+        {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 Log.i(TAG, "shutdownAndLock onClick");
                 WelcomeActivity.shutdownAndLock(MissingChatFileStoreActivity.this);
             }

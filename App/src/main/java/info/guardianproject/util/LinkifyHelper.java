@@ -12,7 +12,8 @@ import android.widget.TextView;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LinkifyHelper {
+public class LinkifyHelper
+{
 
     private static Pattern bitcoin = Pattern.compile("bitcoin:[1-9a-km-zA-HJ-NP-Z]{27,34}(\\?[a-zA-Z0-9$\\-_.+!*'(),%:;@&=]*)?");
     private static Pattern geo = Pattern.compile("geo:[-0-9.]+,[-0-9.]+[^ \t\n\"\':]*");
@@ -23,15 +24,18 @@ public class LinkifyHelper {
     private static Pattern hashtag = Pattern.compile("#([A-Za-z0-9_-]+)");
     private static Pattern bridge = Pattern.compile("bridge:[^ \t\n\"\':,<>]+");
 
-    static TransformFilter returnMatchFilter = new TransformFilter() {
+    static TransformFilter returnMatchFilter = new TransformFilter()
+    {
         @Override
-        public final String transformUrl(final Matcher match, String url) {
+        public final String transformUrl(final Matcher match, String url)
+        {
             return match.group(1);
         }
     };
 
     /* Right now, if there is no app to handle */
-    public static void addLinks(TextView text, SpanConverter<URLSpan, ClickableSpan> converter) {
+    public static void addLinks(TextView text, SpanConverter<URLSpan, ClickableSpan> converter)
+    {
         Linkify.addLinks(text, Linkify.ALL);
         Linkify.addLinks(text, geo, null);
         Linkify.addLinks(text, market, null);
@@ -48,23 +52,27 @@ public class LinkifyHelper {
      *
      * @param text
      */
-    public static void addTorSafeLinks(TextView text) {
+    public static void addTorSafeLinks(TextView text)
+    {
         Linkify.addLinks(text, bridge, null);
     }
 
     /**
      * Do not create this static utility class.
      */
-    private LinkifyHelper() {
+    private LinkifyHelper()
+    {
     }
 
     // thanks to @commonsware https://stackoverflow.com/a/11417498
     public static <A extends CharacterStyle, B extends CharacterStyle> Spannable replaceAll(
-            CharSequence original, Class<A> sourceType, SpanConverter<A, B> converter) {
+            CharSequence original, Class<A> sourceType, SpanConverter<A, B> converter)
+    {
         SpannableString result = new SpannableString(original);
         A[] spans = result.getSpans(0, result.length(), sourceType);
 
-        for (A span : spans) {
+        for (A span : spans)
+        {
             int start = result.getSpanStart(span);
             int end = result.getSpanEnd(span);
             int flags = result.getSpanFlags(span);
@@ -76,7 +84,8 @@ public class LinkifyHelper {
         return (result);
     }
 
-    public interface SpanConverter<A extends CharacterStyle, B extends CharacterStyle> {
+    public interface SpanConverter<A extends CharacterStyle, B extends CharacterStyle>
+    {
         B convert(A span);
     }
 }

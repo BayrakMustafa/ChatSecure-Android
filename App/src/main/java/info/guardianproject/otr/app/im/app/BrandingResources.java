@@ -17,13 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.plugin.ImPlugin;
-import info.guardianproject.otr.app.im.plugin.ImPluginInfo;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,8 +25,18 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-/** The provider specific branding resources. */
-public class BrandingResources {
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import info.guardianproject.otr.app.im.plugin.ImPlugin;
+import info.guardianproject.otr.app.im.plugin.ImPluginInfo;
+
+/**
+ * The provider specific branding resources.
+ */
+public class BrandingResources
+{
     private static final String TAG = ImApp.LOG_TAG;
 
     private Map<Integer, Integer> mResMapping;
@@ -45,43 +48,62 @@ public class BrandingResources {
      * Creates a new BrandingResource of a specific plug-in. The resources will
      * be retrieved from the plug-in package.
      *
-     * @param context The current application context.
+     * @param context    The current application context.
      * @param pluginInfo The info about the plug-in.
      * @param defaultRes The default branding resources. If the resource is not
-     *            found in the plug-in, the default resource will be returned.
+     *                   found in the plug-in, the default resource will be returned.
      */
-    public BrandingResources(Context context, ImPluginInfo pluginInfo, BrandingResources defaultRes) {
+    public BrandingResources(Context context, ImPluginInfo pluginInfo, BrandingResources defaultRes)
+    {
         mDefaultRes = defaultRes;
 
         PackageManager pm = context.getPackageManager();
-        try {
+        try
+        {
             mPackageRes = pm.getResourcesForApplication(pluginInfo.mPackageName);
-        } catch (NameNotFoundException e) {
+        }
+        catch (NameNotFoundException e)
+        {
             Log.e(TAG, "Can not load resources from package: " + pluginInfo.mPackageName);
         }
         // Load the plug-in directly from the apk instead of binding the service
         // and calling through the IPC binder API. It's more effective in this way
         // and we can avoid the async behaviors of binding service.
         ClassLoader classLoader = context.getClassLoader();
-        try {
+        try
+        {
             Class cls = classLoader.loadClass(pluginInfo.mClassName);
             Method m = cls.getMethod("onBind", Intent.class);
-            ImPlugin plugin = (ImPlugin) m.invoke(cls.newInstance(), new Object[] { null });
+            ImPlugin plugin = (ImPlugin) m.invoke(cls.newInstance(), new Object[]{null});
             mResMapping = plugin.getResourceMap();
 
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
-        } catch (IllegalAccessException e) {
+        }
+        catch (IllegalAccessException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
-        } catch (InstantiationException e) {
+        }
+        catch (InstantiationException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
-        } catch (SecurityException e) {
+        }
+        catch (SecurityException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
-        } catch (NoSuchMethodException e) {
+        }
+        catch (NoSuchMethodException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e)
+        {
             Log.e(TAG, "Failed load the plugin resource map", e);
         }
     }
@@ -95,12 +117,14 @@ public class BrandingResources {
      * @param resMapping
      */
     public BrandingResources(Context context, Map<Integer, Integer> resMapping,
-            BrandingResources defaultRes) {
+                             BrandingResources defaultRes)
+    {
         this(context.getResources(), resMapping, defaultRes);
     }
 
     public BrandingResources(Resources packageRes, Map<Integer, Integer> resMapping,
-           BrandingResources defaultRes) {
+                             BrandingResources defaultRes)
+    {
         mPackageRes = packageRes;
         mResMapping = resMapping;
         mDefaultRes = defaultRes;
@@ -111,39 +135,50 @@ public class BrandingResources {
      * in {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
      *
      * @param id The ID defined in
-     *            {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
+     *           {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
      * @return Drawable An object that can be used to draw this resource.
      */
-    public Drawable getDrawable(int id) {
+    public Drawable getDrawable(int id)
+    {
         int resId = getPackageResourceId(id);
-        if (resId != 0) {
+        if (resId != 0)
+        {
             return mPackageRes.getDrawable(resId);
-        } else if (mDefaultRes != null) {
+        }
+        else if (mDefaultRes != null)
+        {
             return mDefaultRes.getDrawable(id);
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
-
 
 
     /**
      * Gets the string value associated with a particular resource ID defined in
      * {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
      *
-     * @param id The ID of the string resource defined in
-     *            {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
+     * @param id         The ID of the string resource defined in
+     *                   {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
      * @param formatArgs The format arguments that will be used for
-     *            substitution.
+     *                   substitution.
      * @return The string data associated with the resource
      */
-    public String getString(int id, Object... formatArgs) {
+    public String getString(int id, Object... formatArgs)
+    {
         int resId = getPackageResourceId(id);
-        if (resId != 0) {
+        if (resId != 0)
+        {
             return mPackageRes.getString(resId, formatArgs);
-        } else if (mDefaultRes != null) {
+        }
+        else if (mDefaultRes != null)
+        {
             return mDefaultRes.getString(id, formatArgs);
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
@@ -153,22 +188,30 @@ public class BrandingResources {
      * {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
      *
      * @param id The ID of the string resource defined in
-     *            {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
+     *           {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}
      * @return The string array associated with the resource.
      */
-    public String[] getStringArray(int id) {
+    public String[] getStringArray(int id)
+    {
         int resId = getPackageResourceId(id);
-        if (resId != 0) {
+        if (resId != 0)
+        {
             return mPackageRes.getStringArray(resId);
-        } else if (mDefaultRes != null) {
+        }
+        else if (mDefaultRes != null)
+        {
             return mDefaultRes.getStringArray(id);
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
 
-    private int getPackageResourceId(int id) {
-        if (mResMapping == null || mPackageRes == null) {
+    private int getPackageResourceId(int id)
+    {
+        if (mResMapping == null || mPackageRes == null)
+        {
             return 0;
         }
         Integer resId = mResMapping.get(id);

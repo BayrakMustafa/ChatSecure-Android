@@ -17,8 +17,11 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-/** Interface for group change events. */
-public interface GroupListener {
+/**
+ * Interface for group change events.
+ */
+public interface GroupListener
+{
     public static final int ERROR_CREATING_GROUP = -1;
     public static final int ERROR_DELETING_GROUP = -2;
     public static final int ERROR_JOINING_IN_GROUP = -3;
@@ -58,7 +61,7 @@ public interface GroupListener {
      * Called when an error occurs with a certain group operation.
      *
      * @param errorType the type of the error
-     * @param error the error information.
+     * @param error     the error information.
      */
     public void onGroupError(int errorType, String groupName, ImErrorInfo error);
 }

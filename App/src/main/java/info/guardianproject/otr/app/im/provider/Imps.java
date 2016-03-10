@@ -16,11 +16,6 @@
 
 package info.guardianproject.otr.app.im.provider;
 
-import info.guardianproject.otr.app.im.app.ImApp;
-
-import java.util.HashMap;
-import java.util.UUID;
-
 import android.content.ContentQueryMap;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -33,23 +28,39 @@ import android.os.Handler;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import java.util.HashMap;
+import java.util.UUID;
+
+import info.guardianproject.otr.app.im.app.ImApp;
+
 /**
  * The IM provider stores all information about roster contacts, chat messages,
  * presence, etc.
  *
  * @hide
  */
-public class Imps {
-    /** no public constructor since this is a utility class */
-    private Imps() {
+public class Imps
+{
+    /**
+     * no public constructor since this is a utility class
+     */
+    private Imps()
+    {
     }
 
-    /** The Columns for IM providers (i.e. AIM, Y!, GTalk) */
-    public interface ProviderColumns {
-        /** The name of the IM provider <P>Type: TEXT</P> */
+    /**
+     * The Columns for IM providers (i.e. AIM, Y!, GTalk)
+     */
+    public interface ProviderColumns
+    {
+        /**
+         * The name of the IM provider <P>Type: TEXT</P>
+         */
         String NAME = "name";
 
-        /** The full name of the provider <P>Type: TEXT</P> */
+        /**
+         * The full name of the provider <P>Type: TEXT</P>
+         */
         String FULLNAME = "fullname";
 
         /**
@@ -64,8 +75,11 @@ public class Imps {
         String SIGNUP_URL = "signup_url";
     }
 
-    /** Known names corresponding to the {@link ProviderColumns#NAME} column */
-    public interface ProviderNames {
+    /**
+     * Known names corresponding to the {@link ProviderColumns#NAME} column
+     */
+    public interface ProviderNames
+    {
         //
         //NOTE: update Contacts.java with new providers when they're added.
         //
@@ -80,12 +94,17 @@ public class Imps {
         String QQ = "QQ";
     }
 
-    /** This table contains the IM providers */
-    public static final class Provider implements BaseColumns, ProviderColumns {
-        private Provider() {
+    /**
+     * This table contains the IM providers
+     */
+    public static final class Provider implements BaseColumns, ProviderColumns
+    {
+        private Provider()
+        {
         }
 
-        public static final long getProviderIdForName(ContentResolver cr, String providerName) {
+        public static final long getProviderIdForName(ContentResolver cr, String providerName)
+        {
 
 
             String select = NAME + "=?";
@@ -94,36 +113,47 @@ public class Imps {
             Cursor cursor = cr.query(CONTENT_URI, PROVIDER_PROJECTION, select, selectionArgs, null);
 
             long retVal = 0;
-            try {
-                if (cursor.moveToFirst()) {
+            try
+            {
+                if (cursor.moveToFirst())
+                {
                     retVal = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
                 }
-            } finally {
+            }
+            finally
+            {
                 if (cursor != null)
+                {
                     cursor.close();
+                }
 
             }
 
             return retVal;
         }
 
-        public static final String getProviderNameForId(ContentResolver cr, long providerId) {
+        public static final String getProviderNameForId(ContentResolver cr, long providerId)
+        {
             Cursor cursor = cr.query(CONTENT_URI, PROVIDER_PROJECTION, _ID + "=" + providerId,
                     null, null);
 
             String retVal = null;
-            try {
-                if (cursor.moveToFirst()) {
+            try
+            {
+                if (cursor.moveToFirst())
+                {
                     retVal = cursor.getString(cursor.getColumnIndexOrThrow(NAME));
                 }
-            } finally {
+            }
+            finally
+            {
                 cursor.close();
             }
 
             return retVal;
         }
 
-        private static final String[] PROVIDER_PROJECTION = new String[] { _ID, NAME };
+        private static final String[] PROVIDER_PROJECTION = new String[]{_ID, NAME};
 
         public static final String ACTIVE_ACCOUNT_ID = "account_id";
         public static final String ACTIVE_ACCOUNT_USERNAME = "account_username";
@@ -133,7 +163,9 @@ public class Imps {
         public static final String ACCOUNT_PRESENCE_STATUS = "account_presenceStatus";
         public static final String ACCOUNT_CONNECTION_STATUS = "account_connStatus";
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/providers");
 
@@ -148,7 +180,9 @@ public class Imps {
 
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-providers";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "providers._ID ASC";
     }
 
@@ -156,17 +190,26 @@ public class Imps {
      * The columns for IM accounts. There can be more than one account for each
      * IM provider.
      */
-    public interface AccountColumns {
-        /** The name of the account <P>Type: TEXT</P> */
+    public interface AccountColumns
+    {
+        /**
+         * The name of the account <P>Type: TEXT</P>
+         */
         String NAME = "name";
 
-        /** The IM provider for this account <P>Type: INTEGER</P> */
+        /**
+         * The IM provider for this account <P>Type: INTEGER</P>
+         */
         String PROVIDER = "provider";
 
-        /** The username for this account <P>Type: TEXT</P> */
+        /**
+         * The username for this account <P>Type: TEXT</P>
+         */
         String USERNAME = "username";
 
-        /** The password for this account <P>Type: TEXT</P> */
+        /**
+         * The password for this account <P>Type: TEXT</P>
+         */
         String PASSWORD = "pw";
 
         /**
@@ -194,66 +237,89 @@ public class Imps {
         String LAST_LOGIN_STATE = "last_login_state";
     }
 
-    /** This table contains the IM accounts. */
-    public static final class Account implements BaseColumns, AccountColumns {
-        private Account() {
+    /**
+     * This table contains the IM accounts.
+     */
+    public static final class Account implements BaseColumns, AccountColumns
+    {
+        private Account()
+        {
         }
 
-        public static final long getProviderIdForAccount(ContentResolver cr, long accountId) {
+        public static final long getProviderIdForAccount(ContentResolver cr, long accountId)
+        {
             Cursor cursor = cr.query(CONTENT_URI, PROVIDER_PROJECTION, _ID + "=" + accountId,
                     null /* selection args */, null /* sort order */);
 
             long providerId = 0;
 
-            try {
-                if (cursor.moveToFirst()) {
+            try
+            {
+                if (cursor.moveToFirst())
+                {
                     providerId = cursor.getLong(PROVIDER_COLUMN);
                 }
-            } finally {
+            }
+            finally
+            {
                 cursor.close();
             }
 
             return providerId;
         }
 
-        public static final String getUserName(ContentResolver cr, long accountId) {
-            Cursor cursor = cr.query(CONTENT_URI, new String[] { USERNAME }, _ID + "=" + accountId,
+        public static final String getUserName(ContentResolver cr, long accountId)
+        {
+            Cursor cursor = cr.query(CONTENT_URI, new String[]{USERNAME}, _ID + "=" + accountId,
                     null /* selection args */, null /* sort order */);
             String ret = null;
-            try {
-                if (cursor.moveToFirst()) {
+            try
+            {
+                if (cursor.moveToFirst())
+                {
                     ret = cursor.getString(cursor.getColumnIndexOrThrow(USERNAME));
                 }
-            } finally {
+            }
+            finally
+            {
                 cursor.close();
             }
 
             return ret;
         }
 
-        public static final String getPassword(ContentResolver cr, long accountId) {
-            Cursor cursor = cr.query(CONTENT_URI, new String[] { PASSWORD }, _ID + "=" + accountId,
+        public static final String getPassword(ContentResolver cr, long accountId)
+        {
+            Cursor cursor = cr.query(CONTENT_URI, new String[]{PASSWORD}, _ID + "=" + accountId,
                     null /* selection args */, null /* sort order */);
             String ret = null;
-            try {
-                if (cursor.moveToFirst()) {
+            try
+            {
+                if (cursor.moveToFirst())
+                {
                     ret = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD));
                 }
-            } finally {
+            }
+            finally
+            {
                 cursor.close();
             }
 
             return ret;
         }
 
-        private static final String[] PROVIDER_PROJECTION = new String[] { PROVIDER };
+        private static final String[] PROVIDER_PROJECTION = new String[]{PROVIDER};
         private static final int PROVIDER_COLUMN = 0;
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/accounts");
 
-        /** The content:// style URL for looking up by domain */
+        /**
+         * The content:// style URL for looking up by domain
+         */
         public static final Uri BY_DOMAIN_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/domainAccounts");
 
@@ -270,28 +336,44 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-accounts";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "name ASC";
 
     }
 
-    /** Connection status */
-    public interface ConnectionStatus {
-        /** The connection is offline, not logged in. */
+    /**
+     * Connection status
+     */
+    public interface ConnectionStatus
+    {
+        /**
+         * The connection is offline, not logged in.
+         */
         int OFFLINE = 0;
 
-        /** The connection is attempting to connect. */
+        /**
+         * The connection is attempting to connect.
+         */
         int CONNECTING = 1;
 
-        /** The connection is suspended due to network not available. */
+        /**
+         * The connection is suspended due to network not available.
+         */
         int SUSPENDED = 2;
 
-        /** The connection is logged in and online. */
+        /**
+         * The connection is logged in and online.
+         */
         int ONLINE = 3;
     }
 
-    public interface AccountStatusColumns {
-        /** account id <P>Type: INTEGER</P> */
+    public interface AccountStatusColumns
+    {
+        /**
+         * account id <P>Type: INTEGER</P>
+         */
         String ACCOUNT = "account";
 
         /**
@@ -307,8 +389,11 @@ public class Imps {
         String CONNECTION_STATUS = "connStatus";
     }
 
-    public static final class AccountStatus implements BaseColumns, AccountStatusColumns {
-        /** The content:// style URL for this table */
+    public static final class AccountStatus implements BaseColumns, AccountStatusColumns
+    {
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/accountStatus");
 
@@ -324,19 +409,30 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-account-status";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "name ASC";
     }
 
-    /** Columns from the Contacts table. */
-    public interface ContactsColumns {
-        /** The username <P>Type: TEXT</P> */
+    /**
+     * Columns from the Contacts table.
+     */
+    public interface ContactsColumns
+    {
+        /**
+         * The username <P>Type: TEXT</P>
+         */
         String USERNAME = "username";
 
-        /** The nickname or display name <P>Type: TEXT</P> */
+        /**
+         * The nickname or display name <P>Type: TEXT</P>
+         */
         String NICKNAME = "nickname";
 
-        /** The IM provider for this contact <P>Type: INTEGER</P> */
+        /**
+         * The IM provider for this contact <P>Type: INTEGER</P>
+         */
         String PROVIDER = "provider";
 
         /**
@@ -345,13 +441,19 @@ public class Imps {
          */
         String ACCOUNT = "account";
 
-        /** The contactList this contact belongs to <P>Type: INTEGER</P> */
+        /**
+         * The contactList this contact belongs to <P>Type: INTEGER</P>
+         */
         String CONTACTLIST = "contactList";
 
-        /** Contact type <P>Type: INTEGER</P> */
+        /**
+         * Contact type <P>Type: INTEGER</P>
+         */
         String TYPE = "type";
 
-        /** normal IM contact */
+        /**
+         * normal IM contact
+         */
         int TYPE_NORMAL = 0;
         /**
          * temporary contact, someone not in the list of contacts that we
@@ -359,9 +461,13 @@ public class Imps {
          * a chat session with this contact.
          */
         int TYPE_TEMPORARY = 1;
-        /** temporary contact created for group chat. */
+        /**
+         * temporary contact created for group chat.
+         */
         int TYPE_GROUP = 2;
-        /** blocked contact. */
+        /**
+         * blocked contact.
+         */
         int TYPE_BLOCKED = 3;
         /**
          * the contact is hidden. The client should always display this contact
@@ -374,22 +480,36 @@ public class Imps {
          */
         int TYPE_PINNED = 5;
 
-        /** Contact subscription status <P>Type: INTEGER</P> */
+        /**
+         * Contact subscription status <P>Type: INTEGER</P>
+         */
         String SUBSCRIPTION_STATUS = "subscriptionStatus";
 
-        /** no pending subscription */
+        /**
+         * no pending subscription
+         */
         int SUBSCRIPTION_STATUS_NONE = 0;
-        /** requested to subscribe */
+        /**
+         * requested to subscribe
+         */
         int SUBSCRIPTION_STATUS_SUBSCRIBE_PENDING = 1;
-        /** requested to unsubscribe */
+        /**
+         * requested to unsubscribe
+         */
         int SUBSCRIPTION_STATUS_UNSUBSCRIBE_PENDING = 2;
 
-        /** Contact subscription type <P>Type: INTEGER </P> */
+        /**
+         * Contact subscription type <P>Type: INTEGER </P>
+         */
         String SUBSCRIPTION_TYPE = "subscriptionType";
 
-        /** The user and contact have no interest in each other's presence. */
+        /**
+         * The user and contact have no interest in each other's presence.
+         */
         int SUBSCRIPTION_TYPE_NONE = 0;
-        /** The user wishes to stop receiving presence updates from the contact. */
+        /**
+         * The user wishes to stop receiving presence updates from the contact.
+         */
         int SUBSCRIPTION_TYPE_REMOVE = 1;
         /**
          * The user is interested in receiving presence updates from the
@@ -405,7 +525,9 @@ public class Imps {
          * The user and contact have a mutual interest in each other's presence.
          */
         int SUBSCRIPTION_TYPE_BOTH = 4;
-        /** This is a special type reserved for pending subscription requests */
+        /**
+         * This is a special type reserved for pending subscription requests
+         */
         int SUBSCRIPTION_TYPE_INVITATIONS = 5;
 
         /**
@@ -416,7 +538,7 @@ public class Imps {
 
         /**
          * Google Contact Extension attribute
-         *
+         * <p/>
          * Rejected: a boolean value indicating whether a subscription request
          * from this client was ever rejected by the user. "true" indicates that
          * it has. This is provided so that a client can block repeated
@@ -431,32 +553,53 @@ public class Imps {
         String OTR = "otr";
     }
 
-    /** This defines the different type of values of {@link ContactsColumns#OTR} */
-    public interface OffTheRecordType {
+    /**
+     * This defines the different type of values of {@link ContactsColumns#OTR}
+     */
+    public interface OffTheRecordType
+    {
         /*
          * Off the record not turned on
          */
         int DISABLED = 0;
-        /** Off the record turned on, but we don't know who turned it on */
+        /**
+         * Off the record turned on, but we don't know who turned it on
+         */
         int ENABLED = 1;
-        /** Off the record turned on by the user */
+        /**
+         * Off the record turned on by the user
+         */
         int ENABLED_BY_USER = 2;
-        /** Off the record turned on by the buddy */
+        /**
+         * Off the record turned on by the buddy
+         */
         int ENABLED_BY_BUDDY = 3;
-    };
+    }
 
-    /** This table contains contacts. */
+    ;
+
+    /**
+     * This table contains contacts.
+     */
     public static final class Contacts implements BaseColumns, ContactsColumns, PresenceColumns,
-            ChatsColumns {
-        /** no public constructor since this is a utility class */
-        private Contacts() {
+            ChatsColumns
+    {
+        /**
+         * no public constructor since this is a utility class
+         */
+        private Contacts()
+        {
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contacts");
 
-        /** The content:// style URL for contacts joined with presence */
+        /**
+         * The content:// style URL for contacts joined with presence
+         */
         public static final Uri CONTENT_URI_WITH_PRESENCE = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contactsWithPresence");
 
@@ -467,15 +610,21 @@ public class Imps {
         public static final Uri CONTENT_URI_CONTACTS_BAREBONE = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contactsBarebone");
 
-        /** The content:// style URL for contacts who have an open chat session */
+        /**
+         * The content:// style URL for contacts who have an open chat session
+         */
         public static final Uri CONTENT_URI_CHAT_CONTACTS = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contacts/chatting");
 
-        /** The content:// style URL for contacts who have been blocked */
+        /**
+         * The content:// style URL for contacts who have been blocked
+         */
         public static final Uri CONTENT_URI_BLOCKED_CONTACTS = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contacts/blocked");
 
-        /** The content:// style URL for contacts by provider and account */
+        /**
+         * The content:// style URL for contacts by provider and account
+         */
         public static final Uri CONTENT_URI_CONTACTS_BY = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contacts");
 
@@ -500,7 +649,9 @@ public class Imps {
         public static final Uri CONTENT_URI_OFFLINE_CONTACTS_BY = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contacts/offline");
 
-        /** The content:// style URL for operations on bulk contacts */
+        /**
+         * The content:// style URL for operations on bulk contacts
+         */
         public static final Uri BULK_CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/bulk_contacts");
 
@@ -523,14 +674,20 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-contacts";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "subscriptionType DESC, last_message_date DESC,"
-                                                        + " mode DESC, nickname COLLATE NOCASE ASC";
+                + " mode DESC, nickname COLLATE NOCASE ASC";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String ALPHA_SORT_ORDER = "nickname COLLATE NOCASE ASC";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String MODE_AND_ALPHA_SORT_ORDER = "mode DESC, nickname COLLATE NOCASE ASC";
 
         public static final String CHATS_CONTACT = "chats_contact";
@@ -540,19 +697,28 @@ public class Imps {
         public static final String AVATAR_DATA = "avatars_data";
     }
 
-    /** Columns from the ContactList table. */
-    public interface ContactListColumns {
+    /**
+     * Columns from the ContactList table.
+     */
+    public interface ContactListColumns
+    {
         String NAME = "name";
         String PROVIDER = "provider";
         String ACCOUNT = "account";
     }
 
-    /** This table contains the contact lists. */
-    public static final class ContactList implements BaseColumns, ContactListColumns {
-        private ContactList() {
+    /**
+     * This table contains the contact lists.
+     */
+    public static final class ContactList implements BaseColumns, ContactListColumns
+    {
+        private ContactList()
+        {
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contactLists");
 
@@ -568,7 +734,9 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-contactLists";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "name COLLATE UNICODE ASC";
 
         public static final String PROVIDER_NAME = "provider_name";
@@ -576,27 +744,44 @@ public class Imps {
         public static final String ACCOUNT_NAME = "account_name";
     }
 
-    /** Columns from the BlockedList table. */
-    public interface BlockedListColumns {
-        /** The username of the blocked contact. <P>Type: TEXT</P> */
+    /**
+     * Columns from the BlockedList table.
+     */
+    public interface BlockedListColumns
+    {
+        /**
+         * The username of the blocked contact. <P>Type: TEXT</P>
+         */
         String USERNAME = "username";
 
-        /** The nickname of the blocked contact. <P>Type: TEXT</P> */
+        /**
+         * The nickname of the blocked contact. <P>Type: TEXT</P>
+         */
         String NICKNAME = "nickname";
 
-        /** The provider id of the blocked contact. <P>Type: INT</P> */
+        /**
+         * The provider id of the blocked contact. <P>Type: INT</P>
+         */
         String PROVIDER = "provider";
 
-        /** The account id of the blocked contact. <P>Type: INT</P> */
+        /**
+         * The account id of the blocked contact. <P>Type: INT</P>
+         */
         String ACCOUNT = "account";
     }
 
-    /** This table contains blocked lists */
-    public static final class BlockedList implements BaseColumns, BlockedListColumns {
-        private BlockedList() {
+    /**
+     * This table contains blocked lists
+     */
+    public static final class BlockedList implements BaseColumns, BlockedListColumns
+    {
+        private BlockedList()
+        {
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/blockedList");
 
@@ -612,7 +797,9 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-blockedList";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "nickname ASC";
 
         public static final String PROVIDER_NAME = "provider_name";
@@ -622,8 +809,11 @@ public class Imps {
         public static final String AVATAR_DATA = "avatars_data";
     }
 
-    /** Columns from the contactsEtag table */
-    public interface ContactsEtagColumns {
+    /**
+     * Columns from the contactsEtag table
+     */
+    public interface ContactsEtagColumns
+    {
         /**
          * The roster etag, computed by the server, stored on the client. There
          * is one etag per account roster. <P>Type: TEXT</P>
@@ -636,70 +826,88 @@ public class Imps {
          */
         String OTR_ETAG = "otr_etag";
 
-        /** The account id for the etag. <P> Type: INTEGER </P> */
+        /**
+         * The account id for the etag. <P> Type: INTEGER </P>
+         */
         String ACCOUNT = "account";
     }
 
-    public static final class ContactsEtag implements BaseColumns, ContactsEtagColumns {
-        private ContactsEtag() {
+    public static final class ContactsEtag implements BaseColumns, ContactsEtagColumns
+    {
+        private ContactsEtag()
+        {
         }
 
-        public static final Cursor query(ContentResolver cr, String[] projection) {
+        public static final Cursor query(ContentResolver cr, String[] projection)
+        {
             return cr.query(CONTENT_URI, projection, null, null, null);
         }
 
         public static final Cursor query(ContentResolver cr, String[] projection, String where,
-                String orderBy) {
+                                         String orderBy)
+        {
             return cr.query(CONTENT_URI, projection, where, null, orderBy == null ? null : orderBy);
         }
 
-        public static final String getRosterEtag(ContentResolver resolver, long accountId) {
+        public static final String getRosterEtag(ContentResolver resolver, long accountId)
+        {
             String retVal = null;
 
             Cursor c = resolver.query(CONTENT_URI, CONTACT_ETAG_PROJECTION, ACCOUNT + "="
-                                                                            + accountId,
+                            + accountId,
                     null /* selection args */, null /* sort order */);
 
-            try {
-                if (c.moveToFirst()) {
+            try
+            {
+                if (c.moveToFirst())
+                {
                     retVal = c.getString(COLUMN_ETAG);
                 }
-            } finally {
+            }
+            finally
+            {
                 c.close();
             }
 
             return retVal;
         }
 
-        public static final String getOtrEtag(ContentResolver resolver, long accountId) {
+        public static final String getOtrEtag(ContentResolver resolver, long accountId)
+        {
             String retVal = null;
 
             Cursor c = resolver.query(CONTENT_URI, CONTACT_OTR_ETAG_PROJECTION, ACCOUNT + "="
-                                                                                + accountId,
+                            + accountId,
                     null /* selection args */, null /* sort order */);
 
-            try {
-                if (c.moveToFirst()) {
+            try
+            {
+                if (c.moveToFirst())
+                {
                     retVal = c.getString(COLUMN_OTR_ETAG);
                 }
-            } finally {
+            }
+            finally
+            {
                 c.close();
             }
 
             return retVal;
         }
 
-        private static final String[] CONTACT_ETAG_PROJECTION = new String[] { Imps.ContactsEtag.ETAG // 0
+        private static final String[] CONTACT_ETAG_PROJECTION = new String[]{Imps.ContactsEtag.ETAG // 0
         };
 
         private static int COLUMN_ETAG = 0;
 
-        private static final String[] CONTACT_OTR_ETAG_PROJECTION = new String[] { Imps.ContactsEtag.OTR_ETAG // 0
+        private static final String[] CONTACT_OTR_ETAG_PROJECTION = new String[]{Imps.ContactsEtag.OTR_ETAG // 0
         };
 
         private static int COLUMN_OTR_ETAG = 0;
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/contactsEtag");
 
@@ -716,8 +924,11 @@ public class Imps {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-contactsEtag";
     }
 
-    /** Message type definition */
-    public interface MessageType {
+    /**
+     * Message type definition
+     */
+    public interface MessageType
+    {
         /* sent message */
         int OUTGOING = 0;
         /* received message */
@@ -756,8 +967,11 @@ public class Imps {
         int OUTGOING_ENCRYPTED_VERIFIED = 16;
     }
 
-    /** The common columns for messages table */
-    public interface MessageColumns {
+    /**
+     * The common columns for messages table
+     */
+    public interface MessageColumns
+    {
         /**
          * The thread_id column stores the contact id of the contact the message
          * belongs to. For groupchat messages, the thread_id stores the group
@@ -774,19 +988,29 @@ public class Imps {
          */
         String NICKNAME = "nickname";
 
-        /** The body <P>Type: TEXT</P> */
+        /**
+         * The body <P>Type: TEXT</P>
+         */
         String BODY = "body";
 
-        /** The date this message is sent or received <P>Type: INTEGER</P> */
+        /**
+         * The date this message is sent or received <P>Type: INTEGER</P>
+         */
         String DATE = "date";
 
-        /** Message Type, see {@link MessageType} <P>Type: INTEGER</P> */
+        /**
+         * Message Type, see {@link MessageType} <P>Type: INTEGER</P>
+         */
         String TYPE = "type";
 
-        /** Error Code: 0 means no error. <P>Type: INTEGER </P> */
+        /**
+         * Error Code: 0 means no error. <P>Type: INTEGER </P>
+         */
         String ERROR_CODE = "err_code";
 
-        /** Error Message <P>Type: TEXT</P> */
+        /**
+         * Error Message <P>Type: TEXT</P>
+         */
         String ERROR_MESSAGE = "err_msg";
 
         /**
@@ -796,7 +1020,9 @@ public class Imps {
          */
         String PACKET_ID = "packet_id";
 
-        /** Is groupchat message or not <P>Type: INTEGER</P> */
+        /**
+         * Is groupchat message or not <P>Type: INTEGER</P>
+         */
         String IS_GROUP_CHAT = "is_muc";
 
         /**
@@ -805,17 +1031,27 @@ public class Imps {
          */
         String DISPLAY_SENT_TIME = "show_ts";
 
-        /** Whether a delivery confirmation was received. <P>Type: INTEGER</P> */
+        /**
+         * Whether a delivery confirmation was received. <P>Type: INTEGER</P>
+         */
         String IS_DELIVERED = "is_delivered";
 
-        /** Mime type.  If non-null, body is a URI. */
+        /**
+         * Mime type.  If non-null, body is a URI.
+         */
         String MIME_TYPE = "mime_type";
     }
 
-    /** This table contains messages. */
-    public static final class Messages implements BaseColumns, MessageColumns {
-        /** no public constructor since this is a utility class */
-        private Messages() {
+    /**
+     * This table contains messages.
+     */
+    public static final class Messages implements BaseColumns, MessageColumns
+    {
+        /**
+         * no public constructor since this is a utility class
+         */
+        private Messages()
+        {
         }
 
         /**
@@ -824,22 +1060,21 @@ public class Imps {
          * @param threadId the thread id of the message.
          * @return the Uri
          */
-        public static final Uri getContentUriByThreadId(long threadId) {
+        public static final Uri getContentUriByThreadId(long threadId)
+        {
             Uri.Builder builder = CONTENT_URI_MESSAGES_BY_THREAD_ID.buildUpon();
             ContentUris.appendId(builder, threadId);
             return builder.build();
         }
 
         /**
-         * @deprecated
-         *
-         *             Gets the Uri to query messages by account and contact.
-         *
          * @param accountId the account id of the contact.
-         * @param username the user name of the contact.
+         * @param username  the user name of the contact.
          * @return the Uri
+         * @deprecated Gets the Uri to query messages by account and contact.
          */
-        public static final Uri getContentUriByContact(long accountId, String username) {
+        public static final Uri getContentUriByContact(long accountId, String username)
+        {
             Uri.Builder builder = CONTENT_URI_MESSAGES_BY_ACCOUNT_AND_CONTACT.buildUpon();
             ContentUris.appendId(builder, accountId);
             builder.appendPath(username);
@@ -852,7 +1087,8 @@ public class Imps {
          * @param providerId the service provider id.
          * @return the Uri
          */
-        public static final Uri getContentUriByProvider(long providerId) {
+        public static final Uri getContentUriByProvider(long providerId)
+        {
             Uri.Builder builder = CONTENT_URI_MESSAGES_BY_PROVIDER.buildUpon();
             ContentUris.appendId(builder, providerId);
             return builder.build();
@@ -864,7 +1100,8 @@ public class Imps {
          * @param accountId the account id.
          * @return the Uri
          */
-        public static final Uri getContentUriByAccount(long accountId) {
+        public static final Uri getContentUriByAccount(long accountId)
+        {
             Uri.Builder builder = CONTENT_URI_BY_ACCOUNT.buildUpon();
             ContentUris.appendId(builder, accountId);
             return builder.build();
@@ -876,23 +1113,22 @@ public class Imps {
          * @param threadId the thread id of the message.
          * @return the Uri
          */
-        public static final Uri getOtrMessagesContentUriByThreadId(long threadId) {
+        public static final Uri getOtrMessagesContentUriByThreadId(long threadId)
+        {
             Uri.Builder builder = OTR_MESSAGES_CONTENT_URI_BY_THREAD_ID.buildUpon();
             ContentUris.appendId(builder, threadId);
             return builder.build();
         }
 
         /**
-         * @deprecated
-         *
-         *             Gets the Uri to query off the record messages by account
-         *             and contact.
-         *
          * @param accountId the account id of the contact.
-         * @param username the user name of the contact.
+         * @param username  the user name of the contact.
          * @return the Uri
+         * @deprecated Gets the Uri to query off the record messages by account
+         * and contact.
          */
-        public static final Uri getOtrMessagesContentUriByContact(long accountId, String username) {
+        public static final Uri getOtrMessagesContentUriByContact(long accountId, String username)
+        {
             Uri.Builder builder = OTR_MESSAGES_CONTENT_URI_BY_ACCOUNT_AND_CONTACT.buildUpon();
             ContentUris.appendId(builder, accountId);
             builder.appendPath(username);
@@ -905,7 +1141,8 @@ public class Imps {
          * @param providerId the service provider id.
          * @return the Uri
          */
-        public static final Uri getOtrMessagesContentUriByProvider(long providerId) {
+        public static final Uri getOtrMessagesContentUriByProvider(long providerId)
+        {
             Uri.Builder builder = OTR_MESSAGES_CONTENT_URI_BY_PROVIDER.buildUpon();
             ContentUris.appendId(builder, providerId);
             return builder.build();
@@ -917,41 +1154,58 @@ public class Imps {
          * @param accountId the account id.
          * @return the Uri
          */
-        public static final Uri getOtrMessagesContentUriByAccount(long accountId) {
+        public static final Uri getOtrMessagesContentUriByAccount(long accountId)
+        {
             Uri.Builder builder = OTR_MESSAGES_CONTENT_URI_BY_ACCOUNT.buildUpon();
             ContentUris.appendId(builder, accountId);
             return builder.build();
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/messages");
 
-        /** The content:// style URL for messages by thread id */
+        /**
+         * The content:// style URL for messages by thread id
+         */
         public static final Uri CONTENT_URI_MESSAGES_BY_THREAD_ID = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/messagesByThreadId");
-        
-        /** The content:// style URL for messages by thread id */
+
+        /**
+         * The content:// style URL for messages by thread id
+         */
         public static final Uri CONTENT_URI_MESSAGES_BY_PACKET_ID = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/messagesByPacketId");
 
-        /** The content:// style URL for messages by account and contact */
+        /**
+         * The content:// style URL for messages by account and contact
+         */
         public static final Uri CONTENT_URI_MESSAGES_BY_ACCOUNT_AND_CONTACT = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/messagesByAcctAndContact");
 
-        /** The content:// style URL for messages by provider */
+        /**
+         * The content:// style URL for messages by provider
+         */
         public static final Uri CONTENT_URI_MESSAGES_BY_PROVIDER = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/messagesByProvider");
 
-        /** The content:// style URL for messages by account */
+        /**
+         * The content:// style URL for messages by account
+         */
         public static final Uri CONTENT_URI_BY_ACCOUNT = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/messagesByAccount");
 
-        /** The content:// style url for off the record messages */
+        /**
+         * The content:// style url for off the record messages
+         */
         public static final Uri OTR_MESSAGES_CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/otrMessages");
 
-        /** The content:// style url for off the record messages by thread id */
+        /**
+         * The content:// style url for off the record messages by thread id
+         */
         public static final Uri OTR_MESSAGES_CONTENT_URI_BY_THREAD_ID = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/otrMessagesByThreadId");
 
@@ -962,11 +1216,15 @@ public class Imps {
         public static final Uri OTR_MESSAGES_CONTENT_URI_BY_ACCOUNT_AND_CONTACT = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/otrMessagesByAcctAndContact");
 
-        /** The content:// style URL for off the record messages by provider */
+        /**
+         * The content:// style URL for off the record messages by provider
+         */
         public static final Uri OTR_MESSAGES_CONTENT_URI_BY_PROVIDER = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/otrMessagesByProvider");
 
-        /** The content:// style URL for off the record messages by account */
+        /**
+         * The content:// style URL for off the record messages by account
+         */
         public static final Uri OTR_MESSAGES_CONTENT_URI_BY_ACCOUNT = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/otrMessagesByAccount");
 
@@ -985,7 +1243,9 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-messages";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "date ASC";
 
         /**
@@ -996,20 +1256,31 @@ public class Imps {
         public static final String CONTACT = "contact";
     }
 
-    /** Columns for the GroupMember table. */
-    public interface GroupMemberColumns {
-        /** The id of the group this member belongs to. <p>Type: INTEGER</p> */
+    /**
+     * Columns for the GroupMember table.
+     */
+    public interface GroupMemberColumns
+    {
+        /**
+         * The id of the group this member belongs to. <p>Type: INTEGER</p>
+         */
         String GROUP = "groupId";
 
-        /** The full name of this member. <p>Type: TEXT</p> */
+        /**
+         * The full name of this member. <p>Type: TEXT</p>
+         */
         String USERNAME = "username";
 
-        /** The nick name of this member. <p>Type: TEXT</p> */
+        /**
+         * The nick name of this member. <p>Type: TEXT</p>
+         */
         String NICKNAME = "nickname";
     }
 
-    public final static class GroupMembers implements GroupMemberColumns {
-        private GroupMembers() {
+    public final static class GroupMembers implements GroupMemberColumns
+    {
+        private GroupMembers()
+        {
         }
 
         public static final Uri CONTENT_URI = Uri
@@ -1028,18 +1299,29 @@ public class Imps {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-groupMembers";
     }
 
-    /** Columns from the Invitation table. */
-    public interface InvitationColumns {
-        /** The provider id. <p>Type: INTEGER</p> */
+    /**
+     * Columns from the Invitation table.
+     */
+    public interface InvitationColumns
+    {
+        /**
+         * The provider id. <p>Type: INTEGER</p>
+         */
         String PROVIDER = "providerId";
 
-        /** The account id. <p>Type: INTEGER</p> */
+        /**
+         * The account id. <p>Type: INTEGER</p>
+         */
         String ACCOUNT = "accountId";
 
-        /** The invitation id. <p>Type: TEXT</p> */
+        /**
+         * The invitation id. <p>Type: TEXT</p>
+         */
         String INVITE_ID = "inviteId";
 
-        /** The name of the sender of the invitation. <p>Type: TEXT</p> */
+        /**
+         * The name of the sender of the invitation. <p>Type: TEXT</p>
+         */
         String SENDER = "sender";
 
         /**
@@ -1048,10 +1330,14 @@ public class Imps {
          */
         String GROUP_NAME = "groupName";
 
-        /** A note <p>Type: TEXT</p> */
+        /**
+         * A note <p>Type: TEXT</p>
+         */
         String NOTE = "note";
 
-        /** The current status of the invitation. <p>Type: TEXT</p> */
+        /**
+         * The current status of the invitation. <p>Type: TEXT</p>
+         */
         String STATUS = "status";
 
         int STATUS_PENDING = 0;
@@ -1059,12 +1345,18 @@ public class Imps {
         int STATUS_REJECTED = 2;
     }
 
-    /** This table contains the invitations received from others. */
-    public final static class Invitation implements InvitationColumns, BaseColumns {
-        private Invitation() {
+    /**
+     * This table contains the invitations received from others.
+     */
+    public final static class Invitation implements InvitationColumns, BaseColumns
+    {
+        private Invitation()
+        {
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/invitations");
 
@@ -1081,29 +1373,46 @@ public class Imps {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-invitations";
     }
 
-    /** Columns from the Avatars table */
-    public interface AvatarsColumns {
-        /** The contact this avatar belongs to <P>Type: TEXT</P> */
+    /**
+     * Columns from the Avatars table
+     */
+    public interface AvatarsColumns
+    {
+        /**
+         * The contact this avatar belongs to <P>Type: TEXT</P>
+         */
         String CONTACT = "contact";
 
         String PROVIDER = "provider_id";
 
         String ACCOUNT = "account_id";
 
-        /** The hash of the image data <P>Type: TEXT</P> */
+        /**
+         * The hash of the image data <P>Type: TEXT</P>
+         */
         String HASH = "hash";
 
-        /** raw image data <P>Type: BLOB</P> */
+        /**
+         * raw image data <P>Type: BLOB</P>
+         */
         String DATA = "data";
     }
 
-    /** This table contains avatars. */
-    public static final class Avatars implements BaseColumns, AvatarsColumns {
-        /** no public constructor since this is a utility class */
-        private Avatars() {
+    /**
+     * This table contains avatars.
+     */
+    public static final class Avatars implements BaseColumns, AvatarsColumns
+    {
+        /**
+         * no public constructor since this is a utility class
+         */
+        private Avatars()
+        {
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/avatars");
 
@@ -1113,13 +1422,19 @@ public class Imps {
         public static final Uri CONTENT_URI_AVATARS_BY = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/avatarsBy");
 
-        /** The MIME type of {@link #CONTENT_URI} providing the avatars */
+        /**
+         * The MIME type of {@link #CONTENT_URI} providing the avatars
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/imps-avatars";
 
-        /** The MIME type of a {@link #CONTENT_URI} */
+        /**
+         * The MIME type of a {@link #CONTENT_URI}
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-avatars";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "contact ASC";
 
     }
@@ -1128,8 +1443,11 @@ public class Imps {
      * Common presence columns shared between the IM and contacts presence
      * tables
      */
-    public interface CommonPresenceColumns {
-        /** The priority, an integer, used by XMPP presence <P>Type: INTEGER</P> */
+    public interface CommonPresenceColumns
+    {
+        /**
+         * The priority, an integer, used by XMPP presence <P>Type: INTEGER</P>
+         */
         String PRIORITY = "priority";
 
         /**
@@ -1138,25 +1456,34 @@ public class Imps {
          */
         String PRESENCE_STATUS = "mode";
 
-        /** Presence Status definition */
-        
+        /**
+         * Presence Status definition
+         */
+
         int OFFLINE = 0;
         int INVISIBLE = 1;
         int AWAY = 2;
         int IDLE = 3;
         int DO_NOT_DISTURB = 4;
         int AVAILABLE = 5;
-        
+
         int NEW_ACCOUNT = -99;
 
 
-        /** The user defined status line. <P>Type: TEXT</P> */
+        /**
+         * The user defined status line. <P>Type: TEXT</P>
+         */
         String PRESENCE_CUSTOM_STATUS = "status";
     }
 
-    /** Columns from the Presence table. */
-    public interface PresenceColumns extends CommonPresenceColumns {
-        /** The contact id <P>Type: INTEGER</P> */
+    /**
+     * Columns from the Presence table.
+     */
+    public interface PresenceColumns extends CommonPresenceColumns
+    {
+        /**
+         * The contact id <P>Type: INTEGER</P>
+         */
         String CONTACT_ID = "contact_id";
 
         /**
@@ -1165,26 +1492,39 @@ public class Imps {
          */
         String JID_RESOURCE = "jid_resource";
 
-        /** The contact's client type */
+        /**
+         * The contact's client type
+         */
         String CLIENT_TYPE = "client_type";
 
-        /** client type definitions */
+        /**
+         * client type definitions
+         */
         int CLIENT_TYPE_DEFAULT = 0;
         int CLIENT_TYPE_MOBILE = 1;
         int CLIENT_TYPE_ANDROID = 2;
     }
 
-    /** Contains presence infomation for contacts. */
-    public static final class Presence implements BaseColumns, PresenceColumns {
-        /** The content:// style URL for this table */
+    /**
+     * Contains presence infomation for contacts.
+     */
+    public static final class Presence implements BaseColumns, PresenceColumns
+    {
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/presence");
 
-        /** The content URL for IM presences for an account */
+        /**
+         * The content URL for IM presences for an account
+         */
         public static final Uri CONTENT_URI_BY_ACCOUNT = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/presence/account");
 
-        /** The content:// style URL for operations on bulk contacts */
+        /**
+         * The content:// style URL for operations on bulk contacts
+         */
         public static final Uri BULK_CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/bulk_presence");
 
@@ -1201,22 +1541,31 @@ public class Imps {
          */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/imps-presence";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "mode DESC";
     }
 
-    /** Columns from the Chats table. */
-    public interface ChatsColumns {
+    /**
+     * Columns from the Chats table.
+     */
+    public interface ChatsColumns
+    {
         /**
          * The contact ID this chat belongs to. The value is a long. <P>Type:
          * INT</P>
          */
         String CONTACT_ID = "contact_id";
 
-        /** The GTalk JID resource. The value is a string. <P>Type: TEXT</P> */
+        /**
+         * The GTalk JID resource. The value is a string. <P>Type: TEXT</P>
+         */
         String JID_RESOURCE = "jid_resource";
 
-        /** Whether this is a groupchat or not. <P>Type: INT</P> */
+        /**
+         * Whether this is a groupchat or not. <P>Type: INT</P>
+         */
         String GROUP_CHAT = "groupchat";
 
         /**
@@ -1225,7 +1574,9 @@ public class Imps {
          */
         String LAST_UNREAD_MESSAGE = "last_unread_message";
 
-        /** The last message timestamp <P>Type: INT</P> */
+        /**
+         * The last message timestamp <P>Type: INT</P>
+         */
         String LAST_MESSAGE_DATE = "last_message_date";
 
         /**
@@ -1243,17 +1594,27 @@ public class Imps {
         String SHORTCUT = "shortcut";
     }
 
-    /** Contains ongoing chat sessions. */
-    public static final class Chats implements BaseColumns, ChatsColumns {
-        /** no public constructor since this is a utility class */
-        private Chats() {
+    /**
+     * Contains ongoing chat sessions.
+     */
+    public static final class Chats implements BaseColumns, ChatsColumns
+    {
+        /**
+         * no public constructor since this is a utility class
+         */
+        private Chats()
+        {
         }
 
-        /** The content:// style URL for this table */
+        /**
+         * The content:// style URL for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/chats");
 
-        /** The content URL for all chats that belong to the account */
+        /**
+         * The content URL for all chats that belong to the account
+         */
         public static final Uri CONTENT_URI_BY_ACCOUNT = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/chats/account");
 
@@ -1268,28 +1629,41 @@ public class Imps {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/imps-chats";
 
-        /** The default sort order for this table */
+        /**
+         * The default sort order for this table
+         */
         public static final String DEFAULT_SORT_ORDER = "last_message_date ASC";
     }
 
-    /** Columns from session cookies table. Used for IMPS. */
-    public static interface SessionCookiesColumns {
+    /**
+     * Columns from session cookies table. Used for IMPS.
+     */
+    public static interface SessionCookiesColumns
+    {
         String NAME = "name";
         String VALUE = "value";
         String PROVIDER = "provider";
         String ACCOUNT = "account";
     }
 
-    /** Contains IMPS session cookies. */
-    public static class SessionCookies implements SessionCookiesColumns, BaseColumns {
-        private SessionCookies() {
+    /**
+     * Contains IMPS session cookies.
+     */
+    public static class SessionCookies implements SessionCookiesColumns, BaseColumns
+    {
+        private SessionCookies()
+        {
         }
 
-        /** The content:// style URI for this table */
+        /**
+         * The content:// style URI for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/sessionCookies");
 
-        /** The content:// style URL for session cookies by provider and account */
+        /**
+         * The content:// style URL for session cookies by provider and account
+         */
         public static final Uri CONTENT_URI_SESSION_COOKIES_BY = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/sessionCookiesBy");
 
@@ -1300,65 +1674,94 @@ public class Imps {
         public static final String CONTENT_TYPE = "vnd.android-dir/imps-sessionCookies";
     }
 
-    /** Columns from ProviderSettings table */
-    public static interface ProviderSettingsColumns {
+    /**
+     * Columns from ProviderSettings table
+     */
+    public static interface ProviderSettingsColumns
+    {
         /**
          * The id in database of the related provider
-         *
+         * <p/>
          * <P>Type: INT</P>
          */
         String PROVIDER = "provider";
 
-        /** The name of the setting <P>Type: TEXT</P> */
+        /**
+         * The name of the setting <P>Type: TEXT</P>
+         */
         String NAME = "name";
 
-        /** The value of the setting <P>Type: TEXT</P> */
+        /**
+         * The value of the setting <P>Type: TEXT</P>
+         */
         String VALUE = "value";
     }
 
-    public static class ProviderSettings implements ProviderSettingsColumns {
+    public static class ProviderSettings implements ProviderSettingsColumns
+    {
         // Global settings are saved with this provider ID, for backward compatibility
 
         public static final long PROVIDER_ID_FOR_GLOBAL_SETTINGS = 1;
 
-        private ProviderSettings() {
+        private ProviderSettings()
+        {
         }
 
-        /** The content:// style URI for this table */
+        /**
+         * The content:// style URI for this table
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/providerSettings");
 
-        /** The MIME type of {@link #CONTENT_URI} providing provider settings */
+        /**
+         * The MIME type of {@link #CONTENT_URI} providing provider settings
+         */
         public static final String CONTENT_TYPE = "vnd.android-dir/imps-providerSettings";
 
         // ACCOUNT SETTINGS (username and password are part of Account above)
 
         // TODO since everything is here except username/password, perhaps it should also be moved here?
 
-        /** the domain name of the account, i.e. @gmail.com for XMPP */
+        /**
+         * the domain name of the account, i.e. @gmail.com for XMPP
+         */
         public static final String DOMAIN = "pref_account_domain";
 
-        /** The XMPP Resource string */
+        /**
+         * The XMPP Resource string
+         */
         public static final String XMPP_RESOURCE = "pref_account_xmpp_resource";
 
-        /** The XMPP Resource priority string */
+        /**
+         * The XMPP Resource priority string
+         */
         public static final String XMPP_RESOURCE_PRIO = "pref_account_xmpp_resource_prio";
 
-        /** the port number to connect to */
+        /**
+         * the port number to connect to
+         */
         public static final String PORT = "pref_account_port";
 
-        /** The hostname or IP of the server to connect to */
+        /**
+         * The hostname or IP of the server to connect to
+         */
         public static final String SERVER = "pref_account_server";
 
         // ENCRYPTION AND ANONYMITY SETTINGS
 
-        /** allow plain text authentication */
+        /**
+         * allow plain text authentication
+         */
         public static final String ALLOW_PLAIN_AUTH = "pref_security_allow_plain_auth";
 
-        /** boolean for the required use of a TLS connection */
+        /**
+         * boolean for the required use of a TLS connection
+         */
         public static final String REQUIRE_TLS = "pref_security_require_tls";
 
-        /** boolean for whether the TLS certificate should be verified */
+        /**
+         * boolean for whether the TLS certificate should be verified
+         */
         public static final String TLS_CERT_VERIFY = "pref_security_tls_cert_verify";
 
         /**
@@ -1367,7 +1770,9 @@ public class Imps {
          */
         public static final String OTR_MODE = "pref_security_otr_mode";
 
-        /** boolean to specify whether to use Tor proxying or not */
+        /**
+         * boolean to specify whether to use Tor proxying or not
+         */
         public static final String USE_TOR = "pref_security_use_tor";
 
         /**
@@ -1378,10 +1783,14 @@ public class Imps {
 
         // GENERAL PREFERENCES
 
-        /** controls whether this provider should show the offline contacts */
+        /**
+         * controls whether this provider should show the offline contacts
+         */
         public static final String SHOW_OFFLINE_CONTACTS = "show_offline_contacts";
 
-        /** controls whether the GTalk service automatically connect to server. */
+        /**
+         * controls whether the GTalk service automatically connect to server.
+         */
         public static final String AUTOMATICALLY_CONNECT_GTALK = "gtalk_auto_connect";
 
         /**
@@ -1399,34 +1808,54 @@ public class Imps {
 
         public static final String DELETE_UNSECURED_MEDIA = "delete_unsecured_media";
 
-        /** Global setting which controls whether enable the IM notification */
+        /**
+         * Global setting which controls whether enable the IM notification
+         */
         public static final String ENABLE_NOTIFICATION = "enable_notification";
 
-        /** Global setting which specifies whether to vibrate */
+        /**
+         * Global setting which specifies whether to vibrate
+         */
         public static final String NOTIFICATION_VIBRATE = "vibrate";
 
-        /** Global setting which specifies the Uri string of the ringtone */
+        /**
+         * Global setting which specifies the Uri string of the ringtone
+         */
         public static final String NOTIFICATION_RINGTONE = "ringtone";
 
-        /** Global setting which specifies the Uri of the default ringtone */
+        /**
+         * Global setting which specifies the Uri of the default ringtone
+         */
         public static final String RINGTONE_DEFAULT = "content://settings/system/notification_sound";
 
-        /** specifies whether to show mobile indicator to friends */
+        /**
+         * specifies whether to show mobile indicator to friends
+         */
         public static final String SHOW_MOBILE_INDICATOR = "mobile_indicator";
 
-        /** specifies whether to show as away when device is idle */
+        /**
+         * specifies whether to show as away when device is idle
+         */
         public static final String SHOW_AWAY_ON_IDLE = "show_away_on_idle";
 
-        /** controls whether the service gets foreground priority */
+        /**
+         * controls whether the service gets foreground priority
+         */
         public static final String USE_FOREGROUND_PRIORITY = "use_foreground_priority";
 
-        /** specifies whether to upload heartbeat stat upon login */
+        /**
+         * specifies whether to upload heartbeat stat upon login
+         */
         public static final String UPLOAD_HEARTBEAT_STAT = "upload_heartbeat_stat";
 
-        /** specifies the last heartbeat interval received from the server */
+        /**
+         * specifies the last heartbeat interval received from the server
+         */
         public static final String HEARTBEAT_INTERVAL = "heartbeat_interval";
 
-        /** specifiy the JID resource used for Google Talk connection */
+        /**
+         * specifiy the JID resource used for Google Talk connection
+         */
         public static final String JID_RESOURCE = "jid_resource";
 
         /**
@@ -1445,23 +1874,26 @@ public class Imps {
         /**
          * Query the settings of the provider specified by id
          *
-         * @param cr the relative content resolver
+         * @param cr         the relative content resolver
          * @param providerId the specified id of provider
          * @return a HashMap which contains all the settings for the specified
-         *         provider
+         * provider
          */
         public static HashMap<String, String> queryProviderSettings(ContentResolver cr,
-                long providerId) {
+                                                                    long providerId)
+        {
             HashMap<String, String> settings = new HashMap<String, String>();
 
-            String[] projection = { NAME, VALUE };
+            String[] projection = {NAME, VALUE};
             Cursor c = cr.query(ContentUris.withAppendedId(CONTENT_URI, providerId), projection,
                     null, null, null);
-            if (c == null) {
+            if (c == null)
+            {
                 return null;
             }
 
-            while (c.moveToNext()) {
+            while (c.moveToNext())
+            {
                 settings.put(c.getString(0), c.getString(1));
             }
 
@@ -1474,16 +1906,18 @@ public class Imps {
          * Get the string value of setting which is specified by provider id and
          * the setting name.
          *
-         * @param cr The ContentResolver to use to access the settings table.
-         * @param providerId The id of the provider.
+         * @param cr          The ContentResolver to use to access the settings table.
+         * @param providerId  The id of the provider.
          * @param settingName The name of the setting.
          * @return The value of the setting if the setting exist, otherwise
-         *         return null.
+         * return null.
          */
-        public static String getStringValue(ContentResolver cr, long providerId, String settingName) {
+        public static String getStringValue(ContentResolver cr, long providerId, String settingName)
+        {
             String ret = null;
             Cursor c = getSettingValue(cr, providerId, settingName);
-            if (c != null) {
+            if (c != null)
+            {
                 ret = c.getString(0);
                 c.close();
             }
@@ -1495,17 +1929,19 @@ public class Imps {
          * Get the string value of setting which is specified by provider id and
          * the setting name.
          *
-         * @param cr The ContentResolver to use to access the settings table.
-         * @param providerId The id of the provider.
+         * @param cr          The ContentResolver to use to access the settings table.
+         * @param providerId  The id of the provider.
          * @param settingName The name of the setting.
          * @return The value of the setting if the setting exist, otherwise
-         *         return null.
+         * return null.
          */
-        public static int getIntValue(ContentResolver cr, long providerId, String settingName) {
+        public static int getIntValue(ContentResolver cr, long providerId, String settingName)
+        {
             int ret = -1;
 
             Cursor c = getSettingValue(cr, providerId, settingName);
-            if (c != null) {
+            if (c != null)
+            {
                 ret = c.getInt(0);
                 c.close();
             }
@@ -1517,17 +1953,19 @@ public class Imps {
          * Get the boolean value of setting which is specified by provider id
          * and the setting name.
          *
-         * @param cr The ContentResolver to use to access the settings table.
-         * @param providerId The id of the provider.
+         * @param cr          The ContentResolver to use to access the settings table.
+         * @param providerId  The id of the provider.
          * @param settingName The name of the setting.
          * @return The value of the setting if the setting exist, otherwise
-         *         return false.
+         * return false.
          */
         public static boolean getBooleanValue(ContentResolver cr, long providerId,
-                String settingName) {
+                                              String settingName)
+        {
             boolean ret = false;
             Cursor c = getSettingValue(cr, providerId, settingName);
-            if (c != null) {
+            if (c != null)
+            {
                 ret = c.getInt(0) != 0;
                 c.close();
             }
@@ -1535,11 +1973,14 @@ public class Imps {
         }
 
         private static Cursor getSettingValue(ContentResolver cr, long providerId,
-                String settingName) {
+                                              String settingName)
+        {
             Cursor c = cr.query(ContentUris.withAppendedId(CONTENT_URI, providerId),
-                    new String[] { VALUE }, NAME + "=?", new String[] { settingName }, null);
-            if (c != null) {
-                if (!c.moveToFirst()) {
+                    new String[]{VALUE}, NAME + "=?", new String[]{settingName}, null);
+            if (c != null)
+            {
+                if (!c.moveToFirst())
+                {
                     c.close();
                     return null;
                 }
@@ -1550,13 +1991,14 @@ public class Imps {
         /**
          * Save a long value of setting in the table providerSetting.
          *
-         * @param cr The ContentProvider used to access the providerSetting
-         *            table.
+         * @param cr         The ContentProvider used to access the providerSetting
+         *                   table.
          * @param providerId The id of the provider.
-         * @param name The name of the setting.
-         * @param value The value of the setting.
+         * @param name       The name of the setting.
+         * @param value      The value of the setting.
          */
-        public static void putLongValue(ContentResolver cr, long providerId, String name, long value) {
+        public static void putLongValue(ContentResolver cr, long providerId, String name, long value)
+        {
             ContentValues v = new ContentValues(3);
             v.put(PROVIDER, providerId);
             v.put(NAME, name);
@@ -1568,13 +2010,14 @@ public class Imps {
         /**
          * Save a long value of setting in the table providerSetting.
          *
-         * @param cr The ContentProvider used to access the providerSetting
-         *            table.
+         * @param cr         The ContentProvider used to access the providerSetting
+         *                   table.
          * @param providerId The id of the provider.
-         * @param name The name of the setting.
-         * @param value The value of the setting.
+         * @param name       The name of the setting.
+         * @param value      The value of the setting.
          */
-        public static void putIntValue(ContentResolver cr, long providerId, String name, int value) {
+        public static void putIntValue(ContentResolver cr, long providerId, String name, int value)
+        {
             ContentValues v = new ContentValues(3);
             v.put(PROVIDER, providerId);
             v.put(NAME, name);
@@ -1586,14 +2029,15 @@ public class Imps {
         /**
          * Save a boolean value of setting in the table providerSetting.
          *
-         * @param cr The ContentProvider used to access the providerSetting
-         *            table.
+         * @param cr         The ContentProvider used to access the providerSetting
+         *                   table.
          * @param providerId The id of the provider.
-         * @param name The name of the setting.
-         * @param value The value of the setting.
+         * @param name       The name of the setting.
+         * @param value      The value of the setting.
          */
         public static void putBooleanValue(ContentResolver cr, long providerId, String name,
-                boolean value) {
+                                           boolean value)
+        {
             ContentValues v = new ContentValues(3);
             v.put(PROVIDER, providerId);
             v.put(NAME, name);
@@ -1605,14 +2049,15 @@ public class Imps {
         /**
          * Save a string value of setting in the table providerSetting.
          *
-         * @param cr The ContentProvider used to access the providerSetting
-         *            table.
+         * @param cr         The ContentProvider used to access the providerSetting
+         *                   table.
          * @param providerId The id of the provider.
-         * @param name The name of the setting.
-         * @param value The value of the setting.
+         * @param name       The name of the setting.
+         * @param value      The value of the setting.
          */
         public static void putStringValue(ContentResolver cr, long providerId, String name,
-                String value) {
+                                          String value)
+        {
             ContentValues v = new ContentValues(3);
             v.put(PROVIDER, providerId);
             v.put(NAME, name);
@@ -1627,48 +2072,52 @@ public class Imps {
          * A convenience method to set the domain name affiliated with an
          * account
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
-         * @param domain The domain name to use for the account
+         *                   provider
+         * @param domain     The domain name to use for the account
          */
-        public static void setDomain(ContentResolver cr, long providerId, String domain) {
+        public static void setDomain(ContentResolver cr, long providerId, String domain)
+        {
             putStringValue(cr, providerId, DOMAIN, domain);
         }
 
         /**
          * A convenience method to set the XMPP Resource string
          *
-         * @param cr The ContentResolver to use to access the settings table
-         * @param providerId used to identify the set of settings for a given
-         *            provider
+         * @param cr           The ContentResolver to use to access the settings table
+         * @param providerId   used to identify the set of settings for a given
+         *                     provider
          * @param xmppResource the XMPP Resource string
          */
-        public static void setXmppResource(ContentResolver cr, long providerId, String xmppResource) {
+        public static void setXmppResource(ContentResolver cr, long providerId, String xmppResource)
+        {
             putStringValue(cr, providerId, XMPP_RESOURCE, xmppResource);
         }
 
         /**
          * A convenience method to set the XMPP Resource priority
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
-         * @param priority the XMPP Resource priority
+         *                   provider
+         * @param priority   the XMPP Resource priority
          */
-        public static void setXmppResourcePrio(ContentResolver cr, long providerId, int priority) {
+        public static void setXmppResourcePrio(ContentResolver cr, long providerId, int priority)
+        {
             putLongValue(cr, providerId, XMPP_RESOURCE_PRIO, (long) priority);
         }
 
         /**
          * A convenience method to set the TCP/IP port number to connect to
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
-         * @param port the TCP/IP port number to connect to
+         *                   provider
+         * @param port       the TCP/IP port number to connect to
          */
-        public static void setPort(ContentResolver cr, long providerId, int port) {
+        public static void setPort(ContentResolver cr, long providerId, int port)
+        {
             putLongValue(cr, providerId, PORT, (long) port);
         }
 
@@ -1676,74 +2125,80 @@ public class Imps {
          * A convenience method to set the hostname or IP of the server to
          * connect to
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
-         * @param server the hostname or IP of the server to connect to
+         *                   provider
+         * @param server     the hostname or IP of the server to connect to
          */
-        public static void setServer(ContentResolver cr, long providerId, String server) {
+        public static void setServer(ContentResolver cr, long providerId, String server)
+        {
             putStringValue(cr, providerId, SERVER, server);
         }
 
         /**
          * A convenience method to set whether to allow plain text auth
          *
-         * @param cr The ContentResolver to use to access the settings table
-         * @param providerId used to identify the set of settings for a given
-         *            provider
+         * @param cr             The ContentResolver to use to access the settings table
+         * @param providerId     used to identify the set of settings for a given
+         *                       provider
          * @param allowPlainAuth
          */
         public static void setAllowPlainAuth(ContentResolver cr, long providerId,
-                boolean allowPlainAuth) {
+                                             boolean allowPlainAuth)
+        {
             putBooleanValue(cr, providerId, ALLOW_PLAIN_AUTH, allowPlainAuth);
         }
 
         /**
          * A convenience method to set whether to require TLS
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
+         *                   provider
          * @param requireTls
          */
-        public static void setRequireTls(ContentResolver cr, long providerId, boolean requireTls) {
+        public static void setRequireTls(ContentResolver cr, long providerId, boolean requireTls)
+        {
             putBooleanValue(cr, providerId, REQUIRE_TLS, requireTls);
         }
 
         /**
          * A convenience method to set whether to verify the TLS cert
          *
-         * @param cr The ContentResolver to use to access the settings table
-         * @param providerId used to identify the set of settings for a given
-         *            provider
+         * @param cr            The ContentResolver to use to access the settings table
+         * @param providerId    used to identify the set of settings for a given
+         *                      provider
          * @param tlsCertVerify
          */
         public static void setTlsCertVerify(ContentResolver cr, long providerId,
-                boolean tlsCertVerify) {
+                                            boolean tlsCertVerify)
+        {
             putBooleanValue(cr, providerId, TLS_CERT_VERIFY, tlsCertVerify);
         }
 
         /**
          * A convenience method to set the mode of operation for the OTR Engine
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
-         * @param otrMode OTR Engine mode (force, auto, requested, disabled)
+         *                   provider
+         * @param otrMode    OTR Engine mode (force, auto, requested, disabled)
          */
-        public static void setOtrMode(ContentResolver cr, long providerId, String otrMode) {
+        public static void setOtrMode(ContentResolver cr, long providerId, String otrMode)
+        {
             putStringValue(cr, providerId, OTR_MODE, otrMode);
         }
 
         /**
          * A convenience method to set whether to use Tor
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
+         *                   provider
          * @param useTor
          */
-        public static void setUseTor(ContentResolver cr, long providerId, boolean useTor) {
+        public static void setUseTor(ContentResolver cr, long providerId, boolean useTor)
+        {
             putBooleanValue(cr, providerId, USE_TOR, useTor);
         }
 
@@ -1751,12 +2206,13 @@ public class Imps {
          * A convenience method to set whether to use DNS SRV lookups to find
          * the server
          *
-         * @param cr The ContentResolver to use to access the settings table
+         * @param cr         The ContentResolver to use to access the settings table
          * @param providerId used to identify the set of settings for a given
-         *            provider
+         *                   provider
          * @param doDnsSrv
          */
-        public static void setDoDnsSrv(ContentResolver cr, long providerId, boolean doDnsSrv) {
+        public static void setDoDnsSrv(ContentResolver cr, long providerId, boolean doDnsSrv)
+        {
             putBooleanValue(cr, providerId, DO_DNS_SRV, doDnsSrv);
         }
 
@@ -1765,17 +2221,19 @@ public class Imps {
          * be started automatically.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            settings table
-         * @param autoConnect Whether the GTalk service should be started
-         *            automatically.
+         *                        settings table
+         * @param autoConnect     Whether the GTalk service should be started
+         *                        automatically.
          */
         public static void setAutomaticallyConnectGTalk(ContentResolver contentResolver,
-                long providerId, boolean autoConnect) {
+                                                        long providerId, boolean autoConnect)
+        {
             putBooleanValue(contentResolver, providerId, AUTOMATICALLY_CONNECT_GTALK, autoConnect);
         }
 
         public static void setLinkifyOnTor(ContentResolver contentResolver, long providerId,
-                boolean linkifyOnTor) {
+                                           boolean linkifyOnTor)
+        {
             putBooleanValue(contentResolver, providerId, LINKIFY_ON_TOR, linkifyOnTor);
         }
 
@@ -1783,23 +2241,26 @@ public class Imps {
          * A convenience method to set whether or not the offline contacts
          * should be hided
          *
-         * @param contentResolver The ContentResolver to use to access the
-         *            setting table
+         * @param contentResolver     The ContentResolver to use to access the
+         *                            setting table
          * @param hideOfflineContacts Whether the offline contacts should be
-         *            hided
+         *                            hided
          */
         public static void setHideOfflineContacts(ContentResolver contentResolver, long providerId,
-                boolean hideOfflineContacts) {
+                                                  boolean hideOfflineContacts)
+        {
             putBooleanValue(contentResolver, providerId, HIDE_OFFLINE_CONTACTS, hideOfflineContacts);
         }
 
         public static void setDeleteUnsecuredMedia(ContentResolver contentResolver, long providerId,
-                boolean deleteUnsecuredMedia) {
+                                                   boolean deleteUnsecuredMedia)
+        {
             putBooleanValue(contentResolver, providerId, DELETE_UNSECURED_MEDIA, deleteUnsecuredMedia);
         }
 
         public static void setUseForegroundPriority(ContentResolver contentResolver,
-                long providerId, boolean flag) {
+                                                    long providerId, boolean flag)
+        {
             putBooleanValue(contentResolver, providerId, USE_FOREGROUND_PRIORITY, flag);
         }
 
@@ -1808,11 +2269,12 @@ public class Imps {
          * notification.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param enable Whether enable the IM notification
+         *                        setting table.
+         * @param enable          Whether enable the IM notification
          */
         public static void setEnableNotification(ContentResolver contentResolver, long providerId,
-                boolean enable) {
+                                                 boolean enable)
+        {
             putBooleanValue(contentResolver, providerId, ENABLE_NOTIFICATION, enable);
         }
 
@@ -1820,11 +2282,12 @@ public class Imps {
          * A convenience method to set whether or not to vibrate.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param vibrate Whether or not to vibrate
+         *                        setting table.
+         * @param vibrate         Whether or not to vibrate
          */
         public static void setVibrate(ContentResolver contentResolver, long providerId,
-                boolean vibrate) {
+                                      boolean vibrate)
+        {
             putBooleanValue(contentResolver, providerId, NOTIFICATION_VIBRATE, vibrate);
         }
 
@@ -1832,23 +2295,25 @@ public class Imps {
          * A convenience method to set the Uri String of the ringtone.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param ringtoneUri The Uri String of the ringtone to be set.
+         *                        setting table.
+         * @param ringtoneUri     The Uri String of the ringtone to be set.
          */
         public static void setRingtoneURI(ContentResolver contentResolver, long providerId,
-                String ringtoneUri) {
+                                          String ringtoneUri)
+        {
             putStringValue(contentResolver, providerId, NOTIFICATION_RINGTONE, ringtoneUri);
         }
 
         /**
          * A convenience method to set whether or not to show mobile indicator.
          *
-         * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
+         * @param contentResolver     The ContentResolver to use to access the
+         *                            setting table.
          * @param showMobileIndicator Whether or not to show mobile indicator.
          */
         public static void setShowMobileIndicator(ContentResolver contentResolver, long providerId,
-                boolean showMobileIndicator) {
+                                                  boolean showMobileIndicator)
+        {
             putBooleanValue(contentResolver, providerId, SHOW_MOBILE_INDICATOR, showMobileIndicator);
         }
 
@@ -1857,11 +2322,12 @@ public class Imps {
          * device is idle.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param showAway Whether or not to show as away when device is idle.
+         *                        setting table.
+         * @param showAway        Whether or not to show as away when device is idle.
          */
         public static void setShowAwayOnIdle(ContentResolver contentResolver, long providerId,
-                boolean showAway) {
+                                             boolean showAway)
+        {
             putBooleanValue(contentResolver, providerId, SHOW_AWAY_ON_IDLE, showAway);
         }
 
@@ -1869,11 +2335,12 @@ public class Imps {
          * A convenience method to set whether or not to upload heartbeat stat.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param uploadStat Whether or not to upload heartbeat stat.
+         *                        setting table.
+         * @param uploadStat      Whether or not to upload heartbeat stat.
          */
         public static void setUploadHeartbeatStat(ContentResolver contentResolver, long providerId,
-                boolean uploadStat) {
+                                                  boolean uploadStat)
+        {
             putBooleanValue(contentResolver, providerId, UPLOAD_HEARTBEAT_STAT, uploadStat);
         }
 
@@ -1882,11 +2349,12 @@ public class Imps {
          * the server.
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param interval The heartbeat interval last received from the server.
+         *                        setting table.
+         * @param interval        The heartbeat interval last received from the server.
          */
         public static void setHeartbeatInterval(ContentResolver contentResolver, long providerId,
-                long interval) {
+                                                long interval)
+        {
             putLongValue(contentResolver, providerId, HEARTBEAT_INTERVAL, interval);
         }
 
@@ -1894,29 +2362,36 @@ public class Imps {
          * A convenience method to user configure presence state and status
          *
          * @param contentResolver The ContentResolver to use to access the
-         *            setting table.
-         * @param interval The heartbeat interval last received from the server.
+         *                        setting table.
+         * @param interval        The heartbeat interval last received from the server.
          */
         public static void setPresence(ContentResolver contentResolver, long providerId,
-                int state, String statusMessage) {
+                                       int state, String statusMessage)
+        {
 
             if (state != -1)
+            {
                 putIntValue(contentResolver, providerId, PRESENCE_STATE, state);
+            }
 
             if (statusMessage != null)
+            {
                 putStringValue(contentResolver, providerId, PRESENCE_STATUS_MESSAGE, statusMessage);
+            }
         }
 
 
-
-
-        /** A convenience method to set the jid resource. */
+        /**
+         * A convenience method to set the jid resource.
+         */
         public static void setJidResource(ContentResolver contentResolver, long providerId,
-                String jidResource) {
+                                          String jidResource)
+        {
             putStringValue(contentResolver, providerId, JID_RESOURCE, jidResource);
         }
 
-        public static class QueryMap extends ContentQueryMap {
+        public static class QueryMap extends ContentQueryMap
+        {
             private ContentResolver mContentResolver;
             private long mProviderId;
             private Exception mStacktrace;
@@ -1931,7 +2406,8 @@ public class Imps {
             //contentResolver.query(CONTENT_URI,new String[] {NAME, VALUE},PROVIDER + "=?",new String[] { Long.toString(providerId)},null)
 
             public QueryMap(Cursor cursor, ContentResolver contentResolver, long providerId, boolean keepUpdated,
-                    Handler handlerForUpdateNotifications) {
+                            Handler handlerForUpdateNotifications)
+            {
 
                 super(cursor, // no sort order
                         NAME, keepUpdated, handlerForUpdateNotifications);
@@ -1940,26 +2416,32 @@ public class Imps {
                 mProviderId = providerId;
                 mStacktrace = new Exception();
             }
+
             @Override
-            public synchronized void close() {
+            public synchronized void close()
+            {
                 mStacktrace = null;
                 super.close();
             }
 
             @Override
-            protected void finalize() throws Throwable {
-                if (mStacktrace != null) {
+            protected void finalize() throws Throwable
+            {
+                if (mStacktrace != null)
+                {
                     Log.w("GB.Imps", "QueryMap cursor not closed before finalize", mStacktrace);
                 }
                 super.finalize();
             }
+
             /**
              * Set if the GTalk service should automatically connect to server.
              *
              * @param autoConnect if the GTalk service should auto connect to
-             *            server.
+             *                    server.
              */
-            public void setAutomaticallyConnectToGTalkServer(boolean autoConnect) {
+            public void setAutomaticallyConnectToGTalkServer(boolean autoConnect)
+            {
                 ProviderSettings.setAutomaticallyConnectGTalk(mContentResolver, mProviderId,
                         autoConnect);
             }
@@ -1969,114 +2451,140 @@ public class Imps {
              * server.
              *
              * @return if the GTalk service should automatically connect to
-             *         server.
+             * server.
              */
-            public boolean getAutomaticallyConnectToGTalkServer() {
+            public boolean getAutomaticallyConnectToGTalkServer()
+            {
                 return getBoolean(AUTOMATICALLY_CONNECT_GTALK, true /* default to automatically sign in */);
             }
 
-            public void setDomain(String domain) {
+            public void setDomain(String domain)
+            {
                 ProviderSettings.setDomain(mContentResolver, mProviderId, domain);
             }
 
-            public String getDomain() {
+            public String getDomain()
+            {
                 return getString(DOMAIN, "");
             }
 
-            public void setXmppResource(String resource) {
+            public void setXmppResource(String resource)
+            {
                 ProviderSettings.setXmppResource(mContentResolver, mProviderId, resource);
             }
 
-            public String getXmppResource() {
+            public String getXmppResource()
+            {
                 String currentResource = getString(XMPP_RESOURCE, ImApp.DEFAULT_XMPP_RESOURCE);
                 String defaultResource;
-                if (currentResource.equals(ImApp.DEFAULT_XMPP_RESOURCE)) {
+                if (currentResource.equals(ImApp.DEFAULT_XMPP_RESOURCE))
+                {
                     defaultResource = ImApp.DEFAULT_XMPP_RESOURCE + "-"
-                                      + UUID.randomUUID().toString().substring(0, 8);
+                            + UUID.randomUUID().toString().substring(0, 8);
                     setXmppResource(defaultResource);
                     return defaultResource;
                 }
                 return currentResource;
             }
 
-            public void setXmppResourcePrio(int prio) {
+            public void setXmppResourcePrio(int prio)
+            {
                 ProviderSettings.setXmppResourcePrio(mContentResolver, mProviderId, prio);
             }
 
-            public int getXmppResourcePrio() {
+            public int getXmppResourcePrio()
+            {
                 return (int) getLong(XMPP_RESOURCE_PRIO, ImApp.DEFAULT_XMPP_PRIORITY);
             }
 
-            public void setPort(int port) {
+            public void setPort(int port)
+            {
                 ProviderSettings.setPort(mContentResolver, mProviderId, port);
             }
 
-            public int getPort() {
+            public int getPort()
+            {
                 return (int) getLong(PORT, 0 /* by default use XMPP's default port */);
             }
 
-            public void setServer(String server) {
+            public void setServer(String server)
+            {
                 ProviderSettings.setServer(mContentResolver, mProviderId, server);
             }
 
-            public String getServer() {
+            public String getServer()
+            {
                 return getString(SERVER, "");
             }
 
-            public void setAllowPlainAuth(boolean value) {
+            public void setAllowPlainAuth(boolean value)
+            {
                 ProviderSettings.setAllowPlainAuth(mContentResolver, mProviderId, value);
             }
 
-            public boolean getAllowPlainAuth() {
+            public boolean getAllowPlainAuth()
+            {
                 return getBoolean(ALLOW_PLAIN_AUTH, false /* by default do not send passwords in the clear */);
             }
 
-            public void setRequireTls(boolean value) {
+            public void setRequireTls(boolean value)
+            {
                 ProviderSettings.setRequireTls(mContentResolver, mProviderId, value);
             }
 
-            public boolean getRequireTls() {
+            public boolean getRequireTls()
+            {
                 return getBoolean(REQUIRE_TLS, true /* by default attempt TLS but don't require */);
                 //n8fr8 2011/04/20 i think we should require it by default so i set to 'true'
             }
 
-            public void setTlsCertVerify(boolean value) {
+            public void setTlsCertVerify(boolean value)
+            {
                 ProviderSettings.setTlsCertVerify(mContentResolver, mProviderId, value);
             }
 
-            public boolean getTlsCertVerify() {
+            public boolean getTlsCertVerify()
+            {
                 return getBoolean(TLS_CERT_VERIFY, true /* by default try to verify the TLS Cert */);
             }
 
-            public void setOtrMode(String otrMode) {
+            public void setOtrMode(String otrMode)
+            {
                 ProviderSettings.setOtrMode(mContentResolver, mProviderId, otrMode);
             }
 
-            public String getOtrMode() {
+            public String getOtrMode()
+            {
                 return getString(OTR_MODE, ImApp.DEFAULT_XMPP_OTR_MODE /* by default, try to use OTR */);
             }
 
-            public void setLinkifyOnTor(boolean value) {
+            public void setLinkifyOnTor(boolean value)
+            {
                 ProviderSettings.setLinkifyOnTor(mContentResolver, mProviderId, value);
             }
 
-            public boolean getLinkifyOnTor() {
+            public boolean getLinkifyOnTor()
+            {
                 return getBoolean(LINKIFY_ON_TOR, false /* default do not linkify */);
             }
 
-            public void setUseTor(boolean value) {
+            public void setUseTor(boolean value)
+            {
                 ProviderSettings.setUseTor(mContentResolver, mProviderId, value);
             }
 
-            public boolean getUseTor() {
+            public boolean getUseTor()
+            {
                 return getBoolean(USE_TOR, false /* by default do not use Tor */);
             }
 
-            public void setDoDnsSrv(boolean value) {
+            public void setDoDnsSrv(boolean value)
+            {
                 ProviderSettings.setDoDnsSrv(mContentResolver, mProviderId, value);
             }
 
-            public boolean getDoDnsSrv() {
+            public boolean getDoDnsSrv()
+            {
                 return getBoolean(DO_DNS_SRV, true /* by default use DNS SRV to find the server */);
             }
 
@@ -2084,9 +2592,10 @@ public class Imps {
              * Set whether or not the offline contacts should be hided.
              *
              * @param hideOfflineContacts Whether or not the offline contacts
-             *            should be hided.
+             *                            should be hided.
              */
-            public void setHideOfflineContacts(boolean hideOfflineContacts) {
+            public void setHideOfflineContacts(boolean hideOfflineContacts)
+            {
                 ProviderSettings.setHideOfflineContacts(mContentResolver, mProviderId,
                         hideOfflineContacts);
             }
@@ -2096,23 +2605,28 @@ public class Imps {
              *
              * @return Whether or not the offline contacts should be hided.
              */
-            public boolean getHideOfflineContacts() {
+            public boolean getHideOfflineContacts()
+            {
                 return getBoolean(HIDE_OFFLINE_CONTACTS, false /* default*/);
             }
 
-            public void setDeleteUnsecuredMedia(boolean deleteUnsecuredMedia) {
+            public void setDeleteUnsecuredMedia(boolean deleteUnsecuredMedia)
+            {
                 ProviderSettings.setDeleteUnsecuredMedia(mContentResolver, mProviderId, deleteUnsecuredMedia);
             }
 
-            public boolean getDeleteUnsecuredMedia() {
+            public boolean getDeleteUnsecuredMedia()
+            {
                 return getBoolean(DELETE_UNSECURED_MEDIA, false /* default */);
             }
 
-            public void setUseForegroundPriority(boolean flag) {
+            public void setUseForegroundPriority(boolean flag)
+            {
                 ProviderSettings.setUseForegroundPriority(mContentResolver, mProviderId, flag);
             }
 
-            public boolean getUseForegroundPriority() {
+            public boolean getUseForegroundPriority()
+            {
                 return getBoolean(USE_FOREGROUND_PRIORITY, false /* default */);
             }
 
@@ -2121,7 +2635,8 @@ public class Imps {
              *
              * @param enable Whether or not enable the IM notification.
              */
-            public void setEnableNotification(boolean enable) {
+            public void setEnableNotification(boolean enable)
+            {
                 ProviderSettings.setEnableNotification(mContentResolver, mProviderId, enable);
             }
 
@@ -2130,7 +2645,8 @@ public class Imps {
              *
              * @return Whether or not enable the IM notification.
              */
-            public boolean getEnableNotification() {
+            public boolean getEnableNotification()
+            {
                 return getBoolean(ENABLE_NOTIFICATION, true/* by default enable the notification */);
             }
 
@@ -2139,7 +2655,8 @@ public class Imps {
              *
              * @param vibrate Whether or not to vibrate.
              */
-            public void setVibrate(boolean vibrate) {
+            public void setVibrate(boolean vibrate)
+            {
                 ProviderSettings.setVibrate(mContentResolver, mProviderId, vibrate);
             }
 
@@ -2148,7 +2665,8 @@ public class Imps {
              *
              * @return Whether or not to vibrate.
              */
-            public boolean getVibrate() {
+            public boolean getVibrate()
+            {
                 return getBoolean(NOTIFICATION_VIBRATE, true /* by default enable vibrate */);
             }
 
@@ -2157,7 +2675,8 @@ public class Imps {
              *
              * @param ringtoneUri The Uri of the ringtone to be set.
              */
-            public void setRingtoneURI(String ringtoneUri) {
+            public void setRingtoneURI(String ringtoneUri)
+            {
                 ProviderSettings.setRingtoneURI(mContentResolver, mProviderId, ringtoneUri);
             }
 
@@ -2166,7 +2685,8 @@ public class Imps {
              *
              * @return The Uri String of the current ringtone.
              */
-            public String getRingtoneURI() {
+            public String getRingtoneURI()
+            {
                 return getString(NOTIFICATION_RINGTONE, RINGTONE_DEFAULT);
             }
 
@@ -2175,7 +2695,8 @@ public class Imps {
              *
              * @param showMobile whether or not to show mobile indicator.
              */
-            public void setShowMobileIndicator(boolean showMobile) {
+            public void setShowMobileIndicator(boolean showMobile)
+            {
                 ProviderSettings.setShowMobileIndicator(mContentResolver, mProviderId, showMobile);
             }
 
@@ -2184,7 +2705,8 @@ public class Imps {
              *
              * @return Whether or not to show mobile indicator.
              */
-            public boolean getShowMobileIndicator() {
+            public boolean getShowMobileIndicator()
+            {
                 return getBoolean(SHOW_MOBILE_INDICATOR, true /* by default show mobile indicator */);
             }
 
@@ -2192,9 +2714,10 @@ public class Imps {
              * Set whether or not to show as away when device is idle.
              *
              * @param showAway whether or not to show as away when device is
-             *            idle.
+             *                 idle.
              */
-            public void setShowAwayOnIdle(boolean showAway) {
+            public void setShowAwayOnIdle(boolean showAway)
+            {
                 ProviderSettings.setShowAwayOnIdle(mContentResolver, mProviderId, showAway);
             }
 
@@ -2203,7 +2726,8 @@ public class Imps {
              *
              * @return Whether or not to show as away when device is idle.
              */
-            public boolean getShowAwayOnIdle() {
+            public boolean getShowAwayOnIdle()
+            {
                 return getBoolean(SHOW_AWAY_ON_IDLE, true /* by default show as away on idle*/);
             }
 
@@ -2212,7 +2736,8 @@ public class Imps {
              *
              * @param uploadStat whether or not to upload heartbeat stat.
              */
-            public void setUploadHeartbeatStat(boolean uploadStat) {
+            public void setUploadHeartbeatStat(boolean uploadStat)
+            {
                 ProviderSettings.setUploadHeartbeatStat(mContentResolver, mProviderId, uploadStat);
             }
 
@@ -2221,17 +2746,22 @@ public class Imps {
              *
              * @return Whether or not to upload heartbeat stat.
              */
-            public boolean getUploadHeartbeatStat() {
+            public boolean getUploadHeartbeatStat()
+            {
                 return getBoolean(UPLOAD_HEARTBEAT_STAT, false /* by default do not upload */);
             }
 
             /**
              * Set the heartbeat interval.
              */
-            public void setHeartbeatInterval(long interval) {
-                if (interval <= 0) {
+            public void setHeartbeatInterval(long interval)
+            {
+                if (interval <= 0)
+                {
                     interval = 1;
-                } else if (interval > 99) {
+                }
+                else if (interval > 99)
+                {
                     interval = 99;
                 }
                 ProviderSettings.setHeartbeatInterval(mContentResolver, mProviderId, interval);
@@ -2240,7 +2770,8 @@ public class Imps {
             /**
              * Get the heartbeat interval, default to 1.
              */
-            public long getHeartbeatInterval() {
+            public long getHeartbeatInterval()
+            {
                 return getLong(HEARTBEAT_INTERVAL, 1);
             }
 
@@ -2249,7 +2780,8 @@ public class Imps {
              *
              * @param jidResource the jid resource to be stored.
              */
-            public void setJidResource(String jidResource) {
+            public void setJidResource(String jidResource)
+            {
                 ProviderSettings.setJidResource(mContentResolver, mProviderId, jidResource);
             }
 
@@ -2258,7 +2790,8 @@ public class Imps {
              *
              * @return the JID resource stored.
              */
-            public String getJidResource() {
+            public String getJidResource()
+            {
                 return getString(JID_RESOURCE, null);
             }
 
@@ -2267,11 +2800,12 @@ public class Imps {
              * boolean.
              *
              * @param name The name of the setting to retrieve.
-             * @param def Value to return if the setting is not defined.
+             * @param def  Value to return if the setting is not defined.
              * @return The setting's current value, or 'def' if it is not
-             *         defined.
+             * defined.
              */
-            private boolean getBoolean(String name, boolean def) {
+            private boolean getBoolean(String name, boolean def)
+            {
                 ContentValues values = getValues(name);
                 return values != null ? values.getAsBoolean(VALUE) : def;
             }
@@ -2281,11 +2815,12 @@ public class Imps {
              * String.
              *
              * @param name The name of the setting to retrieve.
-             * @param def The value to return if the setting is not defined.
+             * @param def  The value to return if the setting is not defined.
              * @return The setting's current value or 'def' if it is not
-             *         defined.
+             * defined.
              */
-            private String getString(String name, String def) {
+            private String getString(String name, String def)
+            {
                 ContentValues values = getValues(name);
                 return values != null ? values.getAsString(VALUE) : def;
             }
@@ -2295,11 +2830,12 @@ public class Imps {
              * Integer.
              *
              * @param name The name of the setting to retrieve.
-             * @param def The value to return if the setting is not defined.
+             * @param def  The value to return if the setting is not defined.
              * @return The setting's current value or 'def' if it is not
-             *         defined.
+             * defined.
              */
-            private int getInteger(String name, int def) {
+            private int getInteger(String name, int def)
+            {
                 ContentValues values = getValues(name);
                 return values != null ? values.getAsInteger(VALUE) : def;
             }
@@ -2309,11 +2845,12 @@ public class Imps {
              * Long.
              *
              * @param name The name of the setting to retrieve.
-             * @param def The value to return if the setting is not defined.
+             * @param def  The value to return if the setting is not defined.
              * @return The setting's current value or 'def' if it is not
-             *         defined.
+             * defined.
              */
-            private long getLong(String name, long def) {
+            private long getLong(String name, long def)
+            {
                 ContentValues values = getValues(name);
                 return values != null ? values.getAsLong(VALUE) : def;
             }
@@ -2326,19 +2863,31 @@ public class Imps {
      * result of loading the branding resources to speed up IM landing page
      * start.
      */
-    public interface BrandingResourceMapCacheColumns {
-        /** The provider ID <P>Type: INTEGER</P> */
+    public interface BrandingResourceMapCacheColumns
+    {
+        /**
+         * The provider ID <P>Type: INTEGER</P>
+         */
         String PROVIDER_ID = "provider_id";
-        /** The application resource ID <P>Type: INTEGER</P> */
+        /**
+         * The application resource ID <P>Type: INTEGER</P>
+         */
         String APP_RES_ID = "app_res_id";
-        /** The plugin resource ID <P>Type: INTEGER</P> */
+        /**
+         * The plugin resource ID <P>Type: INTEGER</P>
+         */
         String PLUGIN_RES_ID = "plugin_res_id";
     }
 
-    /** The table for caching the result of loading IM branding resources. */
+    /**
+     * The table for caching the result of loading IM branding resources.
+     */
     public static final class BrandingResourceMapCache implements BaseColumns,
-            BrandingResourceMapCacheColumns {
-        /** The content:// style URL for this table. */
+            BrandingResourceMapCacheColumns
+    {
+        /**
+         * The content:// style URL for this table.
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/brandingResMapCache");
     }
@@ -2348,8 +2897,11 @@ public class Imps {
      * and should really live in a separate provider specific to MCS code.
      */
 
-    /** Columns from OutgoingRmq table */
-    public interface OutgoingRmqColumns {
+    /**
+     * Columns from OutgoingRmq table
+     */
+    public interface OutgoingRmqColumns
+    {
         String RMQ_ID = "rmq_id";
         String TIMESTAMP = "ts";
         String DATA = "data";
@@ -2360,38 +2912,46 @@ public class Imps {
      * //TODO: we should really move these to their own provider and database.
      * The table for storing outgoing rmq packets.
      */
-    public static final class OutgoingRmq implements BaseColumns, OutgoingRmqColumns {
-        private static String[] RMQ_ID_PROJECTION = new String[] { RMQ_ID, };
+    public static final class OutgoingRmq implements BaseColumns, OutgoingRmqColumns
+    {
+        private static String[] RMQ_ID_PROJECTION = new String[]{RMQ_ID,};
 
         /**
          * queryHighestRmqId
          *
          * @param resolver the content resolver
          * @return the highest rmq id assigned to the rmq packet, or 0 if there
-         *         are no rmq packets in the OutgoingRmq table.
+         * are no rmq packets in the OutgoingRmq table.
          */
-        public static final long queryHighestRmqId(ContentResolver resolver) {
+        public static final long queryHighestRmqId(ContentResolver resolver)
+        {
             Cursor cursor = resolver.query(Imps.OutgoingRmq.CONTENT_URI_FOR_HIGHEST_RMQ_ID,
                     RMQ_ID_PROJECTION, null, // selection
                     null, // selection args
                     null // sort
-                    );
+            );
 
             long retVal = 0;
-            try {
+            try
+            {
                 //if (DBG) log("initializeRmqid: cursor.count= " + cursor.count());
 
-                if (cursor.moveToFirst()) {
+                if (cursor.moveToFirst())
+                {
                     retVal = cursor.getLong(cursor.getColumnIndexOrThrow(RMQ_ID));
                 }
-            } finally {
+            }
+            finally
+            {
                 cursor.close();
             }
 
             return retVal;
         }
 
-        /** The content:// style URL for this table. */
+        /**
+         * The content:// style URL for this table.
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/outgoingRmqMessages");
 
@@ -2402,7 +2962,9 @@ public class Imps {
         public static final Uri CONTENT_URI_FOR_HIGHEST_RMQ_ID = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/outgoingHighestRmqId");
 
-        /** The default sort order for this table. */
+        /**
+         * The default sort order for this table.
+         */
         public static final String DEFAULT_SORT_ORDER = "rmq_id ASC";
     }
 
@@ -2410,7 +2972,8 @@ public class Imps {
      * Columns for the LastRmqId table, which stores a single row for the last
      * client rmq id sent to the server.
      */
-    public interface LastRmqIdColumns {
+    public interface LastRmqIdColumns
+    {
         String RMQ_ID = "rmq_id";
     }
 
@@ -2418,30 +2981,36 @@ public class Imps {
      * //TODO: move these out into their own provider and database The table for
      * storing the last client rmq id sent to the server.
      */
-    public static final class LastRmqId implements BaseColumns, LastRmqIdColumns {
-        private static String[] PROJECTION = new String[] { RMQ_ID, };
+    public static final class LastRmqId implements BaseColumns, LastRmqIdColumns
+    {
+        private static String[] PROJECTION = new String[]{RMQ_ID,};
 
         /**
          * queryLastRmqId
-         *
+         * <p/>
          * queries the last rmq id saved in the LastRmqId table.
          *
          * @param resolver the content resolver.
          * @return the last rmq id stored in the LastRmqId table, or 0 if not
-         *         found.
+         * found.
          */
-        public static final long queryLastRmqId(ContentResolver resolver) {
+        public static final long queryLastRmqId(ContentResolver resolver)
+        {
             Cursor cursor = resolver.query(Imps.LastRmqId.CONTENT_URI, PROJECTION, null, // selection
                     null, // selection args
                     null // sort
-                    );
+            );
 
             long retVal = 0;
-            try {
-                if (cursor.moveToFirst()) {
+            try
+            {
+                if (cursor.moveToFirst())
+                {
                     retVal = cursor.getLong(cursor.getColumnIndexOrThrow(RMQ_ID));
                 }
-            } finally {
+            }
+            finally
+            {
                 cursor.close();
             }
 
@@ -2450,14 +3019,15 @@ public class Imps {
 
         /**
          * saveLastRmqId
-         *
+         * <p/>
          * saves the rmqId to the lastRmqId table. This will override the
          * existing row if any, as we only keep one row of data in this table.
          *
          * @param resolver the content resolver.
-         * @param rmqId the rmq id to be saved.
+         * @param rmqId    the rmq id to be saved.
          */
-        public static final void saveLastRmqId(ContentResolver resolver, long rmqId) {
+        public static final void saveLastRmqId(ContentResolver resolver, long rmqId)
+        {
             ContentValues values = new ContentValues();
 
             // always replace the first row.
@@ -2466,7 +3036,9 @@ public class Imps {
             resolver.insert(CONTENT_URI, values);
         }
 
-        /** The content:// style URL for this table. */
+        /**
+         * The content:// style URL for this table.
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/lastRmqId");
     }
@@ -2476,21 +3048,26 @@ public class Imps {
      * message persistent ids. These are used in the RMQ2 protocol, where in the
      * login request, the client selective acks these s2d ids to the server.
      */
-    public interface ServerToDeviceRmqIdsColumn {
+    public interface ServerToDeviceRmqIdsColumn
+    {
         String RMQ_ID = "rmq_id";
     }
 
     public static final class ServerToDeviceRmqIds implements BaseColumns,
-            ServerToDeviceRmqIdsColumn {
+            ServerToDeviceRmqIdsColumn
+    {
 
-        /** The content:// style URL for this table. */
+        /**
+         * The content:// style URL for this table.
+         */
         public static final Uri CONTENT_URI = Uri
                 .parse("content://info.guardianproject.otr.app.im.provider.Imps/s2dids");
     }
 
     public static boolean isUnlocked(Context context)
     {
-        try {
+        try
+        {
             Cursor cursor = null;
 
             Uri uri = Imps.Provider.CONTENT_URI_WITH_ACCOUNT;
@@ -2502,7 +3079,7 @@ public class Imps {
 
             cursor = context.getContentResolver().query(
                     uri, null, Imps.Provider.CATEGORY + "=?" /* selection */,
-                    new String[] { ImApp.IMPS_CATEGORY } /* selection args */,
+                    new String[]{ImApp.IMPS_CATEGORY} /* selection args */,
                     null);
 
             if (cursor != null)
@@ -2515,10 +3092,12 @@ public class Imps {
                 return false;
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             // Only complain if we thought this password should succeed
 
-             Log.e(ImApp.LOG_TAG, e.getMessage(), e);
+            Log.e(ImApp.LOG_TAG, e.getMessage(), e);
 
             // needs to be unlocked
             return false;
@@ -2526,8 +3105,10 @@ public class Imps {
     }
 
 
-    public static boolean isUnencrypted(Context context) {
-        try {
+    public static boolean isUnencrypted(Context context)
+    {
+        try
+        {
             Cursor cursor = null;
 
             Uri uri = Imps.Provider.CONTENT_URI_WITH_ACCOUNT;
@@ -2540,12 +3121,12 @@ public class Imps {
 
             cursor = context.getContentResolver().query(
                     uri, null, Imps.Provider.CATEGORY + "=?" /* selection */,
-                    new String[] { ImApp.IMPS_CATEGORY } /* selection args */,
+                    new String[]{ImApp.IMPS_CATEGORY} /* selection args */,
                     null);
 
             if (cursor != null)
             {
-               cursor.close();
+                cursor.close();
                 return true;
             }
             else
@@ -2553,64 +3134,74 @@ public class Imps {
                 return false;
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             // Only complain if we thought this password should succeed
 
-             Log.e(ImApp.LOG_TAG, e.getMessage(), e);
+            Log.e(ImApp.LOG_TAG, e.getMessage(), e);
 
             // needs to be unlocked
             return false;
         }
     }
-    public static boolean setEmptyPassphrase(Context ctx, boolean noCreate) {
+
+    public static boolean setEmptyPassphrase(Context ctx, boolean noCreate)
+    {
         String pkey = "";
 
         Uri uri = Provider.CONTENT_URI_WITH_ACCOUNT;
 
         Builder builder = uri.buildUpon().appendQueryParameter(ImApp.CACHEWORD_PASSWORD_KEY, pkey);
-        if (noCreate) {
+        if (noCreate)
+        {
             builder.appendQueryParameter(ImApp.NO_CREATE_KEY, "1");
         }
         uri = builder.build();
 
         Cursor cursor = ctx.getContentResolver().query(uri, null, null, null, null);
-        if (cursor != null) {
+        if (cursor != null)
+        {
             cursor.close();
             return true;
         }
         return false;
     }
 
-    public static void clearPassphrase(Context ctx) {
+    public static void clearPassphrase(Context ctx)
+    {
         Uri uri = Provider.CONTENT_URI_WITH_ACCOUNT;
 
         Builder builder = uri.buildUpon().appendQueryParameter(ImApp.CLEAR_PASSWORD_KEY, "1");
         uri = builder.build();
 
         Cursor cursor = ctx.getContentResolver().query(uri, null, null, null, null);
-        if (cursor != null) {
+        if (cursor != null)
+        {
             throw new RuntimeException("Unexpected cursor returned");
         }
     }
 
     public static Uri insertMessageInDb(ContentResolver resolver,
-            boolean isGroup,
-            long contactId,
-            boolean isEncrypted,
-            String nickname,
-            String body,
-            long time,
-            int type,
-            int errCode,
-            String id,
-            String mimeType) {
+                                        boolean isGroup,
+                                        long contactId,
+                                        boolean isEncrypted,
+                                        String nickname,
+                                        String body,
+                                        long time,
+                                        int type,
+                                        int errCode,
+                                        String id,
+                                        String mimeType)
+    {
 
         ContentValues values = new ContentValues();
         values.put(Imps.Messages.BODY, body);
         values.put(Imps.Messages.DATE, time);
         values.put(Imps.Messages.TYPE, type);
         values.put(Imps.Messages.ERROR_CODE, errCode);
-        if (isGroup) {
+        if (isGroup)
+        {
             values.put(Imps.Messages.NICKNAME, nickname);
             values.put(Imps.Messages.IS_GROUP_CHAT, 1);
         }
@@ -2621,7 +3212,8 @@ public class Imps {
         return resolver.insert(isEncrypted ? Messages.getOtrMessagesContentUriByThreadId(contactId) : Messages.getContentUriByThreadId(contactId), values);
     }
 
-    public static int updateMessageBody(ContentResolver resolver, String id, String body, String mimeType) {
+    public static int updateMessageBody(ContentResolver resolver, String id, String body, String mimeType)
+    {
 
         Uri.Builder builder = Imps.Messages.OTR_MESSAGES_CONTENT_URI.buildUpon();
         builder.appendPath(id);
@@ -2633,7 +3225,8 @@ public class Imps {
         return resolver.update(builder.build(), values, null, null);
     }
 
-    public static int updateConfirmInDb(ContentResolver resolver, String id, boolean isDelivered) {
+    public static int updateConfirmInDb(ContentResolver resolver, String id, boolean isDelivered)
+    {
         Uri.Builder builder = Imps.Messages.OTR_MESSAGES_CONTENT_URI_BY_PACKET_ID.buildUpon();
         builder.appendPath(id);
 
@@ -2641,7 +3234,6 @@ public class Imps {
         values.put(Imps.Messages.IS_DELIVERED, isDelivered);
         return resolver.update(builder.build(), values, null, null);
     }
-
 
 
 }

@@ -17,17 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.IOtrChatSession;
-import info.guardianproject.otr.app.im.IChatSession;
-import info.guardianproject.otr.app.im.IImConnection;
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.engine.Presence;
-import info.guardianproject.otr.app.im.provider.Imps;
-import info.guardianproject.otr.app.im.ui.LetterAvatar;
-import info.guardianproject.otr.app.im.ui.RoundedAvatarDrawable;
-import info.guardianproject.util.SystemServices;
-import info.guardianproject.util.SystemServices.FileInfo;
-import net.java.otr4j.session.SessionStatus;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -47,18 +36,32 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ContactView extends FrameLayout {
-    static final String[] CONTACT_PROJECTION = { Imps.Contacts._ID, Imps.Contacts.PROVIDER,
-                                                Imps.Contacts.ACCOUNT, Imps.Contacts.USERNAME,
-                                                Imps.Contacts.NICKNAME, Imps.Contacts.TYPE,
-                                                Imps.Contacts.SUBSCRIPTION_TYPE,
-                                                Imps.Contacts.SUBSCRIPTION_STATUS,
-                                                Imps.Presence.PRESENCE_STATUS,
-                                                Imps.Presence.PRESENCE_CUSTOM_STATUS,
-                                                Imps.Chats.LAST_MESSAGE_DATE,
-                                                Imps.Chats.LAST_UNREAD_MESSAGE,
-                                                Imps.Contacts.AVATAR_HASH,
-                                                Imps.Contacts.AVATAR_DATA
+import net.java.otr4j.session.SessionStatus;
+
+import info.guardianproject.otr.IOtrChatSession;
+import info.guardianproject.otr.app.im.IChatSession;
+import info.guardianproject.otr.app.im.IImConnection;
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.engine.Presence;
+import info.guardianproject.otr.app.im.provider.Imps;
+import info.guardianproject.otr.app.im.ui.LetterAvatar;
+import info.guardianproject.otr.app.im.ui.RoundedAvatarDrawable;
+import info.guardianproject.util.SystemServices;
+import info.guardianproject.util.SystemServices.FileInfo;
+
+public class ContactView extends FrameLayout
+{
+    static final String[] CONTACT_PROJECTION = {Imps.Contacts._ID, Imps.Contacts.PROVIDER,
+            Imps.Contacts.ACCOUNT, Imps.Contacts.USERNAME,
+            Imps.Contacts.NICKNAME, Imps.Contacts.TYPE,
+            Imps.Contacts.SUBSCRIPTION_TYPE,
+            Imps.Contacts.SUBSCRIPTION_STATUS,
+            Imps.Presence.PRESENCE_STATUS,
+            Imps.Presence.PRESENCE_CUSTOM_STATUS,
+            Imps.Chats.LAST_MESSAGE_DATE,
+            Imps.Chats.LAST_UNREAD_MESSAGE,
+            Imps.Contacts.AVATAR_HASH,
+            Imps.Contacts.AVATAR_DATA
 
     };
 
@@ -77,16 +80,16 @@ public class ContactView extends FrameLayout {
     static final int COLUMN_LAST_MESSAGE = 11;
     static final int COLUMN_AVATAR_HASH = 12;
     static final int COLUMN_AVATAR_DATA = 13;
-    
-    
+
 
     private ImApp app = null;
     static Drawable AVATAR_DEFAULT_GROUP = null;
 
-    public ContactView(Context context, AttributeSet attrs) {
+    public ContactView(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
 
-        app = ((ImApp)((Activity) getContext()).getApplication());
+        app = ((ImApp) ((Activity) getContext()).getApplication());
 
 
     }
@@ -103,11 +106,13 @@ public class ContactView extends FrameLayout {
         ImageView mMediaThumb;
     }
 
-    public void bind(Cursor cursor, String underLineText, boolean scrolling) {
+    public void bind(Cursor cursor, String underLineText, boolean scrolling)
+    {
         bind(cursor, underLineText, true, scrolling);
     }
 
-    public void bind(Cursor cursor, String underLineText, boolean showChatMsg, boolean scrolling) {
+    public void bind(Cursor cursor, String underLineText, boolean showChatMsg, boolean scrolling)
+    {
 
         /*
         if (Debug.DEBUG_ENABLED)
@@ -126,9 +131,9 @@ public class ContactView extends FrameLayout {
            Log.d(ImApp.LOG_TAG,"contact:" + debug.toString());
 
         }*/
-        
-        ViewHolder holder = (ViewHolder)getTag();
-        
+
+        ViewHolder holder = (ViewHolder) getTag();
+
         final long providerId = cursor.getLong(COLUMN_CONTACT_PROVIDER);
         final String address = cursor.getString(COLUMN_CONTACT_USERNAME);
 
@@ -150,18 +155,19 @@ public class ContactView extends FrameLayout {
         {
             nickname = address.split("@")[0];
         }
-        else if (nickname.indexOf('@')!=-1)
+        else if (nickname.indexOf('@') != -1)
         {
             nickname = nickname.split("@")[0];
         }
 
 
-
-        if (!TextUtils.isEmpty(underLineText)) {
+        if (!TextUtils.isEmpty(underLineText))
+        {
             // highlight/underline the word being searched 
             String lowercase = nickname.toLowerCase();
             int start = lowercase.indexOf(underLineText.toLowerCase());
-            if (start >= 0) {
+            if (start >= 0)
+            {
                 int end = start + underLineText.length();
                 SpannableString str = new SpannableString(nickname);
                 str.setSpan(new UnderlineSpan(), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -170,11 +176,15 @@ public class ContactView extends FrameLayout {
 
             }
             else
+            {
                 holder.mLine1.setText(nickname);
+            }
 
         }
         else
+        {
             holder.mLine1.setText(nickname);
+        }
 
         /*
         if (holder.mStatusIcon != null)
@@ -190,20 +200,23 @@ public class ContactView extends FrameLayout {
 
         if (holder.mAvatar != null)
         {
-            if (Imps.Contacts.TYPE_GROUP == type) {
+            if (Imps.Contacts.TYPE_GROUP == type)
+            {
 
                 holder.mAvatar.setVisibility(View.VISIBLE);
 
                 if (AVATAR_DEFAULT_GROUP == null)
+                {
                     AVATAR_DEFAULT_GROUP = new RoundedAvatarDrawable(BitmapFactory.decodeResource(getResources(),
                             R.drawable.group_chat));
+                }
 
 
-                    holder.mAvatar.setImageDrawable(AVATAR_DEFAULT_GROUP);
+                holder.mAvatar.setImageDrawable(AVATAR_DEFAULT_GROUP);
 
 
             }
-            else if (cursor.getColumnIndex(Imps.Contacts.AVATAR_DATA)!=-1)
+            else if (cursor.getColumnIndex(Imps.Contacts.AVATAR_DATA) != -1)
             {
 //                holder.mAvatar.setVisibility(View.GONE);
 
@@ -211,35 +224,39 @@ public class ContactView extends FrameLayout {
 
                 try
                 {
-                  //  avatar = DatabaseUtils.getAvatarFromAddress(this.getContext().getContentResolver(),address, ImApp.DEFAULT_AVATAR_WIDTH,ImApp.DEFAULT_AVATAR_HEIGHT);
-                   avatar = DatabaseUtils.getAvatarFromCursor(cursor, COLUMN_AVATAR_DATA, ImApp.DEFAULT_AVATAR_WIDTH,ImApp.DEFAULT_AVATAR_HEIGHT);
+                    //  avatar = DatabaseUtils.getAvatarFromAddress(this.getContext().getContentResolver(),address, ImApp.DEFAULT_AVATAR_WIDTH,ImApp.DEFAULT_AVATAR_HEIGHT);
+                    avatar = DatabaseUtils.getAvatarFromCursor(cursor, COLUMN_AVATAR_DATA, ImApp.DEFAULT_AVATAR_WIDTH, ImApp.DEFAULT_AVATAR_HEIGHT);
                 }
                 catch (Exception e)
                 {
                     //problem decoding avatar
-                    Log.e(ImApp.LOG_TAG,"error decoding avatar",e);
+                    Log.e(ImApp.LOG_TAG, "error decoding avatar", e);
                 }
 
                 try
                 {
                     if (avatar != null)
                     {
-                        setAvatarBorder(presence,avatar);
+                        setAvatarBorder(presence, avatar);
                         holder.mAvatar.setImageDrawable(avatar);
                     }
                     else
                     {
                         String letterString = null;
-                                
+
                         if (nickname.length() > 0)
-                            letterString = nickname.substring(0,1).toUpperCase();
+                        {
+                            letterString = nickname.substring(0, 1).toUpperCase();
+                        }
                         else
+                        {
                             letterString = "?"; //the unknown name!
-                         
+                        }
+
                         int color = getAvatarBorder(presence);
                         int padding = 24;
                         LetterAvatar lavatar = new LetterAvatar(getContext(), color, letterString, padding);
-                        
+
                         holder.mAvatar.setImageDrawable(lavatar);
 
                     }
@@ -258,11 +275,11 @@ public class ContactView extends FrameLayout {
                 holder.mAvatar.setVisibility(View.GONE);
 
 
-
             }
         }
 
-        if (showChatMsg && lastMsg != null) {
+        if (showChatMsg && lastMsg != null)
+        {
 
 
             if (holder.mLine2 != null)
@@ -270,19 +287,19 @@ public class ContactView extends FrameLayout {
                 if (ChatFileStore.isVfsUri(lastMsg))
                 {
                     FileInfo fInfo = SystemServices.getFileInfoFromURI(getContext(), Uri.parse(lastMsg));
-                    
+
                     if (fInfo.type == null || fInfo.type.startsWith("image"))
                     {
-                        
+
                         if (holder.mMediaThumb != null)
                         {
                             holder.mMediaThumb.setVisibility(View.VISIBLE);
-                        
+
                             Bitmap b = MessageView.getThumbnail(getContext().getContentResolver(), Uri.parse(lastMsg));
                             holder.mMediaThumb.setImageBitmap(b);
-                            
+
                             holder.mLine2.setVisibility(View.GONE);
-                                    
+
                         }
                     }
                     else
@@ -294,8 +311,10 @@ public class ContactView extends FrameLayout {
                 else
                 {
                     if (holder.mMediaThumb != null)
+                    {
                         holder.mMediaThumb.setVisibility(View.GONE);
-                    
+                    }
+
                     holder.mLine2.setVisibility(View.VISIBLE);
                     holder.mLine2.setText(android.text.Html.fromHtml(lastMsg).toString());
                 }
@@ -326,26 +345,27 @@ public class ContactView extends FrameLayout {
         }
 
 
-
-
         if (subType == Imps.ContactsColumns.SUBSCRIPTION_TYPE_INVITATIONS)
         {
-        //    if (holder.mLine2 != null)
-          //      holder.mLine2.setText("Contact List Request");
+            //    if (holder.mLine2 != null)
+            //      holder.mLine2.setText("Contact List Request");
         }
 
         holder.mLine1.setVisibility(View.VISIBLE);
 
-        getEncryptionState (providerId, address, holder);
+        getEncryptionState(providerId, address, holder);
     }
 
-    private void getEncryptionState (long providerId, String address, ViewHolder holder)
+    private void getEncryptionState(long providerId, String address, ViewHolder holder)
     {
 
-         try {
-             IImConnection conn = app.getConnection(providerId);
-             if (conn == null || conn.getChatSessionManager() == null)
-                 return;
+        try
+        {
+            IImConnection conn = app.getConnection(providerId);
+            if (conn == null || conn.getChatSessionManager() == null)
+            {
+                return;
+            }
 
             IChatSession chatSession = conn.getChatSessionManager().getChatSession(address);
 
@@ -361,77 +381,86 @@ public class ContactView extends FrameLayout {
                         boolean isVerified = otrChatSession.isKeyVerified(address);
 
                         if (isVerified)
+                        {
                             holder.mStatusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_black_encrypted_and_verified));
+                        }
                         else
+                        {
                             holder.mStatusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_black_encrypted_not_verified));
+                        }
 
                         holder.mStatusIcon.setVisibility(View.VISIBLE);
                     }
                 }
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
 
-
-                //mCurrentChatSession.getOtrChatSession();
+        //mCurrentChatSession.getOtrChatSession();
 
     }
 
-    public void setAvatarBorder(int status, RoundedAvatarDrawable avatar) {
-        switch (status) {
-        case Presence.AVAILABLE:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_green_light));
-            avatar.setAlpha(255);
-            break;
+    public void setAvatarBorder(int status, RoundedAvatarDrawable avatar)
+    {
+        switch (status)
+        {
+            case Presence.AVAILABLE:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_green_light));
+                avatar.setAlpha(255);
+                break;
 
-        case Presence.IDLE:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_green_dark));
-            avatar.setAlpha(255);
+            case Presence.IDLE:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_green_dark));
+                avatar.setAlpha(255);
 
-            break;
+                break;
 
-        case Presence.AWAY:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_orange_light));
-            avatar.setAlpha(255);
-            break;
+            case Presence.AWAY:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_orange_light));
+                avatar.setAlpha(255);
+                break;
 
-        case Presence.DO_NOT_DISTURB:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_red_dark));
-            avatar.setAlpha(255);
+            case Presence.DO_NOT_DISTURB:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_red_dark));
+                avatar.setAlpha(255);
 
-            break;
+                break;
 
-        case Presence.OFFLINE:
-            avatar.setBorderColor(getResources().getColor(android.R.color.transparent));
-            avatar.setAlpha(100);
-            break;
+            case Presence.OFFLINE:
+                avatar.setBorderColor(getResources().getColor(android.R.color.transparent));
+                avatar.setAlpha(100);
+                break;
 
 
-        default:
+            default:
         }
     }
-    
-    public int getAvatarBorder(int status) {
-        switch (status) {
-        case Presence.AVAILABLE:
-            return (getResources().getColor(R.color.holo_green_light));
 
-        case Presence.IDLE:
-            return (getResources().getColor(R.color.holo_green_dark));
-        case Presence.AWAY:
-            return (getResources().getColor(R.color.holo_orange_light));
+    public int getAvatarBorder(int status)
+    {
+        switch (status)
+        {
+            case Presence.AVAILABLE:
+                return (getResources().getColor(R.color.holo_green_light));
 
-        case Presence.DO_NOT_DISTURB:
-            return(getResources().getColor(R.color.holo_red_dark));
+            case Presence.IDLE:
+                return (getResources().getColor(R.color.holo_green_dark));
+            case Presence.AWAY:
+                return (getResources().getColor(R.color.holo_orange_light));
 
-        case Presence.OFFLINE:
-            return(getResources().getColor(R.color.holo_grey_dark));
+            case Presence.DO_NOT_DISTURB:
+                return (getResources().getColor(R.color.holo_red_dark));
 
-        default:
+            case Presence.OFFLINE:
+                return (getResources().getColor(R.color.holo_grey_dark));
+
+            default:
         }
 
         return Color.TRANSPARENT;

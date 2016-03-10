@@ -1,17 +1,18 @@
 package net.java.otr4j.session;
 
-import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.PublicKey;
-import java.util.List;
-
 import net.java.otr4j.OtrEngineListener;
 import net.java.otr4j.OtrException;
 import net.java.otr4j.OtrPolicy;
 import net.java.otr4j.crypto.OtrTlvHandler;
 import net.java.otr4j.io.messages.AbstractMessage;
 
-public interface Session {
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.PublicKey;
+import java.util.List;
+
+public interface Session
+{
 
     public abstract SessionStatus getSessionStatus();
 

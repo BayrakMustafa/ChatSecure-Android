@@ -193,20 +193,20 @@
         </service>
 
 
-<!--    <service android:name=".plugin.loopback.LoopbackImPlugin">
-            <intent-filter>
-                <action android:name="info.guardianproject.otr.app.im.plugin"/>
-            </intent-filter>
+        <!--    <service android:name=".plugin.loopback.LoopbackImPlugin">
+                    <intent-filter>
+                        <action android:name="info.guardianproject.otr.app.im.plugin"/>
+                    </intent-filter>
 
-            <meta-data
-                android:name="info.guardianproject.otr.app.im.provider_name" android:value="Loopback"/>
-            <meta-data
-                android:name="info.guardianproject.otr.app.im.provider_full_name"
-                android:value="Loopback Provider"/>
-            <meta-data
-                android:name="info.guardianproject.otr.app.im.signup_url"
-                android:value="http://xxx.xxx.xxx"/>
-        </service>-->
+                    <meta-data
+                        android:name="info.guardianproject.otr.app.im.provider_name" android:value="Loopback"/>
+                    <meta-data
+                        android:name="info.guardianproject.otr.app.im.provider_full_name"
+                        android:value="Loopback Provider"/>
+                    <meta-data
+                        android:name="info.guardianproject.otr.app.im.signup_url"
+                        android:value="http://xxx.xxx.xxx"/>
+                </service>-->
 
 
         <!-- android:process="info.guardianproject.otr.app.process.im" -->

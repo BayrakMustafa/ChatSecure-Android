@@ -19,16 +19,23 @@ package info.guardianproject.otr.app.im.service;
 
 import android.content.ComponentName;
 
-public class ImServiceConstants {
-    /** RemoteImService name, used for start or stop the IM service. */
+public class ImServiceConstants
+{
+    /**
+     * RemoteImService name, used for start or stop the IM service.
+     */
     public static final ComponentName IM_SERVICE_COMPONENT = new ComponentName(
             "info.guardianproject.otr.app.im",
             "info.guardianproject.otr.app.im.service.RemoteImService");
 
-    /** Broadcast action: broadcast event for avatar changed. */
+    /**
+     * Broadcast action: broadcast event for avatar changed.
+     */
     public static final String ACTION_AVATAR_CHANGED = "android.intent.action.IM_AVATAR_CHANGED";
 
-    /** Intent action for managing a subscription request. */
+    /**
+     * Intent action for managing a subscription request.
+     */
     public static final String ACTION_MANAGE_SUBSCRIPTION = "android.intent.action.IM_MANAGE_SUBSCRIPTION";
 
     /**
@@ -37,10 +44,14 @@ public class ImServiceConstants {
      */
     public static final String EXTRA_INTENT_FROM_ADDRESS = "from";
 
-    /** Use EXTRA_INTENT_PROVIDER_ID to include the provider id in an intent. */
+    /**
+     * Use EXTRA_INTENT_PROVIDER_ID to include the provider id in an intent.
+     */
     public static final String EXTRA_INTENT_PROVIDER_ID = "providerId";
 
-    /** Use EXTRA_INTENT_ACCOUNT_ID to include the account id in an intent. */
+    /**
+     * Use EXTRA_INTENT_ACCOUNT_ID to include the account id in an intent.
+     */
     public static final String EXTRA_INTENT_ACCOUNT_ID = "accountId";
 
     /**

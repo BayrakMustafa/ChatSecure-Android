@@ -24,7 +24,8 @@ import android.text.TextUtils;
  * An abstract representation of the address to any addressable entities such as
  * User, Contact list, User Group, etc.
  */
-public abstract class Address {
+public abstract class Address
+{
 
     /**
      * Gets a string representation of this address.
@@ -49,6 +50,7 @@ public abstract class Address {
 
     /**
      * Gets the bare address without any resource
+     *
      * @return the bare address
      */
     public abstract String getBareAddress();
@@ -58,16 +60,24 @@ public abstract class Address {
 
     public abstract void readFromParcel(Parcel source);
 
-    static public boolean hasResource(String address) {
+    static public boolean hasResource(String address)
+    {
         return address.contains("/");
     }
 
-    static public String stripResource(String address) {
+    static public String stripResource(String address)
+    {
         if (TextUtils.isEmpty(address))
+        {
             return "null";
+        }
         else if (address.contains("/"))
+        {
             return address.split("/")[0];
+        }
         else
+        {
             return address;
+        }
     }
 }

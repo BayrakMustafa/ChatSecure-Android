@@ -18,14 +18,14 @@
  */
 -->
 <info.guardianproject.otr.app.im.app.ContactListFilterView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/contactFilterView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-     android:padding="0dp"
-     android:background="?listBackground"
-     >
-   
+                                                           android:id="@+id/contactFilterView"
+                                                           android:layout_width="match_parent"
+                                                           android:layout_height="match_parent"
+                                                           android:orientation="vertical"
+                                                           android:padding="0dp"
+                                                           android:background="?listBackground"
+    >
+
     <!-- 
    <info.guardianproject.otr.app.im.app.UserPresenceView
         android:id="@+id/userPresence"
@@ -91,27 +91,28 @@
     </info.guardianproject.otr.app.im.app.UserPresenceView>
      -->
 
-    <ListView  android:id="@+id/filteredList"
+    <ListView
+        android:id="@+id/filteredList"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"                        
-        android:stackFromBottom="false"               
-  		android:layout_margin="0dp"
+        android:layout_weight="1"
+        android:stackFromBottom="false"
+        android:layout_margin="0dp"
         android:padding="0dp"
         android:layout_marginTop="6dp"
-         />
-   
-   <TextView
-	    android:id="@+id/empty"
-	    android:text="@string/loading"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:gravity="center"
-	    android:layout_gravity="center_vertical"
-	    android:textSize="24dp"
-	    		            android:fontFamily="sans-serif-light"
+        />
 
-	    />
-             
+    <TextView
+        android:id="@+id/empty"
+        android:text="@string/loading"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:layout_gravity="center_vertical"
+        android:textSize="24dp"
+        android:fontFamily="sans-serif-light"
+
+        />
+
 
 </info.guardianproject.otr.app.im.app.ContactListFilterView>

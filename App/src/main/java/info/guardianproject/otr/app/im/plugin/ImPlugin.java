@@ -18,7 +18,8 @@ package info.guardianproject.otr.app.im.plugin;
 
 import java.util.Map;
 
-public interface ImPlugin {
+public interface ImPlugin
+{
     /**
      * Gets a map of branding resources for the provider. The keys are defined
      * in {@link info.guardianproject.otr.app.im.plugin.BrandingResourceIDs}.

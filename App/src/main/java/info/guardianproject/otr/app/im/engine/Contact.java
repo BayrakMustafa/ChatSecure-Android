@@ -17,51 +17,61 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import info.guardianproject.otr.app.im.plugin.xmpp.XmppAddress;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Contact extends ImEntity implements Parcelable {
+import info.guardianproject.otr.app.im.plugin.xmpp.XmppAddress;
+
+public class Contact extends ImEntity implements Parcelable
+{
 
     private Address mAddress;
     private String mName;
     private Presence mPresence;
 
-    public Contact(Address address, String name) {
+    public Contact(Address address, String name)
+    {
         mAddress = address;
         mName = name;
 
         mPresence = new Presence();
     }
 
-    public Contact(Parcel source) {
+    public Contact(Parcel source)
+    {
         mAddress = AddressParcelHelper.readFromParcel(source);
         mName = source.readString();
         mPresence = new Presence(source);
     }
 
-    public Address getAddress() {
+    public Address getAddress()
+    {
         return mAddress;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return mName;
     }
 
-    public void setName( String aName ) {
+    public void setName(String aName)
+    {
         mName = aName;
     }
 
-    public Presence getPresence() {
+    public Presence getPresence()
+    {
         return mPresence;
     }
 
-    public boolean equals(Object other) {
+    public boolean equals(Object other)
+    {
 
         return other instanceof Contact && mAddress.getBareAddress().equals(((Contact) other).getAddress().getBareAddress());
     }
 
-    public int hashCode() {
+    public int hashCode()
+    {
         return mAddress.hashCode();
     }
 
@@ -70,28 +80,36 @@ public class Contact extends ImEntity implements Parcelable {
      *
      * @param presence the new presence
      */
-    public void setPresence(Presence presence) {
+    public void setPresence(Presence presence)
+    {
         mPresence = presence;
         if (mPresence != null && mPresence.getResource() != null)
+        {
             mAddress = new XmppAddress(mAddress.getBareAddress() + '/' + mPresence.getResource());
+        }
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags)
+    {
         AddressParcelHelper.writeToParcel(dest, mAddress);
         dest.writeString(mName);
         mPresence.writeToParcel(dest, 0);
     }
 
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
-    public final static Parcelable.Creator<Contact> CREATOR = new Parcelable.Creator<Contact>() {
-        public Contact createFromParcel(Parcel source) {
+    public final static Parcelable.Creator<Contact> CREATOR = new Parcelable.Creator<Contact>()
+    {
+        public Contact createFromParcel(Parcel source)
+        {
             return new Contact(source);
         }
 
-        public Contact[] newArray(int size) {
+        public Contact[] newArray(int size)
+        {
             return new Contact[size];
         }
     };

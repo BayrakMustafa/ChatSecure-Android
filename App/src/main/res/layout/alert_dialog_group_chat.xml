@@ -15,11 +15,12 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
 
-    <Spinner android:id="@+id/choose_list"
+    <Spinner
+        android:id="@+id/choose_list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="true"
@@ -28,7 +29,7 @@
         android:layout_marginRight="20dip"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:popupBackground="?listBackground"
-         />
+        />
 
     <EditText
         android:id="@+id/nickname"
@@ -38,9 +39,9 @@
         android:layout_marginLeft="20dip"
         android:layout_marginRight="20dip"
         android:scrollHorizontally="true"
-        android:gravity="fill_horizontal"               
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
+        android:gravity="fill_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
 
     <EditText
         android:id="@+id/chat_room"
@@ -50,10 +51,10 @@
         android:layout_marginLeft="20dip"
         android:layout_marginRight="20dip"
         android:scrollHorizontally="true"
-        android:gravity="fill_horizontal"               
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-            
+        android:gravity="fill_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+
     <EditText
         android:id="@+id/chat_server"
         android:hint="@string/muc_dialog_server"
@@ -63,7 +64,7 @@
         android:layout_marginRight="20dip"
         android:scrollHorizontally="true"
         android:inputType="textEmailAddress"
-        android:gravity="fill_horizontal"               
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-        
+        android:gravity="fill_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
 </LinearLayout>

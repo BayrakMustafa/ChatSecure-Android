@@ -7,14 +7,18 @@ package net.java.otr4j.io.messages;
 
 import java.util.Arrays;
 
-/** @author George Politis */
-public class RevealSignatureMessage extends SignatureMessage {
+/**
+ * @author George Politis
+ */
+public class RevealSignatureMessage extends SignatureMessage
+{
     // Fields.
     public byte[] revealedKey;
 
     // Ctor.
     public RevealSignatureMessage(int protocolVersion, byte[] xEncrypted, byte[] xEncryptedMAC,
-            byte[] revealedKey) {
+                                  byte[] revealedKey)
+    {
         super(MESSAGE_REVEALSIG, protocolVersion, xEncrypted, xEncryptedMAC);
 
         this.revealedKey = revealedKey;
@@ -22,7 +26,8 @@ public class RevealSignatureMessage extends SignatureMessage {
 
     // Methods.
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + Arrays.hashCode(revealedKey);
@@ -30,16 +35,25 @@ public class RevealSignatureMessage extends SignatureMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         RevealSignatureMessage other = (RevealSignatureMessage) obj;
         if (!Arrays.equals(revealedKey, other.revealedKey))
+        {
             return false;
+        }
         return true;
     }
 }

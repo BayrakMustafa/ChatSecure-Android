@@ -17,27 +17,31 @@
 
 package info.guardianproject.otr.app.im.app.adapter;
 
-import info.guardianproject.otr.app.im.app.ImApp;
-import info.guardianproject.otr.app.im.engine.ImErrorInfo;
+import android.util.Log;
 
 import info.guardianproject.otr.app.im.IChatSession;
 import info.guardianproject.otr.app.im.IChatSessionListener;
+import info.guardianproject.otr.app.im.app.ImApp;
+import info.guardianproject.otr.app.im.engine.ImErrorInfo;
 import info.guardianproject.util.LogCleaner;
 
-import android.util.Log;
-
-public class ChatSessionListenerAdapter extends IChatSessionListener.Stub {
+public class ChatSessionListenerAdapter extends IChatSessionListener.Stub
+{
 
     private static final String TAG = ImApp.LOG_TAG;
 
-    public void onChatSessionCreated(IChatSession session) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onChatSessionCreated(IChatSession session)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "notifyChatSessionCreated(" + session + ")");
         }
     }
 
-    public void onChatSessionCreateError(String name, ImErrorInfo error) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onChatSessionCreateError(String name, ImErrorInfo error)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "notifyChatSessionCreateError(" + name + ", " + error + ")");
         }
     }

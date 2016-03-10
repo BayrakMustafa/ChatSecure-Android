@@ -16,33 +16,60 @@
  */
 package info.guardianproject.otr.app.im.plugin;
 
-/** Defines the IDs of branding resources. */
-public interface BrandingResourceIDs {
+/**
+ * Defines the IDs of branding resources.
+ */
+public interface BrandingResourceIDs
+{
 
-    /** The logo icon of the provider which is displayed in the landing page. */
+    /**
+     * The logo icon of the provider which is displayed in the landing page.
+     */
     public static final int DRAWABLE_LOGO = 100;
-    /** The icon of online presence status. */
+    /**
+     * The icon of online presence status.
+     */
     public static final int DRAWABLE_PRESENCE_ONLINE = 102;
-    /** The icon of busy presence status. */
+    /**
+     * The icon of busy presence status.
+     */
     public static final int DRAWABLE_PRESENCE_BUSY = 103;
-    /** The icon of away presence status. */
+    /**
+     * The icon of away presence status.
+     */
     public static final int DRAWABLE_PRESENCE_AWAY = 104;
-    /** The icon of invisible presence status. */
+    /**
+     * The icon of invisible presence status.
+     */
     public static final int DRAWABLE_PRESENCE_INVISIBLE = 105;
-    /** The icon of offline presence status. */
+    /**
+     * The icon of offline presence status.
+     */
     public static final int DRAWABLE_PRESENCE_OFFLINE = 106;
-    /** The label of the menu to go to the contact list screen. */
+    /**
+     * The label of the menu to go to the contact list screen.
+     */
     public static final int STRING_MENU_CONTACT_LIST = 107;
 
-    /** The image displayed on the splash screen while logging in. */
+    /**
+     * The image displayed on the splash screen while logging in.
+     */
     public static final int DRAWABLE_SPLASH_SCREEN = 200;
-    /** The icon for blocked contacts. */
+    /**
+     * The icon for blocked contacts.
+     */
     public static final int DRAWABLE_BLOCK = 201;
-    /** The water mark background for chat screen. */
+    /**
+     * The water mark background for chat screen.
+     */
     public static final int DRAWABLE_CHAT_WATERMARK = 202;
-    /** The icon for the read conversation. */
+    /**
+     * The icon for the read conversation.
+     */
     public static final int DRAWABLE_READ_CHAT = 203;
-    /** The icon for the unread conversation. */
+    /**
+     * The icon for the unread conversation.
+     */
     public static final int DRAWABLE_UNREAD_CHAT = 204;
 
     /**
@@ -52,51 +79,95 @@ public interface BrandingResourceIDs {
      */
     public static final int STRING_BUDDY_LIST_TITLE = 301;
 
-    /** A string array of the smiley names. */
+    /**
+     * A string array of the smiley names.
+     */
     public static final int STRING_ARRAY_SMILEY_NAMES = 302;
-    /** A string array of the smiley texts. */
+    /**
+     * A string array of the smiley texts.
+     */
     public static final int STRING_ARRAY_SMILEY_TEXTS = 303;
 
-    /** The string of available presence status. */
+    /**
+     * The string of available presence status.
+     */
     public static final int STRING_PRESENCE_AVAILABLE = 304;
-    /** The string of away presence status. */
+    /**
+     * The string of away presence status.
+     */
     public static final int STRING_PRESENCE_AWAY = 305;
-    /** The string of busy presence status. */
+    /**
+     * The string of busy presence status.
+     */
     public static final int STRING_PRESENCE_BUSY = 306;
-    /** The string of the idle presence status. */
+    /**
+     * The string of the idle presence status.
+     */
     public static final int STRING_PRESENCE_IDLE = 307;
-    /** The string of the invisible presence status. */
+    /**
+     * The string of the invisible presence status.
+     */
     public static final int STRING_PRESENCE_INVISIBLE = 308;
-    /** The string of the offline presence status. */
+    /**
+     * The string of the offline presence status.
+     */
     public static final int STRING_PRESENCE_OFFLINE = 309;
 
-    /** The label of username displayed on the account setup screen. */
+    /**
+     * The label of username displayed on the account setup screen.
+     */
     public static final int STRING_LABEL_USERNAME = 310;
-    /** The label of the ongoing conversation group. */
+    /**
+     * The label of the ongoing conversation group.
+     */
     public static final int STRING_ONGOING_CONVERSATION = 311;
-    /** The title of add contact screen. */
+    /**
+     * The title of add contact screen.
+     */
     public static final int STRING_ADD_CONTACT_TITLE = 312;
-    /** The label of the contact input box on the add contact screen. */
+    /**
+     * The label of the contact input box on the add contact screen.
+     */
     public static final int STRING_LABEL_INPUT_CONTACT = 313;
-    /** The label of the add contact button on the add contact screen */
+    /**
+     * The label of the add contact button on the add contact screen
+     */
     public static final int STRING_BUTTON_ADD_CONTACT = 314;
-    /** The title of the contact info dialog. */
+    /**
+     * The title of the contact info dialog.
+     */
     public static final int STRING_CONTACT_INFO_TITLE = 315;
-    /** The label of the menu to add a contact. */
+    /**
+     * The label of the menu to add a contact.
+     */
     public static final int STRING_MENU_ADD_CONTACT = 316;
-    /** The label of the menu to start a conversation. */
+    /**
+     * The label of the menu to start a conversation.
+     */
     public static final int STRING_MENU_START_CHAT = 317;
-    /** The label of the menu to view contact profile info. */
+    /**
+     * The label of the menu to view contact profile info.
+     */
     public static final int STRING_MENU_VIEW_PROFILE = 318;
-    /** The label of the menu to end a conversation. */
+    /**
+     * The label of the menu to end a conversation.
+     */
     public static final int STRING_MENU_END_CHAT = 319;
-    /** The label of the menu to block a contact. */
+    /**
+     * The label of the menu to block a contact.
+     */
     public static final int STRING_MENU_BLOCK_CONTACT = 320;
-    /** The label of the menu to delete a contact. */
+    /**
+     * The label of the menu to delete a contact.
+     */
     public static final int STRING_MENU_DELETE_CONTACT = 321;
-    /** The label of the menu to insert a smiley. */
+    /**
+     * The label of the menu to insert a smiley.
+     */
     public static final int STRING_MENU_INSERT_SMILEY = 322;
-    /** The label of the menu to switch conversations. */
+    /**
+     * The label of the menu to switch conversations.
+     */
     public static final int STRING_MENU_SWITCH_CHATS = 323;
     /**
      * The string of the toast displayed when auto sign in button on the account
@@ -108,17 +179,25 @@ public interface BrandingResourceIDs {
      * the account setup screen is checked.
      */
     public static final int STRING_TOAST_CHECK_SAVE_PASSWORD = 325;
-    /** The label of sign up a new account on the account setup screen. */
+    /**
+     * The label of sign up a new account on the account setup screen.
+     */
     public static final int STRING_LABEL_SIGN_UP = 326;
     /**
      * The term of use message. If provided, a dialog will be shown at the first
      * time login to ask the user if he would accept the term or not.
      */
     public static final int STRING_TOU_MESSAGE = 327;
-    /** The title of the term of use dialog. */
+    /**
+     * The title of the term of use dialog.
+     */
     public static final int STRING_TOU_TITLE = 328;
-    /** The label of the button to accept the term of use. */
+    /**
+     * The label of the button to accept the term of use.
+     */
     public static final int STRING_TOU_ACCEPT = 329;
-    /** The label of the button to decline the term of use. */
+    /**
+     * The label of the button to decline the term of use.
+     */
     public static final int STRING_TOU_DECLINE = 330;
 }

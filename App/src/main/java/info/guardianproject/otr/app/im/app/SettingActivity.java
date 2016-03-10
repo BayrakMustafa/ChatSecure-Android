@@ -45,7 +45,8 @@ import info.guardianproject.otr.app.im.provider.Imps;
 import info.guardianproject.util.Languages;
 
 public class SettingActivity extends PreferenceActivity implements
-        OnSharedPreferenceChangeListener {
+        OnSharedPreferenceChangeListener
+{
     private static final String TAG = "SettingActivity";
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 1;
     private String currentLanguage;
@@ -64,12 +65,13 @@ public class SettingActivity extends PreferenceActivity implements
     EditTextPreference mThemeBackground;
     Preference mNotificationRingtone;
 
-    private void setInitialValues() {
+    private void setInitialValues()
+    {
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, cr,
-                Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS,     false /* keep updated */, null /* no handler */);
+                Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, false /* keep updated */, null /* no handler */);
         mOtrMode.setValue(settings.getOtrMode());
         mLinkifyOnTor.setChecked(settings.getLinkifyOnTor());
         mHideOfflineContacts.setChecked(settings.getHideOfflineContacts());
@@ -81,7 +83,10 @@ public class SettingActivity extends PreferenceActivity implements
         mForegroundService.setChecked(settings.getUseForegroundPriority());
 
         long heartbeatInterval = settings.getHeartbeatInterval();
-        if (heartbeatInterval == 0) heartbeatInterval = DEFAULT_HEARTBEAT_INTERVAL;
+        if (heartbeatInterval == 0)
+        {
+            heartbeatInterval = DEFAULT_HEARTBEAT_INTERVAL;
+        }
         mHeartbeatInterval.setText(String.valueOf(heartbeatInterval));
 
         settings.close();
@@ -96,12 +101,13 @@ public class SettingActivity extends PreferenceActivity implements
     /*
      * Warning: must call settings.close() after usage!
      */
-    private static Imps.ProviderSettings.QueryMap getSettings(Context context) {
+    private static Imps.ProviderSettings.QueryMap getSettings(Context context)
+    {
         ContentResolver cr = context.getContentResolver();
         Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,
-                new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},
+                new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},
                 Imps.ProviderSettings.PROVIDER + "=?",
-                new String[] { Long.toString( Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},
+                new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},
                 null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor,
@@ -112,7 +118,8 @@ public class SettingActivity extends PreferenceActivity implements
         return settings;
     }
 
-    public static boolean getDeleteUnsecuredMedia(Context context) {
+    public static boolean getDeleteUnsecuredMedia(Context context)
+    {
         Imps.ProviderSettings.QueryMap settings = getSettings(context);
         boolean value = settings.getDeleteUnsecuredMedia();
         settings.close();
@@ -122,42 +129,60 @@ public class SettingActivity extends PreferenceActivity implements
 
     /* save the preferences in Imps so they are accessible everywhere */
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    {
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, cr,
-                Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS,     false /* keep updated */, null /* no handler */);
+                Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, false /* keep updated */, null /* no handler */);
 
-        if (key.equals("pref_security_otr_mode")) {
+        if (key.equals("pref_security_otr_mode"))
+        {
             settings.setOtrMode(prefs.getString(key, "auto"));
-        } else if (key.equals("pref_linkify_on_tor")) {
+        }
+        else if (key.equals("pref_linkify_on_tor"))
+        {
             settings.setLinkifyOnTor(prefs.getBoolean(key, false));
-        } else if (key.equals("pref_hide_offline_contacts")) {
+        }
+        else if (key.equals("pref_hide_offline_contacts"))
+        {
             settings.setHideOfflineContacts(prefs.getBoolean(key, false));
-        } else if (key.equals("pref_delete_unsecured_media")) {
+        }
+        else if (key.equals("pref_delete_unsecured_media"))
+        {
             boolean test = prefs.getBoolean(key, false);
             settings.setDeleteUnsecuredMedia(prefs.getBoolean(key, false));
-        } else if (key.equals("pref_store_media_on_external_storage")) {
+        }
+        else if (key.equals("pref_store_media_on_external_storage"))
+        {
             /* This uses SharedPreferences since it is used before Imps is setup */
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
             Editor editor = sharedPrefs.edit();
             editor.putBoolean(getString(R.string.key_store_media_on_external_storage_pref),
                     prefs.getBoolean(key, false));
             editor.apply();
-        } else if (key.equals("pref_enable_notification")) {
+        }
+        else if (key.equals("pref_enable_notification"))
+        {
             settings.setEnableNotification(prefs.getBoolean(key, true));
-        } else if (key.equals("pref_notification_vibrate")) {
+        }
+        else if (key.equals("pref_notification_vibrate"))
+        {
             settings.setVibrate(prefs.getBoolean(key, true));
-        } else if (key.equals("pref_notification_sound")) {
+        }
+        else if (key.equals("pref_notification_sound"))
+        {
             /**
-            // TODO sort out notification sound pref
-            if (prefs.getBoolean(key, true)) {
-                settings.setRingtoneURI("android.resource://" + getPackageName() + "/" + R.raw.notify);
-            } else {
-                settings.setRingtoneURI(null);
-            }*/
-        } else if (key.equals("pref_enable_custom_notification")) {
+             // TODO sort out notification sound pref
+             if (prefs.getBoolean(key, true)) {
+             settings.setRingtoneURI("android.resource://" + getPackageName() + "/" + R.raw.notify);
+             } else {
+             settings.setRingtoneURI(null);
+             }*/
+        }
+        else if (key.equals("pref_enable_custom_notification"))
+        {
             /*
             if (prefs.getBoolean(key, false)) {
                 settings.setRingtoneURI("android.resource://" + getPackageName() + "/" + R.raw.notify);
@@ -165,9 +190,12 @@ public class SettingActivity extends PreferenceActivity implements
                 settings.setRingtoneURI(ProviderSettings.RINGTONE_DEFAULT);
             }*/
         }
-        else if (key.equals("pref_foreground_enable")) {
+        else if (key.equals("pref_foreground_enable"))
+        {
             settings.setUseForegroundPriority(prefs.getBoolean(key, true));
-        } else if (key.equals("pref_heartbeat_interval")) {
+        }
+        else if (key.equals("pref_heartbeat_interval"))
+        {
             try
             {
                 settings.setHeartbeatInterval(Integer.valueOf(prefs.getString(key, String.valueOf(DEFAULT_HEARTBEAT_INTERVAL))));
@@ -180,8 +208,9 @@ public class SettingActivity extends PreferenceActivity implements
         else if (key.equals("pref_language"))
         {
             String newLanguage = prefs.getString(key, Languages.USE_SYSTEM_DEFAULT);
-            if (!TextUtils.equals(currentLanguage, newLanguage)) {
-                ((ImApp)getApplication()).setNewLocale(this, newLanguage);
+            if (!TextUtils.equals(currentLanguage, newLanguage))
+            {
+                ((ImApp) getApplication()).setNewLocale(this, newLanguage);
                 setResult(RESULT_OK);
                 finish(); // go to main screen to reset language
             }
@@ -196,7 +225,8 @@ public class SettingActivity extends PreferenceActivity implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
@@ -222,7 +252,8 @@ public class SettingActivity extends PreferenceActivity implements
         {
 
             @Override
-            public boolean onPreferenceClick(Preference arg0) {
+            public boolean onPreferenceClick(Preference arg0)
+            {
 
                 Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
                 intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
@@ -244,9 +275,10 @@ public class SettingActivity extends PreferenceActivity implements
         {
 
             @Override
-            public boolean onPreferenceClick(Preference arg0) {
+            public boolean onPreferenceClick(Preference arg0)
+            {
 
-                showThemeChooserDialog ();
+                showThemeChooserDialog();
                 return true;
             }
 
@@ -254,19 +286,24 @@ public class SettingActivity extends PreferenceActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 888 && data != null && data.getData() != null){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == 888 && data != null && data.getData() != null)
+        {
             Uri _uri = data.getData();
 
-            if (_uri != null) {
+            if (_uri != null)
+            {
 
-                    //Link to the image
-                    String imageFilePath = getRealPathFromURI(_uri);
-                    
-                    if (imageFilePath != null)                    
-                        mThemeBackground.setText(imageFilePath);
-                    
-                    mThemeBackground.getDialog().cancel();
+                //Link to the image
+                String imageFilePath = getRealPathFromURI(_uri);
+
+                if (imageFilePath != null)
+                {
+                    mThemeBackground.setText(imageFilePath);
+                }
+
+                mThemeBackground.getDialog().cancel();
 
             }
 
@@ -275,10 +312,10 @@ public class SettingActivity extends PreferenceActivity implements
         {
             Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             ContentResolver cr = getContentResolver();
-            Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+            Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
             Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, cr,
-                    Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS,     false /* keep updated */, null /* no handler */);
+                    Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, false /* keep updated */, null /* no handler */);
 
             if (uri != null)
             {
@@ -296,34 +333,44 @@ public class SettingActivity extends PreferenceActivity implements
         super.onActivityResult(requestCode, resultCode, data);
 
     }
-    
 
-    private String getRealPathFromURI(Uri contentURI) {
+
+    private String getRealPathFromURI(Uri contentURI)
+    {
         Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) { // Source is Dropbox or other similar local file path
+        if (cursor == null)
+        { // Source is Dropbox or other similar local file path
             return contentURI.getPath();
-        } else { 
-            cursor.moveToFirst(); 
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA); 
+        }
+        else
+        {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             if (idx > -1)
+            {
                 return cursor.getString(idx);
+            }
             else
+            {
                 return contentURI.toString();
+            }
         }
     }
 
 
-    private void showThemeChooserDialog ()
+    private void showThemeChooserDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle(getString(R.string.dialog_settings_choose_background_title));
         builder.setMessage(getString(R.string.dialog_settings_choose_background_body));
 
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+        {
 
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which)
+            {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -334,10 +381,12 @@ public class SettingActivity extends PreferenceActivity implements
 
         });
 
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+        {
 
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which)
+            {
                 // I do not need any action here you might
                 dialog.dismiss();
             }
@@ -348,14 +397,16 @@ public class SettingActivity extends PreferenceActivity implements
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         setInitialValues();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
 
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(

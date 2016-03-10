@@ -17,6 +17,27 @@
 
 package info.guardianproject.otr.app.im.service;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.RemoteCallbackList;
+import android.os.RemoteException;
+import android.provider.BaseColumns;
+import android.util.Log;
+
+import com.google.common.collect.Maps;
+
+import net.java.otr4j.session.SessionStatus;
+
+import org.jivesoftware.smack.packet.Packet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import info.guardianproject.otr.IOtrChatSession;
 import info.guardianproject.otr.OtrChatListener;
 import info.guardianproject.otr.OtrChatManager;
@@ -31,7 +52,6 @@ import info.guardianproject.otr.app.im.engine.ChatGroup;
 import info.guardianproject.otr.app.im.engine.ChatGroupManager;
 import info.guardianproject.otr.app.im.engine.ChatSession;
 import info.guardianproject.otr.app.im.engine.Contact;
-import info.guardianproject.otr.app.im.engine.ContactListManager;
 import info.guardianproject.otr.app.im.engine.GroupListener;
 import info.guardianproject.otr.app.im.engine.GroupMemberListener;
 import info.guardianproject.otr.app.im.engine.ImConnection;
@@ -42,35 +62,17 @@ import info.guardianproject.otr.app.im.engine.Presence;
 import info.guardianproject.otr.app.im.provider.Imps;
 import info.guardianproject.util.SystemServices;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import net.java.otr4j.session.SessionStatus;
-
-import org.jivesoftware.smack.packet.Packet;
-
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.RemoteCallbackList;
-import android.os.RemoteException;
-import android.provider.BaseColumns;
-import android.util.Log;
-
-import com.google.common.collect.Maps;
-
-public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSession.Stub {
+public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSession.Stub
+{
 
     private static final String NON_CHAT_MESSAGE_SELECTION = Imps.Messages.TYPE + "!="
-                                                             + Imps.MessageType.INCOMING + " AND "
-                                                             + Imps.Messages.TYPE + "!="
-                                                             + Imps.MessageType.OUTGOING;
+            + Imps.MessageType.INCOMING + " AND "
+            + Imps.Messages.TYPE + "!="
+            + Imps.MessageType.OUTGOING;
 
-    /** The registered remote listeners. */
+    /**
+     * The registered remote listeners.
+     */
     final RemoteCallbackList<IChatListener> mRemoteListeners = new RemoteCallbackList<IChatListener>();
 
     ImConnectionAdapter mConnection;
@@ -83,7 +85,7 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
     StatusBarNotifier mStatusBarNotifier;
 
     private ContentResolver mContentResolver;
-    /*package*/Uri mChatURI;
+    /*package*/ Uri mChatURI;
 
     private Uri mMessageURI;
 
@@ -111,7 +113,8 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
     private long mContactId;
 
-    public ChatSessionAdapter(ChatSession chatSession, ImConnectionAdapter connection, boolean isNewSession) {
+    public ChatSessionAdapter(ChatSession chatSession, ImConnectionAdapter connection, boolean isNewSession)
+    {
 
         mChatSession = chatSession;
         mConnection = connection;
@@ -127,15 +130,18 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
         ImEntity participant = mChatSession.getParticipant();
 
-        if (participant instanceof ChatGroup) {
-            init((ChatGroup) participant,isNewSession);
-        } else {
-            init((Contact) participant,isNewSession);
+        if (participant instanceof ChatGroup)
+        {
+            init((ChatGroup) participant, isNewSession);
+        }
+        else
+        {
+            init((Contact) participant, isNewSession);
         }
         mDataHandler.setChatId(getId());
     }
 
-    private void initOtrChatSession ()
+    private void initOtrChatSession()
     {
         try
         {
@@ -154,57 +160,68 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
                 // add OtrChatListener as the intermediary to mListenerAdapter so it can filter OTR msgs
                 mChatSession.setMessageListener(new OtrChatListener(cm, mListenerAdapter));
-               // mChatSession.setOtrChatManager(cm);
+                // mChatSession.setOtrChatManager(cm);
             }
         }
         catch (NullPointerException npe)
         {
-            Log.e(ImApp.LOG_TAG,"error init OTR session",npe);
+            Log.e(ImApp.LOG_TAG, "error init OTR session", npe);
         }
     }
 
-    public synchronized IOtrChatSession getOtrChatSession() {
+    public synchronized IOtrChatSession getOtrChatSession()
+    {
 
         if (mOtrChatSession == null)
+        {
             initOtrChatSession();
+        }
 
         return mOtrChatSession;
     }
 
-    private void init(ChatGroup group, boolean isNewSession) {
-        
+    private void init(ChatGroup group, boolean isNewSession)
+    {
+
         mIsGroupChat = true;
 
         mContactId = insertOrUpdateGroupContactInDb(group);
         group.addMemberListener(mListenerAdapter);
 
-        try {            
+        try
+        {
             mChatSessionManager.getChatGroupManager().joinChatGroupAsync(group.getAddress());
-        
+
             mMessageURI = Imps.Messages.getContentUriByThreadId(mContactId);
-    
+
             mChatURI = ContentUris.withAppendedId(Imps.Chats.CONTENT_URI, mContactId);
-    
+
             if (isNewSession)
+            {
                 insertOrUpdateChat(null);
-    
-            for (Contact c : group.getMembers()) {
+            }
+
+            for (Contact c : group.getMembers())
+            {
                 mContactStatusMap.put(c.getName(), c.getPresence().getStatus());
             }
-            
-        } catch (Exception e) {
+
+        }
+        catch (Exception e)
+        {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-        
+
+
     }
 
-    private void init(Contact contact, boolean isNewSession) {
+    private void init(Contact contact, boolean isNewSession)
+    {
         mIsGroupChat = false;
         ContactListManagerAdapter listManager = (ContactListManagerAdapter) mConnection
                 .getContactListManager();
-        
+
         mContactId = listManager.queryOrInsertContact(contact);
 
         mMessageURI = Imps.Messages.getContentUriByThreadId(mContactId);
@@ -212,45 +229,56 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         mChatURI = ContentUris.withAppendedId(Imps.Chats.CONTENT_URI, mContactId);
 
         if (isNewSession)
+        {
             insertOrUpdateChat(null);
+        }
 
         mContactStatusMap.put(contact.getName(), contact.getPresence().getStatus());
     }
 
-    public void reInit ()
+    public void reInit()
     {
-       // insertOrUpdateChat(null);
+        // insertOrUpdateChat(null);
 
     }
 
-    private ChatGroupManager getGroupManager() {
+    private ChatGroupManager getGroupManager()
+    {
         return mConnection.getAdaptee().getChatGroupManager();
     }
 
-    public ChatSession getAdaptee() {
+    public ChatSession getAdaptee()
+    {
         return mChatSession;
     }
 
-    public Uri getChatUri() {
+    public Uri getChatUri()
+    {
         return mChatURI;
     }
 
-    public String[] getParticipants() {
-        if (mIsGroupChat) {
+    public String[] getParticipants()
+    {
+        if (mIsGroupChat)
+        {
             Contact self = mConnection.getLoginUser();
             ChatGroup group = (ChatGroup) mChatSession.getParticipant();
             List<Contact> members = group.getMembers();
             String[] result = new String[members.size() - 1];
             int index = 0;
-            for (Contact c : members) {
-                if (!c.equals(self)) {
+            for (Contact c : members)
+            {
+                if (!c.equals(self))
+                {
                     result[index++] = c.getAddress().getAddress();
                 }
             }
             return result;
-        } else {
+        }
+        else
+        {
 
-            return new String[] { mChatSession.getParticipant().getAddress().getAddress() };
+            return new String[]{mChatSession.getParticipant().getAddress().getAddress()};
         }
     }
 
@@ -258,12 +286,14 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
      * Convert this chat session to a group chat. If it's already a group chat,
      * nothing will happen. The method works in async mode and the registered
      * listener will be notified when it's converted to group chat successfully.
-     *
+     * <p/>
      * Note that the method is not thread-safe since it's always called from the
      * UI and Android uses single thread mode for UI.
      */
-    public void convertToGroupChat(String nickname) {
-        if (mIsGroupChat || mConvertingToGroupChat) {
+    public void convertToGroupChat(String nickname)
+    {
+        if (mIsGroupChat || mConvertingToGroupChat)
+        {
             return;
         }
 
@@ -271,40 +301,51 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         new ChatConvertor().convertToGroupChat(nickname);
     }
 
-    public boolean isGroupChatSession() {
+    public boolean isGroupChatSession()
+    {
         return mIsGroupChat;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return mChatSession.getParticipant().getAddress().getUser();
     }
 
-    public String getAddress() {
+    public String getAddress()
+    {
         return mChatSession.getParticipant().getAddress().getAddress();
     }
 
-    public long getId() {
+    public long getId()
+    {
         return ContentUris.parseId(mChatURI);
     }
 
-    public void inviteContact(String contact) {
-        if (!mIsGroupChat) {
+    public void inviteContact(String contact)
+    {
+        if (!mIsGroupChat)
+        {
             return;
         }
         ContactListManagerAdapter listManager = (ContactListManagerAdapter) mConnection
                 .getContactListManager();
         Contact invitee = listManager.getContactByAddress(contact);
-        if (invitee == null) {
+        if (invitee == null)
+        {
             ImErrorInfo error = new ImErrorInfo(ImErrorInfo.ILLEGAL_CONTACT_ADDRESS,
                     "Cannot find contact with address: " + contact);
             mListenerAdapter.onError((ChatGroup) mChatSession.getParticipant(), error);
-        } else {
+        }
+        else
+        {
             getGroupManager().inviteUserAsync((ChatGroup) mChatSession.getParticipant(), invitee);
         }
     }
 
-    public void leave() {
-        if (mIsGroupChat) {
+    public void leave()
+    {
+        if (mIsGroupChat)
+        {
             getGroupManager().leaveChatGroupAsync((ChatGroup) mChatSession.getParticipant());
         }
 
@@ -316,14 +357,18 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
     }
 
-    public void leaveIfInactive() {
-        if (mChatSession.getHistoryMessages().isEmpty()) {
+    public void leaveIfInactive()
+    {
+        if (mChatSession.getHistoryMessages().isEmpty())
+        {
             leave();
         }
     }
 
-    public void sendMessage(String text) {
-        if (mConnection.getState() == ImConnection.SUSPENDED) {
+    public void sendMessage(String text)
+    {
+        if (mConnection.getState() == ImConnection.SUSPENDED)
+        {
             // connection has been suspended, save the message without send it
             long now = System.currentTimeMillis();
             insertMessageInDb(null, text, now, Imps.MessageType.POSTPONED);
@@ -338,18 +383,21 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         int newType = mChatSession.sendMessageAsync(msg);
 
         long now = System.currentTimeMillis();
-        
+
         insertMessageInDb(null, text, now, newType, 0, msg.getID());
     }
 
-    public boolean offerData(String offerId, String url, String type) {
-        if (mConnection.getState() == ImConnection.SUSPENDED) {
+    public boolean offerData(String offerId, String url, String type)
+    {
+        if (mConnection.getState() == ImConnection.SUSPENDED)
+        {
             // TODO send later
             return false;
         }
 
         HashMap<String, String> headers = null;
-        if (type != null) {
+        if (type != null)
+        {
             headers = Maps.newHashMap();
             headers.put("Mime-Type", type);
         }
@@ -361,7 +409,7 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
         catch (IOException ioe)
         {
-            Log.w(ImApp.LOG_TAG,"unable to offer data",ioe);
+            Log.w(ImApp.LOG_TAG, "unable to offer data", ioe);
             return false;
         }
     }
@@ -380,59 +428,72 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
      mChatSession.sendMessageAsync(msg);
     }*/
 
-    void sendPostponedMessages() {
-        String[] projection = new String[] { BaseColumns._ID, Imps.Messages.BODY,
-                                             Imps.Messages.PACKET_ID,
-                                            Imps.Messages.DATE, Imps.Messages.TYPE, };
+    void sendPostponedMessages()
+    {
+        String[] projection = new String[]{BaseColumns._ID, Imps.Messages.BODY,
+                Imps.Messages.PACKET_ID,
+                Imps.Messages.DATE, Imps.Messages.TYPE,};
         String selection = Imps.Messages.TYPE + "=?";
 
         Cursor c = mContentResolver.query(mMessageURI, projection, selection,
-                new String[] { Integer.toString(Imps.MessageType.POSTPONED) }, null);
-        if (c == null) {
+                new String[]{Integer.toString(Imps.MessageType.POSTPONED)}, null);
+        if (c == null)
+        {
             RemoteImService.debug("Query error while querying postponed messages");
             return;
         }
 
         ArrayList<String> messages = new ArrayList<String>();
-        
-        while (c.moveToNext()) {
+
+        while (c.moveToNext())
+        {
             String body = c.getString(1);
             messages.add(body);
         }
-        
+
         c.close();
-        
+
         removeMessageInDb(Imps.MessageType.POSTPONED);
-        
+
         for (String body : messages)
-            sendMessage(body);               
-        
+        {
+            sendMessage(body);
+        }
+
     }
 
-    public void registerChatListener(IChatListener listener) {
-        if (listener != null) {
+    public void registerChatListener(IChatListener listener)
+    {
+        if (listener != null)
+        {
             mRemoteListeners.register(listener);
 
             if (mDataHandlerListener != null)
-                mDataHandlerListener.checkLastTransferRequest ();
+            {
+                mDataHandlerListener.checkLastTransferRequest();
+            }
         }
     }
 
-    public void unregisterChatListener(IChatListener listener) {
-        if (listener != null) {
+    public void unregisterChatListener(IChatListener listener)
+    {
+        if (listener != null)
+        {
             mRemoteListeners.unregister(listener);
         }
     }
 
-    public void markAsRead() {
-        if (mHasUnreadMessages) {
+    public void markAsRead()
+    {
+        if (mHasUnreadMessages)
+        {
 
             /**
              * we want to keep the last message now
-            ContentValues values = new ContentValues(1);
-            values.put(Imps.Chats.LAST_UNREAD_MESSAGE, (String) null);
-            mConnection.getContext().getContentResolver().update(mChatURI, values, null, null);
-*/
+             ContentValues values = new ContentValues(1);
+             values.put(Imps.Chats.LAST_UNREAD_MESSAGE, (String) null);
+             mConnection.getContext().getContentResolver().update(mChatURI, values, null, null);
+             */
             String baseUsername = mChatSession.getParticipant().getAddress().getBareAddress();
             mStatusBarNotifier.dismissChatNotification(mConnection.getProviderId(), baseUsername);
 
@@ -440,29 +501,36 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
     }
 
-    String getNickName(String username) {
+    String getNickName(String username)
+    {
         ImEntity participant = mChatSession.getParticipant();
-        if (mIsGroupChat) {
-            
+        if (mIsGroupChat)
+        {
+
             ChatGroup group = (ChatGroup) participant;
             List<Contact> members = group.getMembers();
-            for (Contact c : members) {
-                if (username.equals(c.getAddress().getAddress())) {
-                    
+            for (Contact c : members)
+            {
+                if (username.equals(c.getAddress().getAddress()))
+                {
+
                     return c.getAddress().getResource();
-                        
+
                 }
             }
-            
+
             // not found, impossible
             String[] parts = username.split("/");
-            return parts[parts.length-1];
-        } else {
+            return parts[parts.length - 1];
+        }
+        else
+        {
             return ((Contact) participant).getName();
         }
     }
 
-    void onConvertToGroupChatSuccess(ChatGroup group) {
+    void onConvertToGroupChatSuccess(ChatGroup group)
+    {
         Contact oldParticipant = (Contact) mChatSession.getParticipant();
         String oldAddress = getAddress();
         mChatSession.setParticipant(group);
@@ -470,7 +538,7 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
         Uri oldChatUri = mChatURI;
         Uri oldMessageUri = mMessageURI;
-        init(group,false);
+        init(group, false);
         copyHistoryMessages(oldParticipant);
 
         mContentResolver.delete(oldMessageUri, NON_CHAT_MESSAGE_SELECTION, null);
@@ -480,34 +548,38 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         mConvertingToGroupChat = false;
     }
 
-    private void copyHistoryMessages(Contact oldParticipant) {
+    private void copyHistoryMessages(Contact oldParticipant)
+    {
         List<info.guardianproject.otr.app.im.engine.Message> historyMessages = mChatSession.getHistoryMessages();
         int total = historyMessages.size();
         int start = total > MAX_HISTORY_COPY_COUNT ? total - MAX_HISTORY_COPY_COUNT : 0;
-        for (int i = start; i < total; i++) {
+        for (int i = start; i < total; i++)
+        {
             info.guardianproject.otr.app.im.engine.Message msg = historyMessages.get(i);
             boolean incoming = msg.getFrom().equals(oldParticipant.getAddress());
             String contact = incoming ? oldParticipant.getName() : null;
             long time = msg.getDateTime().getTime();
             insertMessageInDb(contact, msg.getBody(), time, incoming ? Imps.MessageType.INCOMING
-                                                                    : Imps.MessageType.OUTGOING);
+                    : Imps.MessageType.OUTGOING);
         }
     }
 
-    void insertOrUpdateChat(String message) {
+    void insertOrUpdateChat(String message)
+    {
 
         ContentValues values = new ContentValues(2);
 
         values.put(Imps.Chats.LAST_MESSAGE_DATE, System.currentTimeMillis());
-         values.put(Imps.Chats.LAST_UNREAD_MESSAGE, message);
-         values.put(Imps.Chats.GROUP_CHAT, mIsGroupChat);
-         // ImProvider.insert() will replace the chat if it already exist.
-         mContentResolver.insert(mChatURI, values);
-         
+        values.put(Imps.Chats.LAST_UNREAD_MESSAGE, message);
+        values.put(Imps.Chats.GROUP_CHAT, mIsGroupChat);
+        // ImProvider.insert() will replace the chat if it already exist.
+        mContentResolver.insert(mChatURI, values);
+
 
     }
 
-    private long insertOrUpdateGroupContactInDb(ChatGroup group) {
+    private long insertOrUpdateGroupContactInDb(ChatGroup group)
+    {
         // Insert a record in contacts table
         ContentValues values = new ContentValues(4);
         values.put(Imps.Contacts.USERNAME, group.getAddress().getAddress());
@@ -518,38 +590,42 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         Uri contactUri = ContentUris.withAppendedId(
                 ContentUris.withAppendedId(Imps.Contacts.CONTENT_URI, mConnection.mProviderId),
                 mConnection.mAccountId);
-      
+
         ContactListManagerAdapter listManager = (ContactListManagerAdapter) mConnection
                 .getContactListManager();
-        
+
         long id = listManager.queryGroup(group);
-        
+
         if (id == -1)
         {
             id = ContentUris.parseId(mContentResolver.insert(contactUri, values));
-        
+
             ArrayList<ContentValues> memberValues = new ArrayList<ContentValues>();
             Contact self = mConnection.getLoginUser();
-            for (Contact member : group.getMembers()) {
-                if (!member.equals(self)) { // avoid to insert the user himself
+            for (Contact member : group.getMembers())
+            {
+                if (!member.equals(self))
+                { // avoid to insert the user himself
                     ContentValues memberValue = new ContentValues(2);
                     memberValue.put(Imps.GroupMembers.USERNAME, member.getAddress().getAddress());
                     memberValue.put(Imps.GroupMembers.NICKNAME, member.getName());
                     memberValues.add(memberValue);
                 }
             }
-            if (!memberValues.isEmpty()) {
+            if (!memberValues.isEmpty())
+            {
                 ContentValues[] result = new ContentValues[memberValues.size()];
                 memberValues.toArray(result);
                 Uri memberUri = ContentUris.withAppendedId(Imps.GroupMembers.CONTENT_URI, id);
                 mContentResolver.bulkInsert(memberUri, result);
             }
         }
-        
+
         return id;
     }
 
-    void insertGroupMemberInDb(Contact member) {
+    void insertGroupMemberInDb(Contact member)
+    {
         ContentValues values1 = new ContentValues(2);
         values1.put(Imps.GroupMembers.USERNAME, member.getAddress().getAddress());
         values1.put(Imps.GroupMembers.NICKNAME, member.getName());
@@ -563,9 +639,10 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
                 Imps.MessageType.PRESENCE_AVAILABLE);
     }
 
-    void deleteGroupMemberInDb(Contact member) {
+    void deleteGroupMemberInDb(Contact member)
+    {
         String where = Imps.GroupMembers.USERNAME + "=?";
-        String[] selectionArgs = { member.getAddress().getAddress() };
+        String[] selectionArgs = {member.getAddress().getAddress()};
         long groupId = ContentUris.parseId(mChatURI);
         Uri uri = ContentUris.withAppendedId(Imps.GroupMembers.CONTENT_URI, groupId);
         mContentResolver.delete(uri, where, selectionArgs);
@@ -574,11 +651,13 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
                 Imps.MessageType.PRESENCE_UNAVAILABLE);
     }
 
-    void insertPresenceUpdatesMsg(String contact, Presence presence) {
+    void insertPresenceUpdatesMsg(String contact, Presence presence)
+    {
         int status = presence.getStatus();
 
         Integer previousStatus = mContactStatusMap.get(contact);
-        if (previousStatus != null && previousStatus == status) {
+        if (previousStatus != null && previousStatus == status)
+        {
             // don't insert the presence message if it's the same status
             // with the previous presence update notification
             return;
@@ -586,85 +665,99 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
         mContactStatusMap.put(contact, status);
         int messageType;
-        switch (status) {
-        case Presence.AVAILABLE:
-            messageType = Imps.MessageType.PRESENCE_AVAILABLE;
-            break;
+        switch (status)
+        {
+            case Presence.AVAILABLE:
+                messageType = Imps.MessageType.PRESENCE_AVAILABLE;
+                break;
 
-        case Presence.AWAY:
-        case Presence.IDLE:
-            messageType = Imps.MessageType.PRESENCE_AWAY;
-            break;
+            case Presence.AWAY:
+            case Presence.IDLE:
+                messageType = Imps.MessageType.PRESENCE_AWAY;
+                break;
 
-        case Presence.DO_NOT_DISTURB:
-            messageType = Imps.MessageType.PRESENCE_DND;
-            break;
+            case Presence.DO_NOT_DISTURB:
+                messageType = Imps.MessageType.PRESENCE_DND;
+                break;
 
-        default:
-            messageType = Imps.MessageType.PRESENCE_UNAVAILABLE;
-            break;
+            default:
+                messageType = Imps.MessageType.PRESENCE_UNAVAILABLE;
+                break;
         }
 
-        if (mIsGroupChat) {
+        if (mIsGroupChat)
+        {
             insertMessageInDb(contact, null, System.currentTimeMillis(), messageType);
-        } else {
+        }
+        else
+        {
             insertMessageInDb(null, null, System.currentTimeMillis(), messageType);
         }
     }
 
-    void removeMessageInDb(int type) {
+    void removeMessageInDb(int type)
+    {
         mContentResolver.delete(mMessageURI, Imps.Messages.TYPE + "=?",
-                new String[] { Integer.toString(type) });
+                new String[]{Integer.toString(type)});
     }
 
-    Uri insertMessageInDb(String contact, String body, long time, int type) {
+    Uri insertMessageInDb(String contact, String body, long time, int type)
+    {
         return insertMessageInDb(contact, body, time, type, 0/*No error*/, Packet.nextID());
     }
 
-    Uri insertMessageInDb(String contact, String body, long time, int type, int errCode, String id) {
+    Uri insertMessageInDb(String contact, String body, long time, int type, int errCode, String id)
+    {
         boolean isEncrypted = true;
-        try {
+        try
+        {
             isEncrypted = getOtrChatSession().isChatEncrypted();
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
             // Leave it as encrypted so it gets stored in memory
             // FIXME(miron)
         }
         return Imps.insertMessageInDb(mContentResolver, mIsGroupChat, mContactId, isEncrypted, contact, body, time, type, errCode, id, null);
     }
 
-    int updateMessageInDb(String id, int type, long time) {
+    int updateMessageInDb(String id, int type, long time)
+    {
 
         int result = -1;
-        
+
         Uri.Builder builder = Imps.Messages.OTR_MESSAGES_CONTENT_URI_BY_PACKET_ID.buildUpon();
         builder.appendPath(id);
 
         ContentValues values = new ContentValues(1);
         values.put(Imps.Messages.TYPE, type);
-        
+
         if (time != -1)
+        {
             values.put(Imps.Messages.DATE, time);
-        
+        }
+
         result = mContentResolver.update(builder.build(), values, null, null);
-        
+
         if (result == 0)
         {
             builder = Imps.Messages.CONTENT_URI_MESSAGES_BY_PACKET_ID.buildUpon();
             builder.appendPath(id);
-            
+
             result = mContentResolver.update(builder.build(), values, null, null);
         }
-        
-        
+
+
         return result;
-        
+
     }
 
 
+    class ListenerAdapter implements MessageListener, GroupMemberListener
+    {
 
-    class ListenerAdapter implements MessageListener, GroupMemberListener {
-
-        public boolean  onIncomingMessage(ChatSession ses, final info.guardianproject.otr.app.im.engine.Message msg) {
+        public boolean onIncomingMessage(ChatSession ses, final info.guardianproject.otr.app.im.engine.Message msg)
+        {
             String body = msg.getBody();
             String username = msg.getFrom().getAddress();
             String bareUsername = msg.getFrom().getBareAddress();
@@ -678,15 +771,21 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             boolean wasMessageSeen = false;
 
             int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     boolean wasSeen = listener.onIncomingMessage(ChatSessionAdapter.this, msg);
 
                     if (wasSeen)
+                    {
                         wasMessageSeen = wasSeen;
+                    }
 
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -707,16 +806,21 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             return true;
         }
 
-        public void onSendMessageError(ChatSession ses, final info.guardianproject.otr.app.im.engine.Message msg, final ImErrorInfo error) {
+        public void onSendMessageError(ChatSession ses, final info.guardianproject.otr.app.im.engine.Message msg, final ImErrorInfo error)
+        {
             insertMessageInDb(null, null, System.currentTimeMillis(), Imps.MessageType.OUTGOING,
                     error.getCode(), null);
 
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onSendMessageError(ChatSessionAdapter.this, msg, error);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -724,15 +828,20 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             mRemoteListeners.finishBroadcast();
         }
 
-        public void onMemberJoined(ChatGroup group, final Contact contact) {
+        public void onMemberJoined(ChatGroup group, final Contact contact)
+        {
             insertGroupMemberInDb(contact);
 
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onContactJoined(ChatSessionAdapter.this, contact);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -740,15 +849,20 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             mRemoteListeners.finishBroadcast();
         }
 
-        public void onMemberLeft(ChatGroup group, final Contact contact) {
+        public void onMemberLeft(ChatGroup group, final Contact contact)
+        {
             deleteGroupMemberInDb(contact);
 
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onContactLeft(ChatSessionAdapter.this, contact);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -756,14 +870,19 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             mRemoteListeners.finishBroadcast();
         }
 
-        public void onError(ChatGroup group, final ImErrorInfo error) {
+        public void onError(ChatGroup group, final ImErrorInfo error)
+        {
             // TODO: insert an error message?
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onInviteError(ChatSessionAdapter.this, error);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -771,13 +890,18 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             mRemoteListeners.finishBroadcast();
         }
 
-        public void notifyChatSessionConverted() {
+        public void notifyChatSessionConverted()
+        {
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onConvertedToGroupChat(ChatSessionAdapter.this);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -786,15 +910,20 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
 
         @Override
-        public void onIncomingReceipt(ChatSession ses, String id) {
+        public void onIncomingReceipt(ChatSession ses, String id)
+        {
             Imps.updateConfirmInDb(mContentResolver, id, true);
 
             int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onIncomingReceipt(ChatSessionAdapter.this, id);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -803,121 +932,146 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
 
         @Override
-        public void onMessagePostponed(ChatSession ses, String id) {
+        public void onMessagePostponed(ChatSession ses, String id)
+        {
             updateMessageInDb(id, Imps.MessageType.POSTPONED, -1);
         }
 
         @Override
-        public void onReceiptsExpected(ChatSession ses) {
+        public void onReceiptsExpected(ChatSession ses)
+        {
             // TODO
 
         }
 
         @Override
-        public void onStatusChanged(ChatSession session, SessionStatus status) {
+        public void onStatusChanged(ChatSession session, SessionStatus status)
+        {
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onStatusChanged(ChatSessionAdapter.this);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.   // TODO Auto-generated method stub
                 }
             }
             mRemoteListeners.finishBroadcast();
             mDataHandler.onOtrStatusChanged(status);
-            
+
             if (status == SessionStatus.ENCRYPTED)
             {
-                sendPostponedMessages ();
+                sendPostponedMessages();
             }
-            
+
         }
 
         @Override
-        public void onIncomingDataRequest(ChatSession session, info.guardianproject.otr.app.im.engine.Message msg, byte[] value) {
-            mDataHandler.onIncomingRequest(msg.getFrom(),msg.getTo(), value);
+        public void onIncomingDataRequest(ChatSession session, info.guardianproject.otr.app.im.engine.Message msg, byte[] value)
+        {
+            mDataHandler.onIncomingRequest(msg.getFrom(), msg.getTo(), value);
         }
 
         @Override
-        public void onIncomingDataResponse(ChatSession session, info.guardianproject.otr.app.im.engine.Message msg, byte[] value) {
-            mDataHandler.onIncomingResponse(msg.getFrom(),msg.getTo(), value);
+        public void onIncomingDataResponse(ChatSession session, info.guardianproject.otr.app.im.engine.Message msg, byte[] value)
+        {
+            mDataHandler.onIncomingResponse(msg.getFrom(), msg.getTo(), value);
         }
 
         @Override
-        public void onIncomingTransferRequest(final Transfer transfer) {
+        public void onIncomingTransferRequest(final Transfer transfer)
+        {
 
         }
 
 
     }
 
-    class ChatConvertor implements GroupListener, GroupMemberListener {
+    class ChatConvertor implements GroupListener, GroupMemberListener
+    {
         private ChatGroupManager mGroupMgr;
         private String mGroupName;
 
-        public ChatConvertor() {
+        public ChatConvertor()
+        {
             mGroupMgr = mConnection.mGroupManager;
         }
 
-        public void convertToGroupChat(String nickname) {
+        public void convertToGroupChat(String nickname)
+        {
             mGroupMgr.addGroupListener(this);
             mGroupName = "G" + System.currentTimeMillis();
             try
             {
                 mGroupMgr.createChatGroupAsync(mGroupName, nickname);
             }
-            catch (Exception e){
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
 
-        public void onGroupCreated(ChatGroup group) {
-            if (mGroupName.equalsIgnoreCase(group.getName())) {
+        public void onGroupCreated(ChatGroup group)
+        {
+            if (mGroupName.equalsIgnoreCase(group.getName()))
+            {
                 mGroupMgr.removeGroupListener(this);
                 group.addMemberListener(this);
                 mGroupMgr.inviteUserAsync(group, (Contact) mChatSession.getParticipant());
             }
         }
 
-        public void onMemberJoined(ChatGroup group, Contact contact) {
-            if (mChatSession.getParticipant().equals(contact)) {
+        public void onMemberJoined(ChatGroup group, Contact contact)
+        {
+            if (mChatSession.getParticipant().equals(contact))
+            {
                 onConvertToGroupChatSuccess(group);
             }
 
             mContactStatusMap.put(contact.getName(), contact.getPresence().getStatus());
         }
 
-        public void onGroupDeleted(ChatGroup group) {
+        public void onGroupDeleted(ChatGroup group)
+        {
         }
 
-        public void onGroupError(int errorType, String groupName, ImErrorInfo error) {
+        public void onGroupError(int errorType, String groupName, ImErrorInfo error)
+        {
         }
 
-        public void onJoinedGroup(ChatGroup group) {
+        public void onJoinedGroup(ChatGroup group)
+        {
         }
 
-        public void onLeftGroup(ChatGroup group) {
+        public void onLeftGroup(ChatGroup group)
+        {
         }
 
-        public void onError(ChatGroup group, ImErrorInfo error) {
+        public void onError(ChatGroup group, ImErrorInfo error)
+        {
         }
 
-        public void onMemberLeft(ChatGroup group, Contact contact) {
+        public void onMemberLeft(ChatGroup group, Contact contact)
+        {
             mContactStatusMap.remove(contact.getName());
         }
     }
 
     @Override
-    public void setDataListener(IDataListener dataListener) throws RemoteException {
+    public void setDataListener(IDataListener dataListener) throws RemoteException
+    {
 
         mDataListener = dataListener;
         mDataHandler.setDataListener(mDataListener);
     }
 
     @Override
-    public void setIncomingFileResponse (boolean acceptThis, boolean acceptAll)
+    public void setIncomingFileResponse(boolean acceptThis, boolean acceptAll)
     {
 
         mAcceptTransfer = acceptThis;
@@ -928,18 +1082,24 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
     }
 
-    class DataHandlerListenerImpl extends IDataListener.Stub {
+    class DataHandlerListenerImpl extends IDataListener.Stub
+    {
 
         @Override
-        public void onTransferComplete(boolean outgoing, String offerId, String from, String url, String mimeType, String filePath) {
+        public void onTransferComplete(boolean outgoing, String offerId, String from, String url, String mimeType, String filePath)
+        {
 
 
-            try {
+            try
+            {
 
 
-                if (outgoing) {
+                if (outgoing)
+                {
                     Imps.updateConfirmInDb(service.getContentResolver(), offerId, true);
-                } else {
+                }
+                else
+                {
 
                     try
                     {
@@ -948,57 +1108,63 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
                         int type = isVerified ? Imps.MessageType.INCOMING_ENCRYPTED_VERIFIED : Imps.MessageType.INCOMING_ENCRYPTED;
 
                         insertOrUpdateChat(filePath);
-                        
+
                         Uri messageUri = Imps.insertMessageInDb(service.getContentResolver(),
                                 false, getId(),
                                 true, null,
                                 filePath, System.currentTimeMillis(), type,
                                 0, offerId, mimeType);
 
-                        int percent = (int)(100);
+                        int percent = (int) (100);
 
                         String[] path = url.split("/");
                         String sanitizedPath = SystemServices.sanitize(path[path.length - 1]);
 
                         final int N = mRemoteListeners.beginBroadcast();
-                        for (int i = 0; i < N; i++) {
+                        for (int i = 0; i < N; i++)
+                        {
                             IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                            try {
+                            try
+                            {
                                 listener.onIncomingFileTransferProgress(sanitizedPath, percent);
-                            } catch (RemoteException e) {
+                            }
+                            catch (RemoteException e)
+                            {
                                 // The RemoteCallbackList will take care of removing the
                                 // dead listeners.
                             }
                         }
                         mRemoteListeners.finishBroadcast();
-                        
+
 
                     }
                     catch (Exception e)
                     {
-                        Log.e(ImApp.LOG_TAG,"Error updating file transfer progress",e);
+                        Log.e(ImApp.LOG_TAG, "Error updating file transfer progress", e);
                     }
 
                 }
 
                 /**
-                if (mimeType != null && mimeType.startsWith("audio"))
-                {
-                    MediaPlayer mp = new MediaPlayer();
-                    try {
-                        mp.setDataSource(file.getCanonicalPath());
+                 if (mimeType != null && mimeType.startsWith("audio"))
+                 {
+                 MediaPlayer mp = new MediaPlayer();
+                 try {
+                 mp.setDataSource(file.getCanonicalPath());
 
-                        mp.prepare();
-                        mp.start();
+                 mp.prepare();
+                 mp.start();
 
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        //e.printStackTrace();
-                    }
-                }*/
+                 } catch (IOException e) {
+                 // TODO Auto-generated catch block
+                 //e.printStackTrace();
+                 }
+                 }*/
 
-            } catch (Exception e) {
-             //   mHandler.showAlert(service.getString(R.string.error_chat_file_transfer_title), service.getString(R.string.error_chat_file_transfer_body));
+            }
+            catch (Exception e)
+            {
+                //   mHandler.showAlert(service.getString(R.string.error_chat_file_transfer_title), service.getString(R.string.error_chat_file_transfer_body));
                 OtrDebugLogger.log("error reading file", e);
             }
 
@@ -1006,18 +1172,23 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
 
         @Override
-        public synchronized void onTransferFailed(boolean outgoing, String offerId, String from, String url, String reason) {
+        public synchronized void onTransferFailed(boolean outgoing, String offerId, String from, String url, String reason)
+        {
 
 
             String[] path = url.split("/");
             String sanitizedPath = SystemServices.sanitize(path[path.length - 1]);
 
             final int N = mRemoteListeners.beginBroadcast();
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
                 IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                try {
+                try
+                {
                     listener.onIncomingFileTransferError(sanitizedPath, reason);
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // The RemoteCallbackList will take care of removing the
                     // dead listeners.
                 }
@@ -1026,9 +1197,10 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
 
         @Override
-        public synchronized void onTransferProgress(boolean outgoing, String offerId, String from, String url, float percentF) {
+        public synchronized void onTransferProgress(boolean outgoing, String offerId, String from, String url, float percentF)
+        {
 
-            int percent = (int)(100*percentF);
+            int percent = (int) (100 * percentF);
 
             String[] path = url.split("/");
             String sanitizedPath = SystemServices.sanitize(path[path.length - 1]);
@@ -1036,11 +1208,15 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             try
             {
                 final int N = mRemoteListeners.beginBroadcast();
-                for (int i = 0; i < N; i++) {
+                for (int i = 0; i < N; i++)
+                {
                     IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                    try {
+                    try
+                    {
                         listener.onIncomingFileTransferProgress(sanitizedPath, percent);
-                    } catch (RemoteException e) {
+                    }
+                    catch (RemoteException e)
+                    {
                         // The RemoteCallbackList will take care of removing the
                         // dead listeners.
                     }
@@ -1048,7 +1224,7 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
             }
             catch (Exception e)
             {
-                Log.e(ImApp.LOG_TAG,"error broadcasting progress",e);
+                Log.e(ImApp.LOG_TAG, "error broadcasting progress", e);
             }
             finally
             {
@@ -1060,18 +1236,19 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         private String mLastTransferFrom;
         private String mLastTransferUrl;
 
-        public void checkLastTransferRequest ()
+        public void checkLastTransferRequest()
         {
             if (mLastTransferFrom != null)
             {
-                onTransferRequested(mLastTransferUrl,mLastTransferFrom,mLastTransferFrom,mLastTransferUrl);
+                onTransferRequested(mLastTransferUrl, mLastTransferFrom, mLastTransferFrom, mLastTransferUrl);
                 mLastTransferFrom = null;
                 mLastTransferUrl = null;
             }
         }
 
         @Override
-        public synchronized boolean onTransferRequested(String offerId, String from, String to, String transferUrl) {
+        public synchronized boolean onTransferRequested(String offerId, String from, String to, String transferUrl)
+        {
 
             mAcceptTransfer = false;
             mWaitingForResponse = true;
@@ -1094,11 +1271,15 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
 
                     if (N > 0)
                     {
-                        for (int i = 0; i < N; i++) {
+                        for (int i = 0; i < N; i++)
+                        {
                             IChatListener listener = mRemoteListeners.getBroadcastItem(i);
-                            try {
+                            try
+                            {
                                 listener.onIncomingFileTransfer(from, transferUrl);
-                            } catch (RemoteException e) {
+                            }
+                            catch (RemoteException e)
+                            {
                                 // The RemoteCallbackList will take care of removing the
                                 // dead listeners.
                             }
@@ -1127,10 +1308,7 @@ public class ChatSessionAdapter extends info.guardianproject.otr.app.im.IChatSes
         }
 
 
-
     }
-
-
 
 
 }

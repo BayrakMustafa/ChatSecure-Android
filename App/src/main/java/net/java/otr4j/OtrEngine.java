@@ -1,20 +1,23 @@
 package net.java.otr4j;
 
-import java.security.PublicKey;
-import java.util.List;
-
 import net.java.otr4j.session.Session;
 import net.java.otr4j.session.SessionID;
 import net.java.otr4j.session.SessionStatus;
 import net.java.otr4j.session.TLV;
 
-/** @author George Politis */
-public interface OtrEngine {
+import java.security.PublicKey;
+import java.util.List;
+
+/**
+ * @author George Politis
+ */
+public interface OtrEngine
+{
 
     /**
      * @param sessionID The session identifier.
-     * @param content The message content to be transformed.
-     * @param tlvs The TLVs
+     * @param content   The message content to be transformed.
+     * @param tlvs      The TLVs
      * @return The transformed message content.
      * @throws OtrException
      */
@@ -23,7 +26,7 @@ public interface OtrEngine {
 
     /**
      * @param sessionID The session identifier.
-     * @param content The message content to be transformed.
+     * @param content   The message content to be transformed.
      * @return The transformed message content.
      * @throws OtrException
      */
@@ -32,7 +35,7 @@ public interface OtrEngine {
 
     /**
      * @param sessionID The session identifier.
-     * @param content The message content to be transformed.
+     * @param content   The message content to be transformed.
      * @return The transformed message content.
      * @throws OtrException
      */
@@ -41,8 +44,8 @@ public interface OtrEngine {
 
     /**
      * @param sessionID The session identifier.
-     * @param content The message content to be transformed.
-     * @param tlvs The TLVs to attach.
+     * @param content   The message content to be transformed.
+     * @param tlvs      The TLVs to attach.
      * @return The transformed message content.
      * @throws OtrException
      */
@@ -57,7 +60,9 @@ public interface OtrEngine {
      */
     public abstract void startSession(SessionID sessionID) throws OtrException;
 
-    /** Get an OTR session. */
+    /**
+     * Get an OTR session.
+     */
     public abstract Session getSession(SessionID sessionID) throws OtrException;
 
     /**

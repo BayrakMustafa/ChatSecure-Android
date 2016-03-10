@@ -5,17 +5,20 @@
  */
 package net.java.otr4j.session;
 
+import net.java.otr4j.OtrException;
+import net.java.otr4j.io.messages.AbstractMessage;
+
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
 import javax.crypto.interfaces.DHPublicKey;
 
-import net.java.otr4j.OtrException;
-import net.java.otr4j.io.messages.AbstractMessage;
-
-/** @author George Politis */
-interface AuthContext {
+/**
+ * @author George Politis
+ */
+interface AuthContext
+{
 
     public static final int NONE = 0;
     public static final int AWAITING_DHKEY = 1;

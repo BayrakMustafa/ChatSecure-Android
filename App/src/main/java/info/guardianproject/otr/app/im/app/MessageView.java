@@ -17,27 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.emoji.EmojiManager;
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.engine.Presence;
-import info.guardianproject.otr.app.im.plugin.xmpp.XmppAddress;
-import info.guardianproject.otr.app.im.provider.Imps;
-import info.guardianproject.otr.app.im.ui.ImageViewActivity;
-import info.guardianproject.otr.app.im.ui.LetterAvatar;
-import info.guardianproject.otr.app.im.ui.RoundedAvatarDrawable;
-import info.guardianproject.util.AudioPlayer;
-import info.guardianproject.util.LinkifyHelper;
-import info.guardianproject.util.LogCleaner;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -77,25 +56,51 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MessageView extends FrameLayout {
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import info.guardianproject.emoji.EmojiManager;
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.engine.Presence;
+import info.guardianproject.otr.app.im.plugin.xmpp.XmppAddress;
+import info.guardianproject.otr.app.im.provider.Imps;
+import info.guardianproject.otr.app.im.ui.ImageViewActivity;
+import info.guardianproject.otr.app.im.ui.LetterAvatar;
+import info.guardianproject.otr.app.im.ui.RoundedAvatarDrawable;
+import info.guardianproject.util.AudioPlayer;
+import info.guardianproject.util.LinkifyHelper;
+import info.guardianproject.util.LogCleaner;
+
+public class MessageView extends FrameLayout
+{
 
     private static int sCacheSize = 10; // 1MiB
-    private static LruCache<String,Bitmap> mBitmapCache = new LruCache<String,Bitmap>(sCacheSize);
+    private static LruCache<String, Bitmap> mBitmapCache = new LruCache<String, Bitmap>(sCacheSize);
 
-    public enum DeliveryState {
+    public enum DeliveryState
+    {
         NEUTRAL, DELIVERED, UNDELIVERED
     }
 
-    public enum EncryptionState {
+    public enum EncryptionState
+    {
         NONE, ENCRYPTED, ENCRYPTED_AND_VERIFIED
 
     }
+
     private CharSequence lastMessage = null;
 
     private Context context;
     private boolean linkify = false;
 
-    public MessageView(Context context, AttributeSet attrs) {
+    public MessageView(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
         this.context = context;
     }
@@ -118,7 +123,7 @@ public class MessageView extends FrameLayout {
         TextView mTextViewForMessages = (TextView) findViewById(R.id.message);
         TextView mTextViewForTimestamp = (TextView) findViewById(R.id.messagets);
         ImageView mAvatar = (ImageView) findViewById(R.id.avatar);
-       // View mStatusBlock = findViewById(R.id.status_block);
+        // View mStatusBlock = findViewById(R.id.status_block);
         ImageView mMediaThumbnail = (ImageView) findViewById(R.id.media_thumbnail);
         View mContainer = findViewById(R.id.message_container);
 
@@ -126,51 +131,60 @@ public class MessageView extends FrameLayout {
         // if the holder was reused, the pair is broken
         Uri mMediaUri = null;
 
-        ViewHolder() {
+        ViewHolder()
+        {
             // disable built-in autoLink so we can add custom ones
             mTextViewForMessages.setAutoLinkMask(0);
         }
 
-        public void setOnClickListenerMediaThumbnail( final String mimeType, final Uri mediaUri ) {
-            mMediaThumbnail.setOnClickListener( new OnClickListener() {
+        public void setOnClickListenerMediaThumbnail(final String mimeType, final Uri mediaUri)
+        {
+            mMediaThumbnail.setOnClickListener(new OnClickListener()
+            {
                 @Override
-                public void onClick(View v) {
-                    onClickMediaIcon( mimeType, mediaUri );
+                public void onClick(View v)
+                {
+                    onClickMediaIcon(mimeType, mediaUri);
                 }
             });
-            mMediaThumbnail.setOnLongClickListener( new OnLongClickListener() {
+            mMediaThumbnail.setOnLongClickListener(new OnLongClickListener()
+            {
 
                 @Override
-                public boolean onLongClick(View v) {
-                    onLongClickMediaIcon( mimeType, mediaUri );
+                public boolean onLongClick(View v)
+                {
+                    onLongClickMediaIcon(mimeType, mediaUri);
                     return false;
                 }
             });
         }
 
-        public void resetOnClickListenerMediaThumbnail() {
-            mMediaThumbnail.setOnClickListener( null );
+        public void resetOnClickListenerMediaThumbnail()
+        {
+            mMediaThumbnail.setOnClickListener(null);
         }
 
-       long mTimeDiff = -1;
+        long mTimeDiff = -1;
     }
 
     /**
      * This trickery is needed in order to have clickable links that open things
      * in a new {@code Task} rather than in ChatSecure's {@code Task.} Thanks to @commonsware
      * https://stackoverflow.com/a/11417498
-     *
      */
-    class NewTaskUrlSpan extends ClickableSpan {
+    class NewTaskUrlSpan extends ClickableSpan
+    {
 
         private String urlString;
 
-        NewTaskUrlSpan(String urlString) {
+        NewTaskUrlSpan(String urlString)
+        {
             this.urlString = urlString;
         }
 
         @Override
-        public void onClick(View widget) {
+        public void onClick(View widget)
+        {
             Uri uri = Uri.parse(urlString);
             Context context = widget.getContext();
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -180,19 +194,22 @@ public class MessageView extends FrameLayout {
         }
     }
 
-    class URLSpanConverter implements LinkifyHelper.SpanConverter<URLSpan, ClickableSpan> {
+    class URLSpanConverter implements LinkifyHelper.SpanConverter<URLSpan, ClickableSpan>
+    {
         @Override
-        public NewTaskUrlSpan convert(URLSpan span) {
+        public NewTaskUrlSpan convert(URLSpan span)
+        {
             return (new NewTaskUrlSpan(span.getURL()));
         }
     }
 
     @Override
-    protected void onFinishInflate() {
+    protected void onFinishInflate()
+    {
         super.onFinishInflate();
 
 
-        mHolder = (ViewHolder)getTag();
+        mHolder = (ViewHolder) getTag();
 
         if (mHolder == null)
         {
@@ -202,60 +219,70 @@ public class MessageView extends FrameLayout {
         }
     }
 
-    public void setLinkify(boolean linkify) {
+    public void setLinkify(boolean linkify)
+    {
         this.linkify = linkify;
     }
 
-    public void setMessageBackground (Drawable d) {
+    public void setMessageBackground(Drawable d)
+    {
         mHolder.mContainer.setBackgroundDrawable(d);
     }
 
-    public URLSpan[] getMessageLinks() {
+    public URLSpan[] getMessageLinks()
+    {
         return mHolder.mTextViewForMessages.getUrls();
     }
 
 
-    public String getLastMessage () {
+    public String getLastMessage()
+    {
         return lastMessage.toString();
     }
 
     public void bindIncomingMessage(int id, int messageType, String address, String nickname, final String mimeType, final String body, Date date, Markup smileyRes,
-            boolean scrolling, EncryptionState encryption, boolean showContact, int presenceStatus) {
+                                    boolean scrolling, EncryptionState encryption, boolean showContact, int presenceStatus)
+    {
 
-        mHolder = (ViewHolder)getTag();
+        mHolder = (ViewHolder) getTag();
 
         mHolder.mTextViewForMessages.setVisibility(View.VISIBLE);
 
         if (nickname == null)
+        {
             nickname = address;
+        }
 
         if (showContact && nickname != null)
         {
             lastMessage = nickname + ": " + formatMessage(body);
-            showAvatar(address,nickname,true,presenceStatus);
+            showAvatar(address, nickname, true, presenceStatus);
         }
         else
         {
             lastMessage = formatMessage(body);
-            showAvatar(address,nickname,true,presenceStatus);
+            showAvatar(address, nickname, true, presenceStatus);
 
             mHolder.resetOnClickListenerMediaThumbnail();
-            if( mimeType != null ) {
+            if (mimeType != null)
+            {
 
                 mHolder.mTextViewForMessages.setVisibility(View.GONE);
                 mHolder.mMediaThumbnail.setVisibility(View.VISIBLE);
 
-                Uri mediaUri = Uri.parse( body ) ;
+                Uri mediaUri = Uri.parse(body);
                 lastMessage = "";
                 showMediaThumbnail(mimeType, mediaUri, id, mHolder);
 
-            } else {
+            }
+            else
+            {
                 mHolder.mMediaThumbnail.setVisibility(View.GONE);
                 if (showContact)
                 {
                     String[] nickParts = nickname.split("/");
 
-                    lastMessage = nickParts[nickParts.length-1] + ": " + formatMessage(body);
+                    lastMessage = nickParts[nickParts.length - 1] + ": " + formatMessage(body);
 
                 }
                 else
@@ -263,16 +290,19 @@ public class MessageView extends FrameLayout {
                     lastMessage = formatMessage(body);
                 }
             }
-	}
+        }
 
         if (lastMessage.length() > 0)
         {
-            try {
-                SpannableString spannablecontent=new SpannableString(lastMessage);
+            try
+            {
+                SpannableString spannablecontent = new SpannableString(lastMessage);
                 EmojiManager.getInstance(getContext()).addEmoji(getContext(), spannablecontent);
 
                 mHolder.mTextViewForMessages.setText(spannablecontent);
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 LogCleaner.error(ImApp.LOG_TAG, "error processing message", e);
             }
         }
@@ -284,15 +314,19 @@ public class MessageView extends FrameLayout {
 
         if (date != null)
         {
-           CharSequence tsText = null;
+            CharSequence tsText = null;
 
-           if (isSameDay(date,DATE_NOW))
-               tsText = formatTimeStamp(date,messageType,MESSAGE_TIME_FORMAT, null, encryption);
-           else
-               tsText = formatTimeStamp(date,messageType,MESSAGE_DATETIME_FORMAT, null, encryption);
+            if (isSameDay(date, DATE_NOW))
+            {
+                tsText = formatTimeStamp(date, messageType, MESSAGE_TIME_FORMAT, null, encryption);
+            }
+            else
+            {
+                tsText = formatTimeStamp(date, messageType, MESSAGE_DATETIME_FORMAT, null, encryption);
+            }
 
-         mHolder.mTextViewForTimestamp.setText(tsText);
-         mHolder.mTextViewForTimestamp.setVisibility(View.VISIBLE);
+            mHolder.mTextViewForTimestamp.setText(tsText);
+            mHolder.mTextViewForTimestamp.setVisibility(View.VISIBLE);
 
         }
         else
@@ -303,20 +337,28 @@ public class MessageView extends FrameLayout {
 
         }
         if (linkify)
+        {
             LinkifyHelper.addLinks(mHolder.mTextViewForMessages, new URLSpanConverter());
+        }
         LinkifyHelper.addTorSafeLinks(mHolder.mTextViewForMessages);
     }
 
-    private void showMediaThumbnail (String mimeType, Uri mediaUri, int id, ViewHolder holder)
+    private void showMediaThumbnail(String mimeType, Uri mediaUri, int id, ViewHolder holder)
     {
         /* Guess the MIME type in case we received a file that we can display or play*/
-        if (TextUtils.isEmpty(mimeType) || mimeType.startsWith("application")) {
+        if (TextUtils.isEmpty(mimeType) || mimeType.startsWith("application"))
+        {
             String guessed = URLConnection.guessContentTypeFromName(mediaUri.toString());
-            if (!TextUtils.isEmpty(guessed)) {
+            if (!TextUtils.isEmpty(guessed))
+            {
                 if (TextUtils.equals(guessed, "video/3gpp"))
+                {
                     mimeType = "audio/3gpp";
+                }
                 else
+                {
                     mimeType = guessed;
+                }
             }
         }
         holder.setOnClickListenerMediaThumbnail(mimeType, mediaUri);
@@ -325,10 +367,11 @@ public class MessageView extends FrameLayout {
         holder.mTextViewForMessages.setText(lastMessage);
         holder.mTextViewForMessages.setVisibility(View.GONE);
 
-        if( mimeType.startsWith("image/") ) {
-            setImageThumbnail( getContext().getContentResolver(), id, holder, mediaUri );
+        if (mimeType.startsWith("image/"))
+        {
+            setImageThumbnail(getContext().getContentResolver(), id, holder, mediaUri);
             holder.mMediaThumbnail.setBackgroundColor(Color.TRANSPARENT);
-           // holder.mMediaThumbnail.setBackgroundColor(Color.WHITE);
+            // holder.mMediaThumbnail.setBackgroundColor(Color.WHITE);
 
         }
         else if (mimeType.startsWith("audio"))
@@ -345,20 +388,20 @@ public class MessageView extends FrameLayout {
         holder.mContainer.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
 
-
     }
 
 
-    private boolean isSameDay (Date date1, Date date2)
+    private boolean isSameDay(Date date1, Date date2)
     {
         return FMT_SAME_DAY.format(date1).equals(FMT_SAME_DAY.format(date2));
     }
 
-    protected String convertMediaUriToPath(Uri uri) {
+    protected String convertMediaUriToPath(Uri uri)
+    {
         String path = null;
 
-        String [] proj={MediaStore.Images.Media.DATA};
-        Cursor cursor = getContext().getContentResolver().query(uri, proj,  null, null, null);
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContext().getContentResolver().query(uri, proj, null, null, null);
         if (cursor != null && (!cursor.isClosed()))
         {
             if (cursor.isBeforeFirst())
@@ -381,16 +424,20 @@ public class MessageView extends FrameLayout {
      * @param body
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    protected void onClickMediaIcon(String mimeType, Uri mediaUri) {
+    protected void onClickMediaIcon(String mimeType, Uri mediaUri)
+    {
 
-        if (ChatFileStore.isVfsUri(mediaUri)) {
-            if (mimeType.startsWith("image")) {
+        if (ChatFileStore.isVfsUri(mediaUri))
+        {
+            if (mimeType.startsWith("image"))
+            {
                 Intent intent = new Intent(context, ImageViewActivity.class);
-                intent.putExtra( ImageViewActivity.FILENAME, mediaUri.getPath());
+                intent.putExtra(ImageViewActivity.FILENAME, mediaUri.getPath());
                 context.startActivity(intent);
                 return;
             }
-            if (mimeType.startsWith("audio")) {
+            if (mimeType.startsWith("audio"))
+            {
                 new AudioPlayer(getContext(), mediaUri.getPath(), mimeType).play();
                 return;
             }
@@ -403,25 +450,31 @@ public class MessageView extends FrameLayout {
             String body = convertMediaUriToPath(mediaUri);
 
             if (body == null)
+            {
                 body = new File(mediaUri.getPath()).getAbsolutePath();
+            }
 
-            if (mimeType.startsWith("audio") || (body.endsWith("3gp")||body.endsWith("3gpp")||body.endsWith("amr")))
+            if (mimeType.startsWith("audio") || (body.endsWith("3gp") || body.endsWith("3gpp") || body.endsWith("amr")))
             {
 
                 if (mMediaPlayer != null)
+                {
                     mMediaPlayer.release();
+                }
 
                 try
                 {
-                    mMediaPlayer = new  MediaPlayer();
+                    mMediaPlayer = new MediaPlayer();
                     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     mMediaPlayer.setDataSource(body);
                     mMediaPlayer.prepare();
                     mMediaPlayer.start();
 
                     return;
-                } catch (IOException e) {
-                    Log.e(ImApp.LOG_TAG,"error playing audio: " + body,e);
+                }
+                catch (IOException e)
+                {
+                    Log.e(ImApp.LOG_TAG, "error playing audio: " + body, e);
                 }
 
 
@@ -430,14 +483,16 @@ public class MessageView extends FrameLayout {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (Build.VERSION.SDK_INT >= 11)
+            {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            }
 
             //set a general mime type not specific
-            intent.setDataAndType(Uri.parse( body ), mimeType);
+            intent.setDataAndType(Uri.parse(body), mimeType);
 
             Context context = getContext().getApplicationContext();
 
-            if (isIntentAvailable(context,intent))
+            if (isIntentAvailable(context, intent))
             {
                 context.startActivity(intent);
             }
@@ -448,40 +503,49 @@ public class MessageView extends FrameLayout {
         }
     }
 
-    protected void onLongClickMediaIcon(final String mimeType, final Uri mediaUri) {
+    protected void onLongClickMediaIcon(final String mimeType, final Uri mediaUri)
+    {
 
         final java.io.File exportPath = ChatFileStore.exportPath(mimeType, mediaUri);
 
         new AlertDialog.Builder(context)
-        .setTitle(context.getString(R.string.export_media))
-        .setMessage(context.getString(R.string.export_media_file_to, exportPath.getAbsolutePath()))
-        .setPositiveButton(R.string.export, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichButton) {
-                try {
-                    ChatFileStore.exportContent(mimeType, mediaUri, exportPath);
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(exportPath));
-                    shareIntent.setType(mimeType);
-                    context.startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.export_media)));
-                } catch (IOException e) {
-                    Toast.makeText(getContext(), "Export Failed " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
-                return;
-            }
-        })
-        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichButton) {
-                return;
-            }
-        })
-        .create().show();
+                .setTitle(context.getString(R.string.export_media))
+                .setMessage(context.getString(R.string.export_media_file_to, exportPath.getAbsolutePath()))
+                .setPositiveButton(R.string.export, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton)
+                    {
+                        try
+                        {
+                            ChatFileStore.exportContent(mimeType, mediaUri, exportPath);
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(exportPath));
+                            shareIntent.setType(mimeType);
+                            context.startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.export_media)));
+                        }
+                        catch (IOException e)
+                        {
+                            Toast.makeText(getContext(), "Export Failed " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                        return;
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton)
+                    {
+                        return;
+                    }
+                })
+                .create().show();
     }
 
-    public static boolean isIntentAvailable(Context context, Intent intent) {
+    public static boolean isIntentAvailable(Context context, Intent intent)
+    {
         final PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list =
                 packageManager.queryIntentActivities(intent,
@@ -496,7 +560,8 @@ public class MessageView extends FrameLayout {
      * @param aHolder
      * @param mediaUri
      */
-    private void setImageThumbnail(final ContentResolver contentResolver, final int id, final ViewHolder aHolder, final Uri mediaUri) {
+    private void setImageThumbnail(final ContentResolver contentResolver, final int id, final ViewHolder aHolder, final Uri mediaUri)
+    {
         // pair this holder to the uri. if the holder is recycled, the pairing is broken
         aHolder.mMediaUri = mediaUri;
         // if a content uri - already scanned
@@ -511,30 +576,39 @@ public class MessageView extends FrameLayout {
      * @param aHolder
      * @param uri
      */
-    private void setThumbnail(final ContentResolver contentResolver, final ViewHolder aHolder, final Uri uri) {
-        new AsyncTask<String, Void, Bitmap>() {
+    private void setThumbnail(final ContentResolver contentResolver, final ViewHolder aHolder, final Uri uri)
+    {
+        new AsyncTask<String, Void, Bitmap>()
+        {
 
             @Override
-            protected Bitmap doInBackground(String... params) {
+            protected Bitmap doInBackground(String... params)
+            {
 
                 Bitmap result = mBitmapCache.get(uri.toString());
 
                 if (result == null)
-                    return getThumbnail( contentResolver, uri );
+                {
+                    return getThumbnail(contentResolver, uri);
+                }
                 else
+                {
                     return result;
+                }
             }
 
             @Override
-            protected void onPostExecute(Bitmap result) {
+            protected void onPostExecute(Bitmap result)
+            {
 
                 if (uri != null && result != null)
                 {
                     mBitmapCache.put(uri.toString(), result);
 
                     // confirm the holder is still paired to this uri
-                    if( ! uri.equals( aHolder.mMediaUri ) ) {
-                        return ;
+                    if (!uri.equals(aHolder.mMediaUri))
+                    {
+                        return;
                     }
                     // set the thumbnail
                     aHolder.mMediaThumbnail.setImageBitmap(result);
@@ -545,15 +619,18 @@ public class MessageView extends FrameLayout {
 
     public final static int THUMBNAIL_SIZE_DEFAULT = 400;
 
-    public static Bitmap getThumbnail(ContentResolver cr, Uri uri) {
-     //   Log.e( MessageView.class.getSimpleName(), "getThumbnail uri:" + uri);
-        if (ChatFileStore.isVfsUri(uri)) {
+    public static Bitmap getThumbnail(ContentResolver cr, Uri uri)
+    {
+        //   Log.e( MessageView.class.getSimpleName(), "getThumbnail uri:" + uri);
+        if (ChatFileStore.isVfsUri(uri))
+        {
             return ChatFileStore.getThumbnailVfs(uri, THUMBNAIL_SIZE_DEFAULT);
         }
         return getThumbnailFile(cr, uri, THUMBNAIL_SIZE_DEFAULT);
     }
 
-    public static Bitmap getThumbnailFile(ContentResolver cr, Uri uri, int thumbnailSize) {
+    public static Bitmap getThumbnailFile(ContentResolver cr, Uri uri, int thumbnailSize)
+    {
 
 
         try
@@ -562,50 +639,58 @@ public class MessageView extends FrameLayout {
             options.inJustDecodeBounds = true;
             options.inInputShareable = true;
             options.inPurgeable = true;
-    
+
             InputStream is = cr.openInputStream(uri);
             BitmapFactory.decodeStream(is, null, options);
             if ((options.outWidth == -1) || (options.outHeight == -1))
+            {
                 return null;
-    
+            }
+
             int originalSize = (options.outHeight > options.outWidth) ? options.outHeight
                     : options.outWidth;
-    
+
             BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inSampleSize = originalSize / thumbnailSize;
-    
+
             is = cr.openInputStream(uri);
-         
+
             Bitmap scaledBitmap = BitmapFactory.decodeStream(is, null, options);
-    
+
             return scaledBitmap;
         }
         catch (Exception e)
         {
-            Log.d(ImApp.LOG_TAG,"could not getThumbnailFile",e);
+            Log.d(ImApp.LOG_TAG, "could not getThumbnailFile", e);
             return null;
         }
     }
 
-    private String formatMessage (String body)
+    private String formatMessage(String body)
     {
         if (body != null)
+        {
             return android.text.Html.fromHtml(body).toString();
+        }
         else
+        {
             return null;
+        }
     }
 
     public void bindOutgoingMessage(int id, int messageType, String address, final String mimeType, final String body, Date date, Markup smileyRes, boolean scrolling,
-            DeliveryState delivery, EncryptionState encryption) {
+                                    DeliveryState delivery, EncryptionState encryption)
+    {
 
-        mHolder = (ViewHolder)getTag();
+        mHolder = (ViewHolder) getTag();
 
         mHolder.mTextViewForMessages.setVisibility(View.VISIBLE);
         mHolder.resetOnClickListenerMediaThumbnail();
-        if( mimeType != null ) {
+        if (mimeType != null)
+        {
 
             lastMessage = "";
-            Uri mediaUri = Uri.parse( body ) ;
+            Uri mediaUri = Uri.parse(body);
 
             showMediaThumbnail(mimeType, mediaUri, id, mHolder);
 
@@ -613,21 +698,26 @@ public class MessageView extends FrameLayout {
             mHolder.mTextViewForMessages.setVisibility(View.GONE);
             mHolder.mMediaThumbnail.setVisibility(View.VISIBLE);
 
-        } else {
+        }
+        else
+        {
             mHolder.mMediaThumbnail.setVisibility(View.GONE);
             lastMessage = body;//formatMessage(body);
 
-             try {
+            try
+            {
 
-                 SpannableString spannablecontent=new SpannableString(lastMessage);
+                SpannableString spannablecontent = new SpannableString(lastMessage);
 
-                 EmojiManager.getInstance(getContext()).addEmoji(getContext(), spannablecontent);
+                EmojiManager.getInstance(getContext()).addEmoji(getContext(), spannablecontent);
 
-                 mHolder.mTextViewForMessages.setText(spannablecontent);
-             } catch (IOException e) {
-                 // TODO Auto-generated catch block
-                 e.printStackTrace();
-             }
+                mHolder.mTextViewForMessages.setText(spannablecontent);
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         if (date != null)
@@ -635,10 +725,14 @@ public class MessageView extends FrameLayout {
 
             CharSequence tsText = null;
 
-            if (isSameDay(date,DATE_NOW))
-                tsText = formatTimeStamp(date,messageType, MESSAGE_TIME_FORMAT, delivery, encryption);
+            if (isSameDay(date, DATE_NOW))
+            {
+                tsText = formatTimeStamp(date, messageType, MESSAGE_TIME_FORMAT, delivery, encryption);
+            }
             else
-                tsText = formatTimeStamp(date,messageType, MESSAGE_DATETIME_FORMAT, delivery, encryption);
+            {
+                tsText = formatTimeStamp(date, messageType, MESSAGE_DATETIME_FORMAT, delivery, encryption);
+            }
 
             mHolder.mTextViewForTimestamp.setText(tsText);
 
@@ -651,14 +745,18 @@ public class MessageView extends FrameLayout {
 
         }
         if (linkify)
+        {
             LinkifyHelper.addLinks(mHolder.mTextViewForMessages, new URLSpanConverter());
+        }
         LinkifyHelper.addTorSafeLinks(mHolder.mTextViewForMessages);
     }
 
-    private void showAvatar (String address, String nickname, boolean isLeft, int presenceStatus)
+    private void showAvatar(String address, String nickname, boolean isLeft, int presenceStatus)
     {
         if (mHolder.mAvatar == null)
+        {
             return;
+        }
 
         mHolder.mAvatar.setVisibility(View.GONE);
 
@@ -667,8 +765,13 @@ public class MessageView extends FrameLayout {
 
             RoundedAvatarDrawable avatar = null;
 
-            try { avatar = DatabaseUtils.getAvatarFromAddress(this.getContext().getContentResolver(),XmppAddress.stripResource(address), ImApp.DEFAULT_AVATAR_WIDTH,ImApp.DEFAULT_AVATAR_HEIGHT);}
-            catch (Exception e){}
+            try
+            {
+                avatar = DatabaseUtils.getAvatarFromAddress(this.getContext().getContentResolver(), XmppAddress.stripResource(address), ImApp.DEFAULT_AVATAR_WIDTH, ImApp.DEFAULT_AVATAR_HEIGHT);
+            }
+            catch (Exception e)
+            {
+            }
 
             if (avatar != null)
             {
@@ -682,7 +785,7 @@ public class MessageView extends FrameLayout {
             {
                 int color = getAvatarBorder(presenceStatus);
                 int padding = 16;
-                LetterAvatar lavatar = new LetterAvatar(getContext(), color, nickname.substring(0,1).toUpperCase(), padding);
+                LetterAvatar lavatar = new LetterAvatar(getContext(), color, nickname.substring(0, 1).toUpperCase(), padding);
 
                 mHolder.mAvatar.setVisibility(View.VISIBLE);
                 mHolder.mAvatar.setImageDrawable(lavatar);
@@ -690,48 +793,53 @@ public class MessageView extends FrameLayout {
         }
     }
 
-    public int getAvatarBorder(int status) {
-        switch (status) {
-        case Presence.AVAILABLE:
-            return (getResources().getColor(R.color.holo_green_light));
+    public int getAvatarBorder(int status)
+    {
+        switch (status)
+        {
+            case Presence.AVAILABLE:
+                return (getResources().getColor(R.color.holo_green_light));
 
-        case Presence.IDLE:
-            return (getResources().getColor(R.color.holo_green_dark));
-        case Presence.AWAY:
-            return (getResources().getColor(R.color.holo_orange_light));
+            case Presence.IDLE:
+                return (getResources().getColor(R.color.holo_green_dark));
+            case Presence.AWAY:
+                return (getResources().getColor(R.color.holo_orange_light));
 
-        case Presence.DO_NOT_DISTURB:
-            return(getResources().getColor(R.color.holo_red_dark));
+            case Presence.DO_NOT_DISTURB:
+                return (getResources().getColor(R.color.holo_red_dark));
 
-        case Presence.OFFLINE:
-            return(getResources().getColor(R.color.holo_grey_dark));
+            case Presence.OFFLINE:
+                return (getResources().getColor(R.color.holo_grey_dark));
 
-        default:
+            default:
         }
 
         return Color.TRANSPARENT;
     }
 
-    public void bindPresenceMessage(String contact, int type, boolean isGroupChat, boolean scrolling) {
+    public void bindPresenceMessage(String contact, int type, boolean isGroupChat, boolean scrolling)
+    {
 
-        mHolder = (ViewHolder)getTag();
+        mHolder = (ViewHolder) getTag();
 
         CharSequence message = formatPresenceUpdates(contact, type, isGroupChat, scrolling);
         mHolder.mTextViewForMessages.setText(message);
-     //   mHolder.mTextViewForMessages.setTextColor(getResources().getColor(R.color.chat_msg_presence));
+        //   mHolder.mTextViewForMessages.setTextColor(getResources().getColor(R.color.chat_msg_presence));
 
     }
 
-    public void bindErrorMessage(int errCode) {
+    public void bindErrorMessage(int errCode)
+    {
 
-        mHolder = (ViewHolder)getTag();
+        mHolder = (ViewHolder) getTag();
 
         mHolder.mTextViewForMessages.setText(R.string.msg_sent_failed);
         mHolder.mTextViewForMessages.setTextColor(getResources().getColor(R.color.error));
 
     }
 
-    private SpannableString formatTimeStamp(Date date, int messageType, DateFormat format, MessageView.DeliveryState delivery, EncryptionState encryptionState) {
+    private SpannableString formatTimeStamp(Date date, int messageType, DateFormat format, MessageView.DeliveryState delivery, EncryptionState encryptionState)
+    {
 
 
         StringBuilder deliveryText = new StringBuilder();
@@ -741,18 +849,23 @@ public class MessageView extends FrameLayout {
         if (delivery != null)
         {
             //this is for delivery
-            if (delivery == DeliveryState.DELIVERED) {
+            if (delivery == DeliveryState.DELIVERED)
+            {
 
                 deliveryText.append(DELIVERED_SUCCESS);
 
-            } else if (delivery == DeliveryState.UNDELIVERED) {
+            }
+            else if (delivery == DeliveryState.UNDELIVERED)
+            {
 
                 deliveryText.append(DELIVERED_FAIL);
             }
         }
-        
+
         if (messageType != Imps.MessageType.POSTPONED)
+        {
             deliveryText.append(DELIVERED_SUCCESS);//this is for sent, so we know show 2 checks like WhatsApp!
+        }
 
         SpannableString spanText = null;
 
@@ -762,7 +875,7 @@ public class MessageView extends FrameLayout {
             spanText = new SpannableString(deliveryText.toString());
             int len = spanText.length();
 
-            spanText.setSpan(new ImageSpan(getContext(), R.drawable.lock16), len-1,len,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanText.setSpan(new ImageSpan(getContext(), R.drawable.lock16), len - 1, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         }
         else if (encryptionState == EncryptionState.ENCRYPTED_AND_VERIFIED)
@@ -771,7 +884,7 @@ public class MessageView extends FrameLayout {
             spanText = new SpannableString(deliveryText.toString());
             int len = spanText.length();
 
-            spanText.setSpan(new ImageSpan(getContext(), R.drawable.lock16), len-1,len,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanText.setSpan(new ImageSpan(getContext(), R.drawable.lock16), len - 1, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         }
         else
@@ -781,47 +894,52 @@ public class MessageView extends FrameLayout {
 
         }
 
-     //   spanText.setSpan(new StyleSpan(Typeface.SANS_SERIF), 0, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //   spanText.setSpan(new StyleSpan(Typeface.SANS_SERIF), 0, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-       // spanText.setSpan(new RelativeSizeSpan(0.8f), 0, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-    //    spanText.setSpan(new ForegroundColorSpan(R.color.soft_grey),
-      //        0, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // spanText.setSpan(new RelativeSizeSpan(0.8f), 0, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //    spanText.setSpan(new ForegroundColorSpan(R.color.soft_grey),
+        //        0, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         return spanText;
     }
 
     private CharSequence formatPresenceUpdates(String contact, int type, boolean isGroupChat,
-            boolean scrolling) {
+                                               boolean scrolling)
+    {
         String body;
 
-        Resources resources =getResources();
+        Resources resources = getResources();
 
-        switch (type) {
-        case Imps.MessageType.PRESENCE_AVAILABLE:
-            body = resources.getString(isGroupChat ? R.string.contact_joined
-                                                   : R.string.contact_online, contact);
-            break;
+        switch (type)
+        {
+            case Imps.MessageType.PRESENCE_AVAILABLE:
+                body = resources.getString(isGroupChat ? R.string.contact_joined
+                        : R.string.contact_online, contact);
+                break;
 
-        case Imps.MessageType.PRESENCE_AWAY:
-            body = resources.getString(R.string.contact_away, contact);
-            break;
+            case Imps.MessageType.PRESENCE_AWAY:
+                body = resources.getString(R.string.contact_away, contact);
+                break;
 
-        case Imps.MessageType.PRESENCE_DND:
-            body = resources.getString(R.string.contact_busy, contact);
-            break;
+            case Imps.MessageType.PRESENCE_DND:
+                body = resources.getString(R.string.contact_busy, contact);
+                break;
 
-        case Imps.MessageType.PRESENCE_UNAVAILABLE:
-            body = resources.getString(isGroupChat ? R.string.contact_left
-                                                   : R.string.contact_offline, contact);
-            break;
+            case Imps.MessageType.PRESENCE_UNAVAILABLE:
+                body = resources.getString(isGroupChat ? R.string.contact_left
+                        : R.string.contact_offline, contact);
+                break;
 
-        default:
-            return null;
+            default:
+                return null;
         }
 
-        if (scrolling) {
+        if (scrolling)
+        {
             return body;
-        } else {
+        }
+        else
+        {
             SpannableString spanText = new SpannableString(body);
             int len = spanText.length();
             spanText.setSpan(new StyleSpan(Typeface.ITALIC), 0, len,
@@ -832,37 +950,39 @@ public class MessageView extends FrameLayout {
         }
     }
 
-    public void setAvatarBorder(int status, RoundedAvatarDrawable avatar) {
-        switch (status) {
-        case Presence.AVAILABLE:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_green_light));
-            avatar.setAlpha(255);
-            break;
+    public void setAvatarBorder(int status, RoundedAvatarDrawable avatar)
+    {
+        switch (status)
+        {
+            case Presence.AVAILABLE:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_green_light));
+                avatar.setAlpha(255);
+                break;
 
-        case Presence.IDLE:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_green_dark));
-            avatar.setAlpha(255);
+            case Presence.IDLE:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_green_dark));
+                avatar.setAlpha(255);
 
-            break;
+                break;
 
-        case Presence.AWAY:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_orange_light));
-            avatar.setAlpha(255);
-            break;
+            case Presence.AWAY:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_orange_light));
+                avatar.setAlpha(255);
+                break;
 
-        case Presence.DO_NOT_DISTURB:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_red_dark));
-            avatar.setAlpha(255);
+            case Presence.DO_NOT_DISTURB:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_red_dark));
+                avatar.setAlpha(255);
 
-            break;
+                break;
 
-        case Presence.OFFLINE:
-            avatar.setBorderColor(getResources().getColor(R.color.holo_grey_light));
-            avatar.setAlpha(150);
-            break;
+            case Presence.OFFLINE:
+                avatar.setBorderColor(getResources().getColor(R.color.holo_grey_light));
+                avatar.setAlpha(150);
+                break;
 
 
-        default:
+            default:
         }
     }
 }

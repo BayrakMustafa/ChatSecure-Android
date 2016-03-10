@@ -26,34 +26,34 @@ import java.util.Map;
 /**
  * A <code>Presence</code> is an abstract presentation of the user's presence
  * information.
- *
+ * <p/>
  * Note that changes made to the Presence data won't be reflected to the server
  * until <code>ImConnection.updateUserPresence</code> is called. Only the logged
  * in user can update its own presence data via
  * <code>ImConnection.updateUserPresence</code>. Changes to any other contact's
  * presence data won't be saved or sent to the server.
  */
-public final class Presence implements Parcelable {
-    
+public final class Presence implements Parcelable
+{
+
     public static final int MIN_PRESENCE = 0;
     public static final int OFFLINE = 0;
-    public static final int INVISIBLE = 1;    
+    public static final int INVISIBLE = 1;
     public static final int AWAY = 2;
     public static final int IDLE = 3;
     public static final int DO_NOT_DISTURB = 4;
     public static final int AVAILABLE = 5;
     //public static final int NOT_SUBSCRIBED = 5;
     public static final int MAX_PRESENCE = 5;
-    
-    
+
+
     /**
-     * 
-        int OFFLINE = 0;
-        int INVISIBLE = 1;
-        int AWAY = 2;
-        int IDLE = 3;
-        int DO_NOT_DISTURB = 4;
-        int AVAILABLE = 5;
+     * int OFFLINE = 0;
+     * int INVISIBLE = 1;
+     * int AWAY = 2;
+     * int IDLE = 3;
+     * int DO_NOT_DISTURB = 4;
+     * int AVAILABLE = 5;
      */
 
     public static final int CLIENT_TYPE_DEFAULT = 0;
@@ -68,21 +68,25 @@ public final class Presence implements Parcelable {
     private int mPriority = 0;
     private Map<String, String> mExtendedInfo;
 
-    public Presence() {
+    public Presence()
+    {
         this(Presence.OFFLINE, null, null, null, CLIENT_TYPE_DEFAULT, null, null);
     }
 
-    public Presence(int status, String statusText, int clientType) {
+    public Presence(int status, String statusText, int clientType)
+    {
         this(status, statusText, null, null, clientType);
     }
 
     public Presence(int status, String statusText, byte[] avatarData, String avatarType,
-            int clientType) {
+                    int clientType)
+    {
         this(status, statusText, avatarData, avatarType, clientType, null, null);
     }
 
     public Presence(int status, String statusText, byte[] avatarData, String avatarType,
-            int clientType, Map<String, String> extendedInfo, String resource) {
+                    int clientType, Map<String, String> extendedInfo, String resource)
+    {
         setStatus(status);
         mStatusText = statusText;
         setAvatar(avatarData, avatarType);
@@ -91,11 +95,13 @@ public final class Presence implements Parcelable {
         mResource = resource;
     }
 
-    public Presence(Presence p) {
+    public Presence(Presence p)
+    {
         this(p.mStatus, p.mStatusText, p.mAvatarData, p.mAvatarType, p.mClientType, p.mExtendedInfo, p.mResource);
     }
 
-    public Presence(Parcel source) {
+    public Presence(Parcel source)
+    {
         mStatus = source.readInt();
         mStatusText = source.readString();
         mAvatarData = source.createByteArray();
@@ -107,23 +113,29 @@ public final class Presence implements Parcelable {
 
         //this may not exist for older persisted presence data
         if (source.dataAvail() > 0)
-            mResource = source.readString();        
+        {
+            mResource = source.readString();
+        }
     }
 
     /**
      * Get avatar bitmap.
      *
      * @return Avatar bitmap. Note any changes made to the bitmap itself won't
-     *         be saved or sent back to the server. To change avatar call
-     *         <code>setAvatar</code> with a <b>new</b> bitmap instance. FIXME:
-     *         Avatar is stored as a byte array and a type string now, it will
-     *         be encapsulated with an Object after we change to
-     *         ContentProvider.
+     * be saved or sent back to the server. To change avatar call
+     * <code>setAvatar</code> with a <b>new</b> bitmap instance. FIXME:
+     * Avatar is stored as a byte array and a type string now, it will
+     * be encapsulated with an Object after we change to
+     * ContentProvider.
      */
-    public byte[] getAvatarData() {
-        if (mAvatarData == null) {
+    public byte[] getAvatarData()
+    {
+        if (mAvatarData == null)
+        {
             return null;
-        } else {
+        }
+        else
+        {
             byte[] data = new byte[mAvatarData.length];
             System.arraycopy(mAvatarData, 0, data, 0, mAvatarData.length);
             return data;
@@ -135,57 +147,72 @@ public final class Presence implements Parcelable {
      *
      * @return the MIME type of avatar.
      */
-    public String getAvatarType() {
+    public String getAvatarType()
+    {
         return mAvatarType;
     }
 
-    public int getClientType() {
+    public int getClientType()
+    {
         return mClientType;
     }
 
-    public Map<String, String> getExtendedInfo() {
+    public Map<String, String> getExtendedInfo()
+    {
         return mExtendedInfo == null ? null : Collections.unmodifiableMap(mExtendedInfo);
     }
 
-    public boolean isOnline() {
+    public boolean isOnline()
+    {
         return mStatus != OFFLINE;
     }
 
-    public int getStatus() {
+    public int getStatus()
+    {
         return mStatus;
     }
 
-    public void setStatus(int status) {
-        if (status < MIN_PRESENCE || status > MAX_PRESENCE) {
+    public void setStatus(int status)
+    {
+        if (status < MIN_PRESENCE || status > MAX_PRESENCE)
+        {
             throw new IllegalArgumentException("invalid presence status value");
         }
         mStatus = status;
     }
 
-    public String getStatusText() {
+    public String getStatusText()
+    {
         return mStatusText;
     }
 
-    public void setAvatar(byte[] data, String type) {
-        if (data != null) {
+    public void setAvatar(byte[] data, String type)
+    {
+        if (data != null)
+        {
             mAvatarData = new byte[data.length];
             System.arraycopy(data, 0, mAvatarData, 0, data.length);
-        } else {
+        }
+        else
+        {
             mAvatarData = null;
         }
         mAvatarType = type;
     }
 
-    public void setStatusText(String statusText) {
+    public void setStatusText(String statusText)
+    {
         mStatusText = statusText;
     }
 
-    public void setClientType(int clientType) {
+    public void setClientType(int clientType)
+    {
         mClientType = clientType;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags)
+    {
         dest.writeInt(mStatus);
         dest.writeString(mStatusText);
         dest.writeByteArray(mAvatarData);
@@ -196,39 +223,45 @@ public final class Presence implements Parcelable {
     }
 
     @Override
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
-    public static final Parcelable.Creator<Presence> CREATOR = new Parcelable.Creator<Presence>() {
+    public static final Parcelable.Creator<Presence> CREATOR = new Parcelable.Creator<Presence>()
+    {
         @Override
-        public Presence createFromParcel(Parcel source) {
+        public Presence createFromParcel(Parcel source)
+        {
             return new Presence(source);
         }
 
         @Override
-        public Presence[] newArray(int size) {
+        public Presence[] newArray(int size)
+        {
             return new Presence[size];
         }
     };
 
-    public String getResource ()
+    public String getResource()
     {
         return mResource;
     }
 
-    public void setResource (String resource)
+    public void setResource(String resource)
     {
         mResource = resource;
     }
 
-    public int getPriority() {
+    public int getPriority()
+    {
         return mPriority;
     }
 
-    public void setPriority(int mPriority) {
+    public void setPriority(int mPriority)
+    {
         this.mPriority = mPriority;
     }
 
-    
+
 }

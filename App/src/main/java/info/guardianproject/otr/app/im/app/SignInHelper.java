@@ -1,5 +1,19 @@
 package info.guardianproject.otr.app.im.app;
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Handler;
+import android.os.RemoteException;
+import android.util.Log;
+import android.widget.Toast;
+
+import java.util.Collection;
+import java.util.HashSet;
+
 import info.guardianproject.otr.app.im.IImConnection;
 import info.guardianproject.otr.app.im.R;
 import info.guardianproject.otr.app.im.app.adapter.ConnectionListenerAdapter;
@@ -9,37 +23,19 @@ import info.guardianproject.otr.app.im.provider.Imps;
 import info.guardianproject.otr.app.im.service.ImServiceConstants;
 import info.guardianproject.util.LogCleaner;
 
-import java.util.Collection;
-import java.util.HashSet;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.AsyncTask;
-import android.os.DeadObjectException;
-import android.os.Handler;
-import android.os.RemoteException;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
-
 /**
  * Handle sign-in process for activities.
  *
  * @author devrandom
- *
- * <p>Users of this helper must call {@link SignInHelper#stop()} to clean up callbacks
- * in their onDestroy() or onPause() lifecycle methods.
- *
- * <p>The helper listens to connection events.  It automatically stops listening when the
- * connection state is logged-in or disconnected (failed).
+ *         <p/>
+ *         <p>Users of this helper must call {@link SignInHelper#stop()} to clean up callbacks
+ *         in their onDestroy() or onPause() lifecycle methods.
+ *         <p/>
+ *         <p>The helper listens to connection events.  It automatically stops listening when the
+ *         connection state is logged-in or disconnected (failed).
  */
-public class SignInHelper {
+public class SignInHelper
+{
     Activity mContext;
     private SimpleAlertHandler mHandler;
     private ImApp mApp;
@@ -48,82 +44,107 @@ public class SignInHelper {
     private SignInListener mSignInListener;
 
     // This can be used to be informed of signin events
-    public interface SignInListener {
+    public interface SignInListener
+    {
         void connectedToService();
+
         void stateChanged(int state, long accountId);
     }
 
-    public SignInHelper(Activity context, SignInListener listener) {
+    public SignInHelper(Activity context, SignInListener listener)
+    {
         this.mContext = context;
         mHandler = new SimpleAlertHandler(context);
         mListener = new MyConnectionListener(mHandler);
         mSignInListener = listener;
-        if (mApp == null) {
+        if (mApp == null)
+        {
 
-            mApp = (ImApp)mContext.getApplication();
+            mApp = (ImApp) mContext.getApplication();
         }
 
         connections = new HashSet<IImConnection>();
     }
 
-    public SignInHelper(Activity context) {
+    public SignInHelper(Activity context)
+    {
         this(context, null);
     }
 
-    public void setSignInListener(SignInListener listener) {
+    public void setSignInListener(SignInListener listener)
+    {
         mSignInListener = listener;
     }
 
-    public void stop() {
-        for (IImConnection connection : connections) {
-            try {
+    public void stop()
+    {
+        for (IImConnection connection : connections)
+        {
+            try
+            {
                 connection.unregisterConnectionListener(mListener);
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 // Ignore
             }
         }
         connections.clear();
     }
 
-    private final class MyConnectionListener extends ConnectionListenerAdapter {
-        MyConnectionListener(Handler handler) {
+    private final class MyConnectionListener extends ConnectionListenerAdapter
+    {
+        MyConnectionListener(Handler handler)
+        {
             super(handler);
         }
 
         @Override
-        public void onConnectionStateChange(IImConnection connection, int state, ImErrorInfo error) {
+        public void onConnectionStateChange(IImConnection connection, int state, ImErrorInfo error)
+        {
             handleConnectionEvent(connection, state, error);
         }
     }
 
-    private void handleConnectionEvent(IImConnection connection, int state, ImErrorInfo error) {
+    private void handleConnectionEvent(IImConnection connection, int state, ImErrorInfo error)
+    {
         long accountId;
         long providerId;
-        try {
+        try
+        {
             accountId = connection.getAccountId();
             providerId = connection.getProviderId();
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
             // Ouch!  Service died!  We'll just disappear.
             Log.w(ImApp.LOG_TAG, "<SigningInActivity> Connection disappeared while signing in!");
             return;
         }
 
         if (mSignInListener != null)
+        {
             mSignInListener.stateChanged(state, accountId);
+        }
 
         // Stop listening if we get into a resting state
-        if (state == ImConnection.LOGGED_IN || state == ImConnection.DISCONNECTED) {
+        if (state == ImConnection.LOGGED_IN || state == ImConnection.DISCONNECTED)
+        {
             connections.remove(connection);
-            try {
+            try
+            {
                 connection.unregisterConnectionListener(mListener);
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
 
                 mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-                LogCleaner.error(ImApp.LOG_TAG, "handle connection error",e);
+                LogCleaner.error(ImApp.LOG_TAG, "handle connection error", e);
             }
         }
 
-        if (state == ImConnection.DISCONNECTED) {
+        if (state == ImConnection.DISCONNECTED)
+        {
             // sign in failed
             final ProviderDef provider = mApp.getProvider(providerId);
 
@@ -136,7 +157,7 @@ public class SignInHelper {
                 String errMsg = r.getString(R.string.login_service_failed, providerName, // FIXME
                         error == null ? "" : ErrorResUtils.getErrorRes(r, error.getCode()));
 
-               // Toast.makeText(mContext, errMsg, Toast.LENGTH_LONG).show();
+                // Toast.makeText(mContext, errMsg, Toast.LENGTH_LONG).show();
                 /*
                 new AlertDialog.Builder(mContext).setTitle(R.string.error)
                         .setMessage()
@@ -150,7 +171,8 @@ public class SignInHelper {
         }
     }
 
-    public void goToAccount(long accountId) {
+    public void goToAccount(long accountId)
+    {
         Intent intent;
         intent = new Intent(mContext, NewChatActivity.class);
         // clear the back stack of the account setup
@@ -158,11 +180,12 @@ public class SignInHelper {
 
         mContext.startActivity(intent);
         // sign in successfully, finish and switch to contact list
-      //  mContext.finish();
+        //  mContext.finish();
     }
 
     public void signIn(final String password, final long providerId, final long accountId,
-            final boolean isActive) {
+                       final boolean isActive)
+    {
 
         final ProviderDef provider = mApp.getProvider(providerId);
 
@@ -170,22 +193,32 @@ public class SignInHelper {
         {
             final String providerName = provider.mName;
 
-            if (mApp.serviceConnected()) {
+            if (mApp.serviceConnected())
+            {
                 if (mSignInListener != null)
+                {
                     mSignInListener.connectedToService();
-                if (!isActive) {
+                }
+                if (!isActive)
+                {
                     activateAccount(providerId, accountId);
                 }
                 signInAccount(password, providerId, providerName, accountId);
             }
             else
             {
-                mApp.callWhenServiceConnected(mHandler, new Runnable() {
-                    public void run() {
-                        if (mApp.serviceConnected()) {
+                mApp.callWhenServiceConnected(mHandler, new Runnable()
+                {
+                    public void run()
+                    {
+                        if (mApp.serviceConnected())
+                        {
                             if (mSignInListener != null)
+                            {
                                 mSignInListener.connectedToService();
-                            if (!isActive) {
+                            }
+                            if (!isActive)
+                            {
                                 activateAccount(providerId, accountId);
                             }
                             signInAccount(password, providerId, providerName, accountId);
@@ -196,56 +229,68 @@ public class SignInHelper {
         }
     }
 
-    private void signInAccount(final String password, final long providerId, final String providerName, final long accountId) {
+    private void signInAccount(final String password, final long providerId, final String providerName, final long accountId)
+    {
 
 
-        try {
+        try
+        {
             signInAccountAsync(password, providerId, providerName, accountId);
-        } catch (RemoteException e) {
-            Log.d(ImApp.LOG_TAG,"error signing in",e);
         }
-
+        catch (RemoteException e)
+        {
+            Log.d(ImApp.LOG_TAG, "error signing in", e);
+        }
 
 
     }
 
-    private void signInAccountAsync(String password, long providerId, String providerName, long accountId) throws RemoteException {
+    private void signInAccountAsync(String password, long providerId, String providerName, long accountId) throws RemoteException
+    {
         boolean autoLoadContacts = true;
         boolean autoRetryLogin = true;
         IImConnection conn = null;
 
 
-            conn = mApp.getConnection(providerId);
+        conn = mApp.getConnection(providerId);
 
-            if (conn != null) {
-                connections.add(conn);
-                conn.registerConnectionListener(mListener);
-                int state = conn.getState();
-                if (mSignInListener != null)
-                    mSignInListener.stateChanged(state, accountId);
-
-                if (state != ImConnection.DISCONNECTED) {
-                    // already signed in or in the process
-                    if (state == ImConnection.LOGGED_IN) {
-                        connections.remove(conn);
-                        conn.unregisterConnectionListener(mListener);
-                    }
-                    handleConnectionEvent(conn, state, null);
-                    return;
-                }
-
-            } else {
-                conn = mApp.createConnection(providerId, accountId);
-                if (conn == null) {
-                    // This can happen when service did not come up for any reason
-                    return;
-                }
-
-                connections.add(conn);
-                conn.registerConnectionListener(mListener);
+        if (conn != null)
+        {
+            connections.add(conn);
+            conn.registerConnectionListener(mListener);
+            int state = conn.getState();
+            if (mSignInListener != null)
+            {
+                mSignInListener.stateChanged(state, accountId);
             }
 
-            conn.login(password, autoLoadContacts, autoRetryLogin);
+            if (state != ImConnection.DISCONNECTED)
+            {
+                // already signed in or in the process
+                if (state == ImConnection.LOGGED_IN)
+                {
+                    connections.remove(conn);
+                    conn.unregisterConnectionListener(mListener);
+                }
+                handleConnectionEvent(conn, state, null);
+                return;
+            }
+
+        }
+        else
+        {
+            conn = mApp.createConnection(providerId, accountId);
+            if (conn == null)
+            {
+                // This can happen when service did not come up for any reason
+                return;
+            }
+
+            connections.add(conn);
+            conn.registerConnectionListener(mListener);
+        }
+
+        conn.login(password, autoLoadContacts, autoRetryLogin);
 
             /*
             if (mApp.isNetworkAvailableAndConnected()) {
@@ -262,14 +307,16 @@ public class SignInHelper {
      * connection to continue. If yes, enable the setting and broadcast the
      * change. Otherwise, quit the signing in window immediately.
      */
-    private void promptForBackgroundDataSetting(String providerName) {
+    private void promptForBackgroundDataSetting(String providerName)
+    {
 
         Toast.makeText(mContext, mContext.getString(R.string.bg_data_prompt_message, providerName), Toast.LENGTH_LONG).show();
 
 
     }
 
-    public void activateAccount(long providerId, long accountId) {
+    public void activateAccount(long providerId, long accountId)
+    {
         // Update the active value. We restrict to only one active
         // account per provider right now, so update all accounts of
         // this provider to inactive first and then update this

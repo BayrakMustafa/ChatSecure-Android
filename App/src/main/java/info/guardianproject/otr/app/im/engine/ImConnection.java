@@ -17,40 +17,59 @@
 
 package info.guardianproject.otr.app.im.engine;
 
+import android.content.Context;
+
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import android.content.Context;
 
 /**
  * An <code>ImConnection</code> is an abstract representation of a connection to
  * the IM server.
  */
-public abstract class ImConnection {
-    /** Connection state that indicates the connection is not connected yet. */
+public abstract class ImConnection
+{
+    /**
+     * Connection state that indicates the connection is not connected yet.
+     */
     public static final int DISCONNECTED = 0;
 
-    /** Connection state that indicates the user is logging into the server. */
+    /**
+     * Connection state that indicates the user is logging into the server.
+     */
     public static final int LOGGING_IN = 1;
 
-    /** Connection state that indicates the user has logged into the server. */
+    /**
+     * Connection state that indicates the user has logged into the server.
+     */
     public static final int LOGGED_IN = 2;
 
-    /** Connection state that indicates the user is logging out the server. */
+    /**
+     * Connection state that indicates the user is logging out the server.
+     */
     public static final int LOGGING_OUT = 3;
 
-    /** Connection state that indicate the connection is suspending. */
+    /**
+     * Connection state that indicate the connection is suspending.
+     */
     public static final int SUSPENDING = 4;
 
-    /** Connection state that indicate the connection has been suspended. */
+    /**
+     * Connection state that indicate the connection has been suspended.
+     */
     public static final int SUSPENDED = 5;
 
-    /** The capability of supporting group chat. */
+    /**
+     * The capability of supporting group chat.
+     */
     public static final int CAPABILITY_GROUP_CHAT = 1;
-    /** The capability of supporting session re-establishment. */
+    /**
+     * The capability of supporting session re-establishment.
+     */
     public static final int CAPABILITY_SESSION_REESTABLISHMENT = 2;
 
-    /** The current state of the connection. */
+    /**
+     * The current state of the connection.
+     */
     protected int mState;
 
     protected CopyOnWriteArrayList<ConnectionListener> mConnectionListeners;
@@ -58,37 +77,45 @@ public abstract class ImConnection {
 
     protected Context mContext;
 
-    protected ImConnection(Context context) {
+    protected ImConnection(Context context)
+    {
         mConnectionListeners = new CopyOnWriteArrayList<ConnectionListener>();
         mState = DISCONNECTED;
         mContext = context;
     }
 
-    public void addConnectionListener(ConnectionListener listener) {
-        if (listener != null) {
+    public void addConnectionListener(ConnectionListener listener)
+    {
+        if (listener != null)
+        {
             mConnectionListeners.add(listener);
         }
     }
 
-    public void removeConnectionListener(ConnectionListener listener) {
+    public void removeConnectionListener(ConnectionListener listener)
+    {
         mConnectionListeners.remove(listener);
     }
 
     public abstract Contact getLoginUser();
 
-    public String getLoginUserName() {
+    public String getLoginUserName()
+    {
         Contact loginUser = getLoginUser();
         return loginUser == null ? null : loginUser.getName();
     }
 
     public abstract int[] getSupportedPresenceStatus();
 
-    public Presence getUserPresence() {
-        if (mState == SUSPENDING || mState == SUSPENDED) {
+    public Presence getUserPresence()
+    {
+        if (mState == SUSPENDING || mState == SUSPENDED)
+        {
             return new Presence();
         }
 
-        if (mState != LOGGED_IN) {
+        if (mState != LOGGED_IN)
+        {
             // In most cases we have a valid mUserPresence instance also
             // in the LOGGING_OUT state. However there is one exception:
             // if logout() is called before login finishes, the state may
@@ -101,10 +128,12 @@ public abstract class ImConnection {
         return new Presence(mUserPresence);
     }
 
-    public abstract void initUser (long providerId, long accountId) throws ImException;
+    public abstract void initUser(long providerId, long accountId) throws ImException;
 
-    public void updateUserPresenceAsync(Presence newPresence) throws ImException {
-        if (mState != LOGGED_IN) {
+    public void updateUserPresenceAsync(Presence newPresence) throws ImException
+    {
+        if (mState != LOGGED_IN)
+        {
             throw new ImException(ImErrorInfo.NOT_LOGGED_IN, "NOT logged in");
         }
 
@@ -115,15 +144,19 @@ public abstract class ImConnection {
      * Tells the engine that the network type has changed, e.g. switch from gprs
      * to wifi. The engine should drop all the network connections created
      * before because they are not available anymore.
-     *
+     * <p/>
      * The engine might also need to redo authentication on the new network
      * depending on the underlying protocol.
      */
-    public void networkTypeChanged() {
+    public void networkTypeChanged()
+    {
     }
 
-    /** Tells the current state of the connection. */
-    public int getState() {
+    /**
+     * Tells the current state of the connection.
+     */
+    public int getState()
+    {
         return mState;
     }
 
@@ -133,26 +166,34 @@ public abstract class ImConnection {
      * @param state the new state of the connection.
      * @param error the error information which caused the state change or null.
      */
-    protected void setState(int state, ImErrorInfo error) {
-        if (state < DISCONNECTED || state > SUSPENDED) {
+    protected void setState(int state, ImErrorInfo error)
+    {
+        if (state < DISCONNECTED || state > SUSPENDED)
+        {
             throw new IllegalArgumentException("Invalid state: " + state);
         }
-        if (mState != state) {
+        if (mState != state)
+        {
             mState = state;
-            for (ConnectionListener listener : mConnectionListeners) {
+            for (ConnectionListener listener : mConnectionListeners)
+            {
                 listener.onStateChanged(state, error);
             }
         }
     }
 
-    protected void notifyUserPresenceUpdated() {
-        for (ConnectionListener listener : mConnectionListeners) {
+    protected void notifyUserPresenceUpdated()
+    {
+        for (ConnectionListener listener : mConnectionListeners)
+        {
             listener.onUserPresenceUpdated();
         }
     }
 
-    protected void notifyUpdateUserPresenceError(ImErrorInfo error) {
-        for (ConnectionListener listener : mConnectionListeners) {
+    protected void notifyUpdateUserPresenceError(ImErrorInfo error)
+    {
+        for (ConnectionListener listener : mConnectionListeners)
+        {
             listener.onUpdatePresenceError(error);
         }
     }
@@ -169,13 +210,13 @@ public abstract class ImConnection {
     /**
      * Log in to the IM server, using the settings stored in Imps.
      *
-     * @param accountId the ID to get the Account record
+     * @param accountId    the ID to get the Account record
      * @param passwordTemp a one time use password, not to be saved
-     * @param providerId the ID to get the ProviderSettings record
-     * @param retry whether or not to retry the connection upon failure
+     * @param providerId   the ID to get the ProviderSettings record
+     * @param retry        whether or not to retry the connection upon failure
      */
     public abstract void loginAsync(long accountId, String passwordTemp, long providerId,
-            boolean retry);
+                                    boolean retry);
 
     /**
      * Re-establish previous session using the session context persisted by the
@@ -188,21 +229,27 @@ public abstract class ImConnection {
      * .
      *
      * @param sessionContext the session context which was fetched from previous
-     *            session by {@link #getSessionContext()} and persisted by the
-     *            client.
+     *                       session by {@link #getSessionContext()} and persisted by the
+     *                       client.
      * @throws UnsupportedOperationException if session re-establishment is not
-     *             supported by the underlying protocol.
+     *                                       supported by the underlying protocol.
      */
     public abstract void reestablishSessionAsync(Map<String, String> sessionContext);
 
-    /** Log out from the IM server. */
+    /**
+     * Log out from the IM server.
+     */
     public abstract void logoutAsync();
 
-    /** Immediate logout */
+    /**
+     * Immediate logout
+     */
 
     public abstract void logout();
 
-    /** Suspend connection with the IM server. */
+    /**
+     * Suspend connection with the IM server.
+     */
     public abstract void suspend();
 
     /**
@@ -212,9 +259,9 @@ public abstract class ImConnection {
      * removed upon the connection logout/disconnect.
      *
      * @return the context of the current session or <code>null</code> if the
-     *         user has not logged in yet.
+     * user has not logged in yet.
      * @throws UnsupportedOperationException if session re-establishment is not
-     *             supported by the underlying protocol.
+     *                                       supported by the underlying protocol.
      */
     public abstract Map<String, String> getSessionContext();
 
@@ -237,12 +284,13 @@ public abstract class ImConnection {
      *
      * @return the instance of ChatGroupManager for the connection.
      * @throws UnsupportedOperationException if group chat is not supported by
-     *             the underlying protocol.
+     *                                       the underlying protocol.
      */
     public abstract ChatGroupManager getChatGroupManager();
 
     /**
      * Whether this connection is going over Tor or not.
+     *
      * @return boolean
      */
     public abstract boolean isUsingTor();

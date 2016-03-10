@@ -5,20 +5,25 @@
  */
 package net.java.otr4j.io.messages;
 
-/** @author George Politis */
-public class ErrorMessage extends AbstractMessage {
+/**
+ * @author George Politis
+ */
+public class ErrorMessage extends AbstractMessage
+{
     // Fields.
     public String error;
 
     // Ctor.
-    public ErrorMessage(int messageType, String error) {
+    public ErrorMessage(int messageType, String error)
+    {
         super(messageType);
         this.error = error;
     }
 
     // Methods.
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((error == null) ? 0 : error.hashCode());
@@ -26,19 +31,32 @@ public class ErrorMessage extends AbstractMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ErrorMessage other = (ErrorMessage) obj;
-        if (error == null) {
+        if (error == null)
+        {
             if (other.error != null)
+            {
                 return false;
-        } else if (!error.equals(other.error))
+            }
+        }
+        else if (!error.equals(other.error))
+        {
             return false;
+        }
         return true;
     }
 }

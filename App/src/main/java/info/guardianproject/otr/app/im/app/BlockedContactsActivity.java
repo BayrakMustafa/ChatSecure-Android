@@ -17,13 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
-import info.guardianproject.otr.app.im.provider.Imps;
-
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.IContactListManager;
-import info.guardianproject.otr.app.im.IImConnection;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ContentUris;
@@ -42,15 +35,22 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 
-public class BlockedContactsActivity extends ListActivity {
+import info.guardianproject.otr.app.im.IContactListManager;
+import info.guardianproject.otr.app.im.IImConnection;
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
+import info.guardianproject.otr.app.im.provider.Imps;
+
+public class BlockedContactsActivity extends ListActivity
+{
     ImApp mApp;
     SimpleAlertHandler mHandler;
 
-    private static final String[] PROJECTION = { Imps.BlockedList._ID, Imps.BlockedList.ACCOUNT,
-                                                Imps.BlockedList.PROVIDER,
-                                                Imps.BlockedList.NICKNAME,
-                                                Imps.BlockedList.USERNAME,
-                                                Imps.BlockedList.AVATAR_DATA, };
+    private static final String[] PROJECTION = {Imps.BlockedList._ID, Imps.BlockedList.ACCOUNT,
+            Imps.BlockedList.PROVIDER,
+            Imps.BlockedList.NICKNAME,
+            Imps.BlockedList.USERNAME,
+            Imps.BlockedList.AVATAR_DATA,};
 
     static final int ACCOUNT_COLUMN = 1;
     static final int PROVIDER_COLUMN = 2;
@@ -59,7 +59,8 @@ public class BlockedContactsActivity extends ListActivity {
     static final int AVATAR_COLUMN = 5;
 
     @Override
-    protected void onCreate(Bundle icicle) {
+    protected void onCreate(Bundle icicle)
+    {
         super.onCreate(icicle);
 
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
@@ -67,19 +68,22 @@ public class BlockedContactsActivity extends ListActivity {
         setContentView(R.layout.blocked_contacts_activity);
         mHandler = new SimpleAlertHandler(this);
 
-        mApp = (ImApp)getApplication();
+        mApp = (ImApp) getApplication();
         mApp.startImServiceIfNeed();
 
-        if (!resolveIntent()) {
+        if (!resolveIntent())
+        {
             finish();
             return;
         }
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(ListView l, View v, int position, long id)
+    {
         Cursor c = (Cursor) l.getAdapter().getItem(position);
-        if (c == null) {
+        if (c == null)
+        {
             mHandler.showAlert(R.string.error, R.string.select_contact);
             return;
         }
@@ -89,10 +93,12 @@ public class BlockedContactsActivity extends ListActivity {
         mApp.callWhenServiceConnected(mHandler, new UnblockAction(providerId, username, nickname));
     }
 
-    private boolean resolveIntent() {
+    private boolean resolveIntent()
+    {
         Intent i = getIntent();
         Uri uri = i.getData();
-        if (uri == null) {
+        if (uri == null)
+        {
             warning("No data to show");
             return false;
         }
@@ -102,11 +108,13 @@ public class BlockedContactsActivity extends ListActivity {
             long accountId = ContentUris.parseId(uri);
             Uri accountUri = ContentUris.withAppendedId(Imps.Account.CONTENT_URI, accountId);
             Cursor accountCursor = getContentResolver().query(accountUri, null, null, null, null);
-            if (accountCursor == null) {
+            if (accountCursor == null)
+            {
                 warning("Bad account");
                 return false;
             }
-            if (!accountCursor.moveToFirst()) {
+            if (!accountCursor.moveToFirst())
+            {
                 warning("Bad account");
                 accountCursor.close();
                 return false;
@@ -125,7 +133,8 @@ public class BlockedContactsActivity extends ListActivity {
             accountCursor.close();
 
             Cursor c = managedQuery(uri, PROJECTION, null, null, Imps.BlockedList.DEFAULT_SORT_ORDER);
-            if (c == null) {
+            if (c == null)
+            {
                 warning("Database error when query " + uri);
                 return false;
             }
@@ -136,52 +145,66 @@ public class BlockedContactsActivity extends ListActivity {
         catch (Exception e)
         {
             //error parsing input
-            Log.e(ImApp.LOG_TAG,"error parsing intent input",e);
+            Log.e(ImApp.LOG_TAG, "error parsing intent input", e);
         }
 
         return true;
     }
 
-    private static void warning(String msg) {
+    private static void warning(String msg)
+    {
         Log.w(ImApp.LOG_TAG, "<BlockContactsActivity> " + msg);
     }
 
-    private static class BlockedContactsAdapter extends ResourceCursorAdapter {
-        public BlockedContactsAdapter(Cursor c, Context context) {
+    private static class BlockedContactsAdapter extends ResourceCursorAdapter
+    {
+        public BlockedContactsAdapter(Cursor c, Context context)
+        {
             super(context, R.layout.blocked_contact_view, c);
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            if (view instanceof BlockedContactView) {
+        public void bindView(View view, Context context, Cursor cursor)
+        {
+            if (view instanceof BlockedContactView)
+            {
                 ((BlockedContactView) view).bind(cursor, context);
             }
         }
     }
 
-    private class UnblockAction implements Runnable {
+    private class UnblockAction implements Runnable
+    {
         private long mProviderId;
         String mUserName;
         private String mNickName;
 
-        public UnblockAction(long providerId, String userName, String nickName) {
+        public UnblockAction(long providerId, String userName, String nickName)
+        {
             mProviderId = providerId;
             mUserName = userName;
             mNickName = nickName;
         }
 
-        public void run() {
+        public void run()
+        {
             final IImConnection conn = mApp.getConnection(mProviderId);
-            if (conn == null) {
+            if (conn == null)
+            {
                 mHandler.showAlert(R.string.error, R.string.disconnected);
                 return;
             }
-            DialogInterface.OnClickListener confirmListener = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    try {
+            DialogInterface.OnClickListener confirmListener = new DialogInterface.OnClickListener()
+            {
+                public void onClick(DialogInterface dialog, int whichButton)
+                {
+                    try
+                    {
                         IContactListManager manager = conn.getContactListManager();
                         manager.unBlockContact(mUserName);
-                    } catch (RemoteException e) {
+                    }
+                    catch (RemoteException e)
+                    {
                         mHandler.showServiceErrorAlert(e.getMessage());
                     }
                 }

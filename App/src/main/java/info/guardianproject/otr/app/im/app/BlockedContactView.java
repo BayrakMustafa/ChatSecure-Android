@@ -17,12 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
-import info.guardianproject.otr.app.im.provider.ImpsAddressUtils;
-
-import info.guardianproject.otr.app.im.R;
-
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -31,18 +25,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class BlockedContactView extends LinearLayout {
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.provider.ImpsAddressUtils;
+
+public class BlockedContactView extends LinearLayout
+{
     private ImageView mAvatar;
     private ImageView mBlockedIcon;
     private TextView mLine1;
     private TextView mLine2;
 
-    public BlockedContactView(Context context, AttributeSet attrs) {
+    public BlockedContactView(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
     }
 
     @Override
-    protected void onFinishInflate() {
+    protected void onFinishInflate()
+    {
         super.onFinishInflate();
 
         mAvatar = (ImageView) findViewById(R.id.avatar);
@@ -51,20 +51,29 @@ public class BlockedContactView extends LinearLayout {
         mLine2 = (TextView) findViewById(R.id.line2);
     }
 
-    public void bind(Cursor cursor, Context mContext) {
+    public void bind(Cursor cursor, Context mContext)
+    {
         long providerId = cursor.getLong(BlockedContactsActivity.PROVIDER_COLUMN);
         String username = cursor.getString(BlockedContactsActivity.USERNAME_COLUMN);
         String nickname = cursor.getString(BlockedContactsActivity.NICKNAME_COLUMN);
 
         Drawable avatar = null;
 
-        try { avatar = DatabaseUtils.getAvatarFromCursor(cursor,
-                BlockedContactsActivity.AVATAR_COLUMN, ImApp.DEFAULT_AVATAR_WIDTH,ImApp.DEFAULT_AVATAR_HEIGHT);}
-        catch(Exception e){}
+        try
+        {
+            avatar = DatabaseUtils.getAvatarFromCursor(cursor,
+                    BlockedContactsActivity.AVATAR_COLUMN, ImApp.DEFAULT_AVATAR_WIDTH, ImApp.DEFAULT_AVATAR_HEIGHT);
+        }
+        catch (Exception e)
+        {
+        }
 
-        if (avatar != null) {
+        if (avatar != null)
+        {
             mAvatar.setImageDrawable(avatar);
-        } else {
+        }
+        else
+        {
             mAvatar.setImageResource(R.drawable.avatar_unknown);
         }
 

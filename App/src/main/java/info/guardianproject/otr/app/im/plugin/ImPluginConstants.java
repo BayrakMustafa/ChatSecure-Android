@@ -16,9 +16,12 @@
  */
 package info.guardianproject.otr.app.im.plugin;
 
-public class ImPluginConstants {
+public class ImPluginConstants
+{
 
-    /** The intent action name for the plugin service. */
+    /**
+     * The intent action name for the plugin service.
+     */
     public static final String PLUGIN_ACTION_NAME = "info.guardianproject.otr.app.im.plugin";
 
     /**
@@ -27,10 +30,14 @@ public class ImPluginConstants {
      */
     public static final String METADATA_PROVIDER_NAME = "info.guardianproject.otr.app.im.provider_name";
 
-    /** The full name of the provider. */
+    /**
+     * The full name of the provider.
+     */
     public static final String METADATA_PROVIDER_FULL_NAME = "info.guardianproject.otr.app.im.provider_full_name";
 
-    /** The url where the user can register a new account for the provider. */
+    /**
+     * The url where the user can register a new account for the provider.
+     */
     public static final String METADATA_SIGN_UP_URL = "info.guardianproject.otr.app.im.signup_url";
 
     /**
@@ -44,10 +51,14 @@ public class ImPluginConstants {
      */
     public static final int PRESENCE_DO_NOT_DISTURB = 1;
 
-    /** Presence status AWAY. Should match the value defined in the IM engine. */
+    /**
+     * Presence status AWAY. Should match the value defined in the IM engine.
+     */
     public static final int PRESENCE_AWAY = 2;
 
-    /** Presence status IDLE. Should match the value defined in the IM engine. */
+    /**
+     * Presence status IDLE. Should match the value defined in the IM engine.
+     */
     public static final int PRESENCE_IDLE = 3;
 
     /**

@@ -17,39 +17,46 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import java.util.Date;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/** Represents an instant message send between users. */
-public class Message implements Parcelable {
+import java.util.Date;
+
+/**
+ * Represents an instant message send between users.
+ */
+public class Message implements Parcelable
+{
 
     private String mId;
     private Address mFrom;
     private Address mTo;
     private String mBody;
     private Date mDate;
-    private int mType;    
+    private int mType;
 
     /**
      * @param msg
      * @throws NullPointerException if msg is null.
      */
-    public Message(String msg) {
-        if (msg == null) {
+    public Message(String msg)
+    {
+        if (msg == null)
+        {
             throw new NullPointerException("null msg");
         }
         mBody = msg;
     }
 
-    public Message(Parcel source) {
+    public Message(Parcel source)
+    {
         mId = source.readString();
         mFrom = AddressParcelHelper.readFromParcel(source);
         mTo = AddressParcelHelper.readFromParcel(source);
         mBody = source.readString();
         long time = source.readLong();
-        if (time != -1) {
+        if (time != -1)
+        {
             mDate = new Date(time);
         }
         mType = source.readInt();
@@ -61,7 +68,8 @@ public class Message implements Parcelable {
      *
      * @return the identifier of this message.
      */
-    public String getID() {
+    public String getID()
+    {
         return mId;
     }
 
@@ -70,7 +78,8 @@ public class Message implements Parcelable {
      *
      * @return the body of this message.
      */
-    public String getBody() {
+    public String getBody()
+    {
         return mBody;
     }
 
@@ -79,7 +88,8 @@ public class Message implements Parcelable {
      *
      * @return the address where the message is sent from.
      */
-    public Address getFrom() {
+    public Address getFrom()
+    {
         return mFrom;
     }
 
@@ -88,7 +98,8 @@ public class Message implements Parcelable {
      *
      * @return the address where the message is sent to.
      */
-    public Address getTo() {
+    public Address getTo()
+    {
         return mTo;
     }
 
@@ -100,43 +111,55 @@ public class Message implements Parcelable {
      *
      * @return the date time.
      */
-    public Date getDateTime() {
-        if (mDate == null) {
+    public Date getDateTime()
+    {
+        if (mDate == null)
+        {
             return null;
         }
         return new Date(mDate.getTime());
     }
 
-    public void setID(String id) {
+    public void setID(String id)
+    {
         mId = id;
     }
 
-    public void setBody(String body) {
+    public void setBody(String body)
+    {
         mBody = body;
     }
 
-    public void setFrom(Address from) {
+    public void setFrom(Address from)
+    {
         mFrom = from;
     }
 
-    public void setTo(Address to) {
+    public void setTo(Address to)
+    {
         mTo = to;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(Date dateTime)
+    {
         long time = dateTime.getTime();
-        if (mDate == null) {
+        if (mDate == null)
+        {
             mDate = new Date(time);
-        } else {
+        }
+        else
+        {
             mDate.setTime(time);
         }
     }
 
-    public String toString() {
+    public String toString()
+    {
         return "From: " + mFrom.getAddress() + " To: " + mTo.getAddress() + " " + mBody;
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags)
+    {
         dest.writeString(mId);
         AddressParcelHelper.writeToParcel(dest, mFrom);
         AddressParcelHelper.writeToParcel(dest, mTo);
@@ -145,27 +168,32 @@ public class Message implements Parcelable {
         dest.writeInt(mType);
     }
 
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
-    public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
-        public Message createFromParcel(Parcel source) {
+    public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>()
+    {
+        public Message createFromParcel(Parcel source)
+        {
             return new Message(source);
         }
 
-        public Message[] newArray(int size) {
+        public Message[] newArray(int size)
+        {
             return new Message[size];
         }
     };
 
 
-
-    public int getType() {
+    public int getType()
+    {
         return mType;
     }
 
-    public void setType(int mType) {
+    public void setType(int mType)
+    {
         this.mType = mType;
     }
 

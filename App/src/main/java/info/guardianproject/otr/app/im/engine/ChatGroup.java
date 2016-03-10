@@ -23,33 +23,38 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ChatGroup extends ImEntity {
+public class ChatGroup extends ImEntity
+{
     private ChatGroupManager mManager;
     private Address mAddress;
     private String mName;
     private Vector<Contact> mMembers;
     private CopyOnWriteArrayList<GroupMemberListener> mMemberListeners;
 
-    public ChatGroup(Address address, String name, ChatGroupManager manager) {
+    public ChatGroup(Address address, String name, ChatGroupManager manager)
+    {
         this(address, name, null, manager);
     }
 
     public ChatGroup(Address address, String name, Collection<Contact> members,
-            ChatGroupManager manager) {
+                     ChatGroupManager manager)
+    {
 
         mAddress = address;
         mName = name;
         mManager = manager;
         mMembers = new Vector<Contact>();
 
-        if (members != null) {
+        if (members != null)
+        {
             mMembers.addAll(members);
         }
         mMemberListeners = new CopyOnWriteArrayList<GroupMemberListener>();
     }
 
     @Override
-    public Address getAddress() {
+    public Address getAddress()
+    {
         return mAddress;
     }
 
@@ -58,15 +63,18 @@ public class ChatGroup extends ImEntity {
      *
      * @return the name of the group.
      */
-    public String getName() {
+    public String getName()
+    {
         return mName;
     }
 
-    public void addMemberListener(GroupMemberListener listener) {
+    public void addMemberListener(GroupMemberListener listener)
+    {
         mMemberListeners.add(listener);
     }
 
-    public void removeMemberListener(GroupMemberListener listener) {
+    public void removeMemberListener(GroupMemberListener listener)
+    {
         mMemberListeners.remove(listener);
     }
 
@@ -75,7 +83,8 @@ public class ChatGroup extends ImEntity {
      *
      * @return an unmodifiable collection of the members of the group.
      */
-    public List<Contact> getMembers() {
+    public List<Contact> getMembers()
+    {
         return Collections.unmodifiableList(mMembers);
     }
 
@@ -84,7 +93,8 @@ public class ChatGroup extends ImEntity {
      *
      * @param contact the member to add.
      */
-    public synchronized void addMemberAsync(Contact contact) {
+    public synchronized void addMemberAsync(Contact contact)
+    {
         mManager.addGroupMemberAsync(this, contact);
     }
 
@@ -93,7 +103,8 @@ public class ChatGroup extends ImEntity {
      *
      * @param contact the member to remove.
      */
-    public synchronized void removeMemberAsync(Contact contact) {
+    public synchronized void removeMemberAsync(Contact contact)
+    {
         mManager.removeGroupMemberAsync(this, contact);
     }
 
@@ -102,9 +113,11 @@ public class ChatGroup extends ImEntity {
      *
      * @param contact the contact who has joined into the group.
      */
-    void notifyMemberJoined(Contact contact) {
+    void notifyMemberJoined(Contact contact)
+    {
         mMembers.add(contact);
-        for (GroupMemberListener listener : mMemberListeners) {
+        for (GroupMemberListener listener : mMemberListeners)
+        {
             listener.onMemberJoined(this, contact);
         }
     }
@@ -114,9 +127,12 @@ public class ChatGroup extends ImEntity {
      *
      * @param contact the contact who has left this group.
      */
-    void notifyMemberLeft(Contact contact) {
-        if (mMembers.remove(contact)) {
-            for (GroupMemberListener listener : mMemberListeners) {
+    void notifyMemberLeft(Contact contact)
+    {
+        if (mMembers.remove(contact))
+        {
+            for (GroupMemberListener listener : mMemberListeners)
+            {
                 listener.onMemberLeft(this, contact);
             }
         }
@@ -127,14 +143,17 @@ public class ChatGroup extends ImEntity {
      *
      * @param error the error information.
      */
-    void notifyGroupMemberError(ImErrorInfo error) {
-        for (GroupMemberListener listener : mMemberListeners) {
+    void notifyGroupMemberError(ImErrorInfo error)
+    {
+        for (GroupMemberListener listener : mMemberListeners)
+        {
             listener.onError(this, error);
         }
     }
 
     @Override
-    public boolean isGroup() {
+    public boolean isGroup()
+    {
         return true;
     }
 }

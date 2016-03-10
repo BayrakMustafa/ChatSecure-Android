@@ -17,6 +17,9 @@
 
 package info.guardianproject.otr.app.im.app.adapter;
 
+import android.os.RemoteException;
+import android.util.Log;
+
 import info.guardianproject.otr.app.im.IChatListener;
 import info.guardianproject.otr.app.im.IChatSession;
 import info.guardianproject.otr.app.im.app.ImApp;
@@ -24,88 +27,111 @@ import info.guardianproject.otr.app.im.engine.Contact;
 import info.guardianproject.otr.app.im.engine.ImErrorInfo;
 import info.guardianproject.otr.app.im.engine.Message;
 import info.guardianproject.util.LogCleaner;
-import android.os.RemoteException;
-import android.util.Log;
 
-public class ChatListenerAdapter extends IChatListener.Stub {
+public class ChatListenerAdapter extends IChatListener.Stub
+{
 
     private static final String TAG = ImApp.LOG_TAG;
 
-    public void onContactJoined(IChatSession ses, Contact contact) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onContactJoined(IChatSession ses, Contact contact)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onContactJoined(" + ses + ", " + contact + ")");
         }
     }
 
-    public void onContactLeft(IChatSession ses, Contact contact) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onContactLeft(IChatSession ses, Contact contact)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onContactLeft(" + ses + ", " + contact + ")");
         }
     }
 
-    public boolean onIncomingMessage(IChatSession ses, Message msg) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public boolean onIncomingMessage(IChatSession ses, Message msg)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onIncomingMessage(" + ses + ", " + msg + ")");
         }
 
         return true;
     }
 
-    public void onIncomingData(IChatSession ses, byte[] data) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onIncomingData(IChatSession ses, byte[] data)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onIncomingMessage(" + ses + ", len=" + data.length + ")");
         }
     }
 
-    public void onSendMessageError(IChatSession ses, Message msg, ImErrorInfo error) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onSendMessageError(IChatSession ses, Message msg, ImErrorInfo error)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onSendMessageError(" + ses + ", " + msg + ", " + error + ")");
         }
     }
 
-    public void onInviteError(IChatSession ses, ImErrorInfo error) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onInviteError(IChatSession ses, ImErrorInfo error)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onInviteError(" + ses + ", " + error + ")");
         }
     }
 
-    public void onConvertedToGroupChat(IChatSession ses) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onConvertedToGroupChat(IChatSession ses)
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onConvertedToGroupChat(" + ses + ")");
         }
     }
 
     @Override
-    public void onIncomingReceipt(IChatSession ses, String packetId) throws RemoteException {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onIncomingReceipt(IChatSession ses, String packetId) throws RemoteException
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onIncomingReceipt(" + ses + "," + packetId + ")");
         }
     }
 
     @Override
-    public void onStatusChanged(IChatSession ses) throws RemoteException {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onStatusChanged(IChatSession ses) throws RemoteException
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onStatusChanged(" + ses + ")");
         }
     }
 
     @Override
-    public void onIncomingFileTransfer(String from, String file) throws RemoteException {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onIncomingFileTransfer(String from, String file) throws RemoteException
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onIncomingFileTransfer(" + from + "," + file + ")");
         }
     }
 
     @Override
-    public void onIncomingFileTransferProgress(String file, int percent) throws RemoteException {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onIncomingFileTransferProgress(String file, int percent) throws RemoteException
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onIncomingFileTransferProgress(" + file + "," + percent + ")");
         }
     }
 
     @Override
-    public void onIncomingFileTransferError(String file, String message) throws RemoteException {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+    public void onIncomingFileTransferError(String file, String message) throws RemoteException
+    {
+        if (Log.isLoggable(TAG, Log.DEBUG))
+        {
             LogCleaner.debug(TAG, "onIncomingFileTransferError(" + file + "," + message + ")");
         }
 

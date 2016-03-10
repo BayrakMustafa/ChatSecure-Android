@@ -119,7 +119,8 @@ import info.guardianproject.util.SystemServices;
 import info.guardianproject.util.SystemServices.FileInfo;
 import info.guardianproject.util.XmppUriHelper;
 
-public class NewChatActivity extends FragmentActivity implements View.OnCreateContextMenuListener {
+public class NewChatActivity extends FragmentActivity implements View.OnCreateContextMenuListener
+{
 
     private static final String ICICLE_CHAT_PAGER_ADAPTER = "chatPagerAdapter";
     private static final String ICICLE_POSITION = "position";
@@ -135,8 +136,8 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     private static final int REQUEST_ADD_CONTACT = REQUEST_TAKE_PICTURE_SECURE + 1;
 
     private static final int CONTACT_LIST_LOADER_ID = 4444;
-    private static final int CHAT_LIST_LOADER_ID = CONTACT_LIST_LOADER_ID+1;
-    private static final int CHAT_PAGE_LOADER_ID = CONTACT_LIST_LOADER_ID+2;
+    private static final int CHAT_LIST_LOADER_ID = CONTACT_LIST_LOADER_ID + 1;
+    private static final int CHAT_PAGE_LOADER_ID = CONTACT_LIST_LOADER_ID + 2;
 
     private ImApp mApp;
     private ViewPager mChatPager;
@@ -160,15 +161,19 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
     private Imps.ProviderSettings.QueryMap mGlobalSettings = null;
 
-    final static class MyHandler extends SimpleAlertHandler {
-        public MyHandler(NewChatActivity activity) {
+    final static class MyHandler extends SimpleAlertHandler
+    {
+        public MyHandler(NewChatActivity activity)
+        {
             super(activity);
         }
 
         @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == ImApp.EVENT_SERVICE_CONNECTED) {
-                ((NewChatActivity)mActivity).onServiceConnected();
+        public void handleMessage(Message msg)
+        {
+            if (msg.what == ImApp.EVENT_SERVICE_CONNECTED)
+            {
+                ((NewChatActivity) mActivity).onServiceConnected();
                 return;
             }
             super.handleMessage(msg);
@@ -177,45 +182,48 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
 
     @Override
-    protected void onCreate(Bundle icicle) {
+    protected void onCreate(Bundle icicle)
+    {
 
         super.onCreate(icicle);
 
-        checkCustomFont ();
+        checkCustomFont();
 
-        mApp = (ImApp)getApplication();
+        mApp = (ImApp) getApplication();
         mApp.maybeInit(this);
 
         setContentView(R.layout.chat_pager);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        mApp.setAppTheme(this,mToolbar);
+        mApp.setAppTheme(this, mToolbar);
         ThemeableActivity.setBackgroundImage(this);
 
         mToolbar.inflateMenu(R.menu.new_chat_menu);
-        setupMenu ();
+        setupMenu();
 
         setTitle(R.string.app_name);
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
-            this,  mDrawer, mToolbar,
-            R.string.ok, R.string.cancel
+                this, mDrawer, mToolbar,
+                R.string.ok, R.string.cancel
         );
-        
+
         // Set the drawer toggle as the DrawerListener
         mDrawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerToggle.syncState();
-        mDrawerToggle.setToolbarNavigationClickListener(new OnClickListener ()
+        mDrawerToggle.setToolbarNavigationClickListener(new OnClickListener()
         {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
 
                 int currentPos = mChatPager.getCurrentItem();
-                if (currentPos > 0) {
+                if (currentPos > 0)
+                {
                     mChatPager.setCurrentItem(0);
 
                 }
@@ -227,17 +235,18 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
         mHandler = new MyHandler(this);
         mRequestedChatId = -1;
-      
-        ((Button)findViewById(R.id.btnAddAccount)).setOnClickListener (new OnClickListener ()
-        
+
+        ((Button) findViewById(R.id.btnAddAccount)).setOnClickListener(new OnClickListener()
+
         {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 // TODO Auto-generated method stub
-                startAccountSetup ();
+                startAccountSetup();
             }
-            
+
         });
 
         mChatPager = (ViewPager) findViewById(R.id.chatpager);
@@ -246,25 +255,32 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         //mChatPager.setDrawingCacheEnabled(true);
         //mChatPager.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
 
-        mChatPager.setOnPageChangeListener(new SimpleOnPageChangeListener () {
+        mChatPager.setOnPageChangeListener(new SimpleOnPageChangeListener()
+        {
 
             @Override
-            public void onPageSelected(int pos) {
+            public void onPageSelected(int pos)
+            {
 
-                if (pos > 0) {
+                if (pos > 0)
+                {
 
                     if (mLastPagePosition != -1)
                     {
-                        ChatViewFragment frag = (ChatViewFragment)mChatPagerAdapter.getItemAt(pos);
+                        ChatViewFragment frag = (ChatViewFragment) mChatPagerAdapter.getItemAt(pos);
                         // Fragment isn't guaranteed to be initialized yet
                         if (frag != null)
+                        {
                             frag.onDeselected(mApp);
+                        }
                     }
 
-                    ChatViewFragment frag = (ChatViewFragment)mChatPagerAdapter.getItemAt(pos);
+                    ChatViewFragment frag = (ChatViewFragment) mChatPagerAdapter.getItemAt(pos);
                     // Fragment isn't guaranteed to be initialized yet
                     if (frag != null)
+                    {
                         frag.onSelected(mApp);
+                    }
 
                     mLastPagePosition = pos;
 
@@ -289,9 +305,9 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                         mMenu.setGroupVisible(R.id.menu_group_chats, false);
                         mMenu.setGroupVisible(R.id.menu_group_contacts, true);
 
-                        mMenu.setGroupVisible(R.id.menu_group_otr_verified,false);
-                        mMenu.setGroupVisible(R.id.menu_group_otr_unverified,false);
-                        mMenu.setGroupVisible(R.id.menu_group_otr_off,false);
+                        mMenu.setGroupVisible(R.id.menu_group_otr_verified, false);
+                        mMenu.setGroupVisible(R.id.menu_group_otr_unverified, false);
+                        mMenu.setGroupVisible(R.id.menu_group_otr_off, false);
 
                     }
 
@@ -305,24 +321,28 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             }
 
 
-
         });
 
         mMessageContextMenuHandler = new MessageContextMenuHandler();
 
-       // initSideBar ();
+        // initSideBar ();
 
         mChatPagerAdapter = new ChatViewPagerAdapter(getSupportFragmentManager());
         mChatPager.setAdapter(mChatPagerAdapter);
 
-        if (icicle != null) {
-            if (icicle.containsKey(ICICLE_CHAT_PAGER_ADAPTER)) {
+        if (icicle != null)
+        {
+            if (icicle.containsKey(ICICLE_CHAT_PAGER_ADAPTER))
+            {
                 mChatPagerAdapter.restoreState(icicle.getParcelable(ICICLE_CHAT_PAGER_ADAPTER), getClassLoader());
             }
-            if (icicle.containsKey(ICICLE_POSITION)) {
+            if (icicle.containsKey(ICICLE_POSITION))
+            {
                 int position = icicle.getInt(ICICLE_POSITION);
                 if (position < mChatPagerAdapter.getCount())
+                {
                     mChatPager.setCurrentItem(position);
+                }
             }
         }
 
@@ -331,14 +351,16 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         initConnections();
 
     }
-    
-    private void initChats ()
+
+    private void initChats()
     {
-        LoaderManager lMgr =getSupportLoaderManager();
-        lMgr.initLoader(CHAT_LIST_LOADER_ID, null, new LoaderManager.LoaderCallbacks<Cursor> () {
+        LoaderManager lMgr = getSupportLoaderManager();
+        lMgr.initLoader(CHAT_LIST_LOADER_ID, null, new LoaderManager.LoaderCallbacks<Cursor>()
+        {
 
             @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            public Loader<Cursor> onCreateLoader(int id, Bundle args)
+            {
                 CursorLoader loader = new CursorLoader(NewChatActivity.this, Imps.Contacts.CONTENT_URI_CHAT_CONTACTS, ChatView.CHAT_PROJECTION, null, null, null);
                 loader.setUpdateThrottle(100L);
 
@@ -346,16 +368,21 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             }
 
             @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor newCursor) {
+            public void onLoadFinished(Loader<Cursor> loader, Cursor newCursor)
+            {
 
                 mChatPagerAdapter.swapCursor(newCursor);
                 updateChatList();
 
                 if (getIntent() != null)
+                {
                     resolveIntent(getIntent());
+                }
 
-                if (mRequestedChatId >= 0) {
-                    if (showChat(mRequestedChatId)) {
+                if (mRequestedChatId >= 0)
+                {
+                    if (showChat(mRequestedChatId))
+                    {
                         mRequestedChatId = -1;
                     }
                 }
@@ -364,51 +391,54 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             }
 
             @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
+            public void onLoaderReset(Loader<Cursor> loader)
+            {
                 mChatPagerAdapter.swapCursor(null);
             }
         });
     }
 
 
-
     @Override
-    public void setTitle(CharSequence title) {
-
-        mToolbar.setTitle(title);
-    //    mToolbar.setLogo(null);
-    }
-
-    public void setTitle(CharSequence title, Drawable icon) {
-
-        mToolbar.setTitle(title);
-     //   mToolbar.setLogo(icon);
-        
-    }
-
-
-    private void checkCustomFont ()
+    public void setTitle(CharSequence title)
     {
-        if (CustomTypefaceManager.getCurrentTypeface(this)==null)
+
+        mToolbar.setTitle(title);
+        //    mToolbar.setLogo(null);
+    }
+
+    public void setTitle(CharSequence title, Drawable icon)
+    {
+
+        mToolbar.setTitle(title);
+        //   mToolbar.setLogo(icon);
+
+    }
+
+
+    private void checkCustomFont()
+    {
+        if (CustomTypefaceManager.getCurrentTypeface(this) == null)
         {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             List<InputMethodInfo> mInputMethodProperties = imm.getEnabledInputMethodList();
 
             final int N = mInputMethodProperties.size();
 
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++)
+            {
 
                 InputMethodInfo imi = mInputMethodProperties.get(i);
 
                 //imi contains the information about the keyboard you are using
                 if (imi.getPackageName().equals("org.ironrabbit.bhoboard"))
                 {
-                    CustomTypefaceManager.loadFromKeyboard(this);   
+                    CustomTypefaceManager.loadFromKeyboard(this);
                     break;
                 }
-            
+
             }
-            
+
 
         }
     }
@@ -417,12 +447,16 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
      * We must have been thawed and the service was not previously connected, so our ChatViews are showing nothing.
      * Refresh them.
      */
-    void onServiceConnected() {
-        if (mChatPagerAdapter != null) {
+    void onServiceConnected()
+    {
+        if (mChatPagerAdapter != null)
+        {
             int size = mChatPagerAdapter.getCount();
-            for (int i = 1; i < size ; i++) {
-                ChatViewFragment frag = (ChatViewFragment)mChatPagerAdapter.getItemAt(i);
-                if (frag != null) {
+            for (int i = 1; i < size; i++)
+            {
+                ChatViewFragment frag = (ChatViewFragment) mChatPagerAdapter.getItemAt(i);
+                if (frag != null)
+                {
                     frag.onServiceConnected();
                 }
             }
@@ -430,8 +464,9 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
     @Override
-    protected void onDestroy() {
-        unregisterSubListeners ();
+    protected void onDestroy()
+    {
+        unregisterSubListeners();
 
         if (mGlobalSettings != null)
         {
@@ -444,37 +479,40 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         //mAdapter.swapCursor(null);
         super.onDestroy();
         mChatPagerAdapter = null;
-       // mAdapter = null;
+        // mAdapter = null;
 
 
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState)
+    {
         super.onSaveInstanceState(outState);
         outState.putInt(ICICLE_POSITION, mChatPager.getCurrentItem());
         outState.putParcelable(ICICLE_CHAT_PAGER_ADAPTER, mChatPagerAdapter.saveState());
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
 
         mApp.getTrustManager().bindDisplayActivity(this);
 
         mApp.checkForCrashes(this);
-        
+
         //if VFS is not mounted, then send to WelcomeActivity
         if (!VirtualFileSystem.get().isMounted())
         {
             finish();
-            startActivity(new Intent(this,WelcomeActivity.class));
-            
+            startActivity(new Intent(this, WelcomeActivity.class));
+
         }
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
 
         mApp.getTrustManager().unbindDisplayActivity(this);
@@ -482,7 +520,8 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(Intent intent)
+    {
         super.onNewIntent(intent);
 
         setIntent(intent);
@@ -490,10 +529,12 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
 
         int currentPos = mChatPager.getCurrentItem();
-        if (currentPos > 0) {
+        if (currentPos > 0)
+        {
             mChatPager.setCurrentItem(0);
             return;
         }
@@ -501,23 +542,28 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         super.onBackPressed();
     }
 
-    private void showInviteContactDialog ()
+    private void showInviteContactDialog()
     {
 
         Intent i = new Intent(this, AddContactActivity.class);
-        startActivityForResult(i,REQUEST_ADD_CONTACT);
+        startActivityForResult(i, REQUEST_ADD_CONTACT);
 
     }
 
-    private IOtrChatSession getCurrentOtrChatSession() throws RemoteException {
+    private IOtrChatSession getCurrentOtrChatSession() throws RemoteException
+    {
         IChatSession chatSession = getCurrentChatSession();
         if (chatSession == null)
+        {
             return null;
+        }
         else
+        {
             return chatSession.getOtrChatSession();
+        }
     }
 
-    private void displayQRCode ()
+    private void displayQRCode()
     {
         try
         {
@@ -533,7 +579,7 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
                     new IntentIntegrator(this).shareText(otrKeyURI);
                     return;
-                 }
+                }
             }
         }
         catch (RemoteException re)
@@ -542,16 +588,17 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
         //did not work
         Toast.makeText(this, R.string.please_start_a_secure_conversation_before_scanning_codes, Toast.LENGTH_LONG).show();
-     }
+    }
 
-    private void resolveIntent(Intent intent) {
+    private void resolveIntent(Intent intent)
+    {
 
         doResolveIntent(intent);
         setIntent(null);
 
     }
 
-    private IImConnection findConnectionForGroupChat (String user, String host)
+    private IImConnection findConnectionForGroupChat(String user, String host)
     {
         Collection<IImConnection> connActive = mApp.getActiveConnections();
         ContentResolver cr = this.getContentResolver();
@@ -562,28 +609,29 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             try
             {
 
-                    Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( conn.getProviderId())},null);
+                Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(conn.getProviderId())}, null);
 
-                    Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, cr,
-                            conn.getProviderId(),     false /* keep updated */, mHandler /* no handler */);
+                Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, cr,
+                        conn.getProviderId(), false /* keep updated */, mHandler /* no handler */);
 
-                    if (host.contains(settings.getDomain()))
+                if (host.contains(settings.getDomain()))
+                {
+                    if (conn.getState() == ImConnection.LOGGED_IN)
                     {
-                        if (conn.getState() == ImConnection.LOGGED_IN)
-                        {
 
-                            result = conn;
-                            settings.close();
-                            pCursor.close();
-                            break;
-                        }
+                        result = conn;
+                        settings.close();
+                        pCursor.close();
+                        break;
                     }
+                }
 
-                    settings.close();
-                    pCursor.close();
+                settings.close();
+                pCursor.close();
 
             }
-            catch (RemoteException e){//nothing to do here
+            catch (RemoteException e)
+            {//nothing to do here
             }
 
         }
@@ -591,39 +639,52 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         return result;
     }
 
-    private void doResolveIntent(Intent intent) {
+    private void doResolveIntent(Intent intent)
+    {
 
-        if (requireOpenDashboardOnStart(intent)) {
+        if (requireOpenDashboardOnStart(intent))
+        {
             long providerId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_PROVIDER_ID, -1L);
             mLastAccountId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_ACCOUNT_ID,
                     -1L);
-            if (providerId == -1L || mLastAccountId == -1L) {
+            if (providerId == -1L || mLastAccountId == -1L)
+            {
                 finish();
-            } else {
-             //   mChatSwitcher.open();
+            }
+            else
+            {
+                //   mChatSwitcher.open();
             }
             return;
         }
 
-        if (ImServiceConstants.ACTION_MANAGE_SUBSCRIPTION.equals(intent.getAction())) {
+        if (ImServiceConstants.ACTION_MANAGE_SUBSCRIPTION.equals(intent.getAction()))
+        {
 
             long providerId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_PROVIDER_ID, -1);
             mLastAccountId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_ACCOUNT_ID,
                     -1L);
             String from = intent.getStringExtra(ImServiceConstants.EXTRA_INTENT_FROM_ADDRESS);
 
-            if ((providerId == -1) || (from == null)) {
+            if ((providerId == -1) || (from == null))
+            {
                 finish();
-            } else {
+            }
+            else
+            {
 
-                showSubscriptionDialog (providerId, from);
+                showSubscriptionDialog(providerId, from);
 
             }
-        } else if (intent != null) {
+        }
+        else if (intent != null)
+        {
             Uri data = intent.getData();
 
-           if (intent.getBooleanExtra("showaccounts", false))
-               mDrawer.openDrawer(GravityCompat.START);
+            if (intent.getBooleanExtra("showaccounts", false))
+            {
+                mDrawer.openDrawer(GravityCompat.START);
+            }
 
             if (data != null)
             {
@@ -634,7 +695,9 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                     String path = null;
 
                     if (data.getPathSegments().size() > 0)
+                    {
                         path = data.getPathSegments().get(0);
+                    }
 
                     if (host != null && path != null)
                     {
@@ -644,7 +707,7 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                         if (connMUC != null)
                         {
 
-                            startGroupChat (path, host, user, connMUC);
+                            startGroupChat(path, host, user, connMUC);
                             setResult(RESULT_OK);
                         }
                         else
@@ -654,14 +717,16 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                             finish();
                         }
 
-                     }
+                    }
 
 
-
-                } else {
+                }
+                else
+                {
 
                     String type = getContentResolver().getType(data);
-                    if (Imps.Chats.CONTENT_ITEM_TYPE.equals(type)) {
+                    if (Imps.Chats.CONTENT_ITEM_TYPE.equals(type))
+                    {
 
                         long requestedContactId = ContentUris.parseId(data);
 
@@ -694,22 +759,25 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                                 ContentUris.appendId(builder, requestedContactId);
                                 Cursor cursor = getContentResolver().query(builder.build(), ChatView.CHAT_PROJECTION, null, null, null);
 
-                                try {
+                                try
+                                {
                                     if (cursor.getCount() > 0)
                                     {
                                         cursor.moveToFirst();
                                         openExistingChat(cursor);
                                     }
-                                } finally {
+                                }
+                                finally
+                                {
                                     cursor.close();
                                 }
                             }
                         }
 
-                    } else if (Imps.Invitation.CONTENT_ITEM_TYPE.equals(type)) {
+                    }
+                    else if (Imps.Invitation.CONTENT_ITEM_TYPE.equals(type))
+                    {
                         //chatView.bindInvitation(ContentUris.parseId(data));
-
-
 
 
                     }
@@ -718,31 +786,34 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             else if (intent.hasExtra(ImServiceConstants.EXTRA_INTENT_ACCOUNT_ID))
             {
                 //set the current account id
-                mLastAccountId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_ACCOUNT_ID,-1L);
+                mLastAccountId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_ACCOUNT_ID, -1L);
 
                 //move the pager back to the first page
                 if (mChatPager != null)
+                {
                     mChatPager.setCurrentItem(0);
-
+                }
 
 
             }
             else
             {
-              //  refreshConnections();
+                //  refreshConnections();
             }
         }
 
 
     }
 
-    public boolean showChat (long requestedChatId)
+    public boolean showChat(long requestedChatId)
     {
         Cursor cursorChats = mChatPagerAdapter.getCursor();
-        
+
         if (cursorChats == null)
+        {
             return false;
-        
+        }
+
         cursorChats.moveToPosition(-1);
         int posIdx = 1;
 
@@ -763,23 +834,25 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         return false;
     }
 
-    public void refreshChatViews ()
+    public void refreshChatViews()
     {
         mChatPagerAdapter.notifyDataSetChanged();
-        
+
     }
 
     private Menu mMenu;
-   // private AccountAdapter mAdapter;
+    // private AccountAdapter mAdapter;
     protected Long[][] mAccountIds;
     private long mRequestedChatId;
 
-    public void updateEncryptionMenuState ()
+    public void updateEncryptionMenuState()
     {
         ChatView cView = getCurrentChatView();
 
         if (cView == null)
+        {
             return;
+        }
 
         if (mChatPager != null && mMenu != null)
         {
@@ -789,49 +862,48 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 // cannot be verified. Thus, show as neutral.
                 if (cView.isGroupChat())
                 {
-                    mMenu.setGroupVisible(R.id.menu_group_otr_verified,false);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified,false);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_off,false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_verified, false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified, false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_off, false);
 
                 }
                 else if (cView.getOtrSessionStatus() == SessionStatus.ENCRYPTED && cView.isOtrSessionVerified())
                 {
-                    mMenu.setGroupVisible(R.id.menu_group_otr_verified,true);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified,false);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_off,false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_verified, true);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified, false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_off, false);
 
                 }
                 else if (cView.getOtrSessionStatus() == SessionStatus.ENCRYPTED)
                 {
-                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified,true);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_verified,false);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_off,false);
-
+                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified, true);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_verified, false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_off, false);
 
 
                 }
                 else if (cView.getOtrSessionStatus() == SessionStatus.FINISHED)
                 {
-                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified,true);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_verified,false);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_off,false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified, true);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_verified, false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_off, false);
 
                 }
                 else
                 {
-                    mMenu.setGroupVisible(R.id.menu_group_otr_off,true);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_off, true);
 
-                    mMenu.setGroupVisible(R.id.menu_group_otr_verified,false);
-                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified,false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_verified, false);
+                    mMenu.setGroupVisible(R.id.menu_group_otr_unverified, false);
 
                 }
 
             }
 
-         }
+        }
     }
 
-    private void setupMenu ()
+    private void setupMenu()
     {
 
         mMenu = mToolbar.getMenu();
@@ -849,21 +921,23 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 mMenu.setGroupVisible(R.id.menu_group_chats, false);
                 mMenu.setGroupVisible(R.id.menu_group_contacts, true);
 
-                mMenu.setGroupVisible(R.id.menu_group_otr_verified,false);
-                mMenu.setGroupVisible(R.id.menu_group_otr_unverified,false);
-                mMenu.setGroupVisible(R.id.menu_group_otr_off,false);
+                mMenu.setGroupVisible(R.id.menu_group_otr_verified, false);
+                mMenu.setGroupVisible(R.id.menu_group_otr_unverified, false);
+                mMenu.setGroupVisible(R.id.menu_group_otr_off, false);
 
             }
         }
 
-        mToolbar.setOnMenuItemClickListener(new OnMenuItemClickListener ()
+        mToolbar.setOnMenuItemClickListener(new OnMenuItemClickListener()
         {
 
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            public boolean onMenuItemClick(MenuItem item)
+            {
 
-                
-                switch (item.getItemId()) {
+
+                switch (item.getItemId())
+                {
 /*
                 case R.id.menu_send_image:
                     if (getCurrentChatView() != null && getCurrentChatView().getOtrSessionStatus() == SessionStatus.ENCRYPTED)
@@ -912,88 +986,93 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
                     return true;
 */
-                case R.id.menu_verify_or_view:
-                case R.id.menu_view_profile_verified:
-                    
-                    if (getCurrentChatView() != null)
-                        getCurrentChatView().showVerifyDialog();
-                    return true;
+                    case R.id.menu_verify_or_view:
+                    case R.id.menu_view_profile_verified:
 
-                case R.id.menu_show_qr:
-                    displayQRCode();
-                    return true;
-                case R.id.menu_end_conversation:
-                    try {
-                        endCurrentChatPrompt( getCurrentSessionId());
-                    } catch (Exception e) {
-                        Toast.makeText(NewChatActivity.this, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show(); // TODO i18n
-                        e.printStackTrace();
-                    }
+                        if (getCurrentChatView() != null)
+                        {
+                            getCurrentChatView().showVerifyDialog();
+                        }
+                        return true;
 
-                    return true;
+                    case R.id.menu_show_qr:
+                        displayQRCode();
+                        return true;
+                    case R.id.menu_end_conversation:
+                        try
+                        {
+                            endCurrentChatPrompt(getCurrentSessionId());
+                        }
+                        catch (Exception e)
+                        {
+                            Toast.makeText(NewChatActivity.this, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show(); // TODO i18n
+                            e.printStackTrace();
+                        }
+
+                        return true;
                 /*
                 case R.id.menu_delete_conversation:
                     if (getCurrentChatView() != null)
                         getCurrentChatView().closeChatSession(true);
                     return true;
                   */
-                case R.id.menu_settings:
-                    Intent sintent = new Intent(NewChatActivity.this, SettingActivity.class);
-                    startActivityForResult(sintent,REQUEST_SETTINGS);
-                    return true;
+                    case R.id.menu_settings:
+                        Intent sintent = new Intent(NewChatActivity.this, SettingActivity.class);
+                        startActivityForResult(sintent, REQUEST_SETTINGS);
+                        return true;
 
-                case R.id.menu_otr:
-                case R.id.menu_otr_stop:
-                case R.id.menu_otr_stop_verified:
-                    
-                    if (getCurrentChatView() != null)
-                    {
+                    case R.id.menu_otr:
+                    case R.id.menu_otr_stop:
+                    case R.id.menu_otr_stop_verified:
 
-                        boolean isEnc = (getCurrentChatView().getOtrSessionStatus() == SessionStatus.ENCRYPTED ||
-                                getCurrentChatView().getOtrSessionStatus() == SessionStatus.FINISHED
-                                );
+                        if (getCurrentChatView() != null)
+                        {
 
-                        getCurrentChatView().setOTRState(!isEnc);
+                            boolean isEnc = (getCurrentChatView().getOtrSessionStatus() == SessionStatus.ENCRYPTED ||
+                                    getCurrentChatView().getOtrSessionStatus() == SessionStatus.FINISHED
+                            );
+
+                            getCurrentChatView().setOTRState(!isEnc);
 
 
+                        }
 
-                    }
+                        return true;
 
-                    return true;
+                    case android.R.id.home:
+                        int currentPos = mChatPager.getCurrentItem();
+                        if (currentPos > 0)
+                        {
+                            mChatPager.setCurrentItem(0);
 
-                case android.R.id.home:
-                    int currentPos = mChatPager.getCurrentItem();
-                    if (currentPos > 0) {
-                        mChatPager.setCurrentItem(0);
+                        }
 
-                    }
+                        return true;
 
-                    return true;
+                    case R.id.menu_view_accounts:
+                        startAccountSetup();
 
-                case R.id.menu_view_accounts:
-                    startAccountSetup();
-                        
-                    return true;
+                        return true;
 
-                case R.id.menu_new_chat:
-                    startContactPicker();
-                    return true;
+                    case R.id.menu_new_chat:
+                        startContactPicker();
+                        return true;
 
-                case R.id.menu_exit:
-                    WelcomeActivity.shutdownAndLock(NewChatActivity.this);
-                    ExitActivity.exitAndRemoveFromRecentApps(NewChatActivity.this);
-                    return true;
+                    case R.id.menu_exit:
+                        WelcomeActivity.shutdownAndLock(NewChatActivity.this);
+                        ExitActivity.exitAndRemoveFromRecentApps(NewChatActivity.this);
+                        return true;
 
-                case R.id.menu_add_contact:
-                    showInviteContactDialog();
-                    return true;
+                    case R.id.menu_add_contact:
+                        showInviteContactDialog();
+                        return true;
 
-                case R.id.menu_group_chat:
-                    showGroupChatDialog();
-                    return true;
-                case R.id.menu_import_keys:
-                    importKeyStore();
-                    return true;
+                    case R.id.menu_group_chat:
+                        showGroupChatDialog();
+                        return true;
+                    case R.id.menu_import_keys:
+                        importKeyStore();
+                        return true;
                 }
 
                 return false;
@@ -1005,81 +1084,98 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
     }
 
-    private void startAccountSetup ()
+    private void startAccountSetup()
     {
         startActivity(new Intent(getBaseContext(), ChooseAccountActivity.class));
 
     }
 
-    private void importKeyStore ()
+    private void importKeyStore()
     {
         OtrAndroidKeyManagerImpl.checkForKeyImport(getIntent(), this);
     }
 
-    private void endCurrentChatPrompt( final String sessionId ) {
+    private void endCurrentChatPrompt(final String sessionId)
+    {
         OtrChatManager otrChatManager = OtrChatManager.getInstance();
-        if (otrChatManager != null) {
-            try {
+        if (otrChatManager != null)
+        {
+            try
+            {
                 IOtrChatSession otrSession = getCurrentOtrChatSession();
                 otrSession.stopChatEncryption();
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
             }
         }
         // if no files to delete - just end the session
-        if (!ChatFileStore.sessionExists(sessionId)) {
+        if (!ChatFileStore.sessionExists(sessionId))
+        {
             endCurrentChat();
             return;
         }
         new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert)
-        .setTitle(getString(R.string.end_chat_title))
-        .setMessage(getString(R.string.end_chat_summary))
-        .setPositiveButton(getString(R.string.end_chat_and_delete), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                endCurrentChat();
-            }
-        })
-        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                return;
-            }
-        })
-        .show();
+                .setTitle(getString(R.string.end_chat_title))
+                .setMessage(getString(R.string.end_chat_summary))
+                .setPositiveButton(getString(R.string.end_chat_and_delete), new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        endCurrentChat();
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        return;
+                    }
+                })
+                .show();
     }
 
     private void endCurrentChat()
     {
-        if (getCurrentChatView() != null) {
-            try {
+        if (getCurrentChatView() != null)
+        {
+            try
+            {
                 // delete the chat session's files if any
-                deleteSessionVfs( getCurrentSessionId() );
-            } catch (Exception e) {
+                deleteSessionVfs(getCurrentSessionId());
+            }
+            catch (Exception e)
+            {
                 // TODO error
                 e.printStackTrace();
             }
             getCurrentChatView().closeChatSession(true);
         }
-        
+
         updateChatList();
         mChatPager.setCurrentItem(0);
-        
+
     }
 
-    private void deleteSessionVfs( final String sessionId ) throws Exception {
+    private void deleteSessionVfs(final String sessionId) throws Exception
+    {
         // if no files to delete - bail
-        if (!ChatFileStore.sessionExists(sessionId)) {
+        if (!ChatFileStore.sessionExists(sessionId))
+        {
             return;
         }
         // delete
         ChatFileStore.deleteSession(sessionId);
     }
 
-    private void startContactPicker() {
+    private void startContactPicker()
+    {
 
         Uri.Builder builder = Imps.Contacts.CONTENT_URI_CONTACTS_BY.buildUpon();
         Uri data = builder.build();
-        
+
         Intent i = new Intent(Intent.ACTION_PICK, data);
         i.putExtra("invitations", false);
         startActivityForResult(i, REQUEST_PICK_CONTACTS);
@@ -1087,7 +1183,8 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
 
     @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
+    public boolean dispatchKeyEvent(KeyEvent event)
+    {
         /*
          * this behavior doesn't make sense to me. i hit the back key
          * and the chat disappears, as opposed to just going back to the message
@@ -1102,12 +1199,16 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         return super.dispatchKeyEvent(event);
     }
 
-    /** Check whether we are asked to open Dashboard on startup. */
-    private boolean requireOpenDashboardOnStart(Intent intent) {
+    /**
+     * Check whether we are asked to open Dashboard on startup.
+     */
+    private boolean requireOpenDashboardOnStart(Intent intent)
+    {
         return intent.getBooleanExtra(ImServiceConstants.EXTRA_INTENT_SHOW_MULTIPLE, false);
     }
 
-    void startImagePicker() {
+    void startImagePicker()
+    {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, REQUEST_SEND_IMAGE);
@@ -1115,11 +1216,12 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
     Uri mLastPhoto = null;
 
-    void startPhotoTaker() {
+    void startPhotoTaker()
+    {
 
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File photo = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),  "cs_" + new Date().getTime() + ".jpg");
+        File photo = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "cs_" + new Date().getTime() + ".jpg");
         mLastPhoto = Uri.fromFile(photo);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,
                 mLastPhoto);
@@ -1128,30 +1230,35 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         startActivityForResult(intent, REQUEST_TAKE_PICTURE);
     }
 
-    void startPhotoTakerSecure() {
+    void startPhotoTakerSecure()
+    {
 
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(this, SecureCameraActivity.class);
-        String time = ""+new Date().getTime();
-        String filename = "/" + Environment.DIRECTORY_DCIM + "/" +  "cs_" + time + ".jpg";
-        String thumbnail = "/" + Environment.DIRECTORY_DCIM + "/" +  "cs_" + time + "_thumb.jpg";
-        intent.putExtra(SecureCameraActivity.FILENAME, filename ) ;
-        intent.putExtra(SecureCameraActivity.THUMBNAIL, thumbnail ) ;
+        String time = "" + new Date().getTime();
+        String filename = "/" + Environment.DIRECTORY_DCIM + "/" + "cs_" + time + ".jpg";
+        String thumbnail = "/" + Environment.DIRECTORY_DCIM + "/" + "cs_" + time + "_thumb.jpg";
+        intent.putExtra(SecureCameraActivity.FILENAME, filename);
+        intent.putExtra(SecureCameraActivity.THUMBNAIL, thumbnail);
 
         // start the secure image capture Intent
         startActivityForResult(intent, REQUEST_TAKE_PICTURE_SECURE);
     }
 
-    void startFilePicker() {
+    void startFilePicker()
+    {
         Intent selectFile = new Intent(Intent.ACTION_GET_CONTENT);
         selectFile.setType("file/*");
         Intent intentChooser = Intent.createChooser(selectFile, "Select File");
 
         if (intentChooser != null)
+        {
             startActivityForResult(Intent.createChooser(selectFile, "Select File"), REQUEST_SEND_FILE);
+        }
     }
 
-    void startAudioPicker() {
+    void startAudioPicker()
+    {
 
 
         Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
@@ -1166,7 +1273,9 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 intent.setType("audio/*");
 
                 if (!isCallable(intent))
+                {
                     return;
+                }
 
             }
         }
@@ -1175,47 +1284,62 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
     }
 
-    private boolean isCallable(Intent intent) {
+    private boolean isCallable(Intent intent)
+    {
         List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent,
-            PackageManager.MATCH_DEFAULT_ONLY);
+                PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
 
-    private void handleSendDelete( Uri contentUri, boolean delete, boolean resizeImage) {
-        try {
+    private void handleSendDelete(Uri contentUri, boolean delete, boolean resizeImage)
+    {
+        try
+        {
             // import
             FileInfo info = SystemServices.getFileInfoFromURI(this, contentUri);
             String sessionId = getCurrentSessionId();
             Uri vfsUri;
             if (resizeImage)
+            {
                 vfsUri = ChatFileStore.resizeAndImportImage(this, sessionId, contentUri, info.type);
+            }
             else
+            {
                 vfsUri = ChatFileStore.importContent(sessionId, info.path);
+            }
             // send
             boolean sent = handleSend(vfsUri, info.type);
-            if (!sent) {
+            if (!sent)
+            {
                 // not deleting if not sent
                 return;
             }
             // autu delete
-            if (delete) {
+            if (delete)
+            {
                 boolean deleted = delete(contentUri);
-                if (!deleted) {
+                if (!deleted)
+                {
                     throw new IOException("Error deleting " + contentUri);
                 }
             }
-        } catch (Exception e) {
-          //  Toast.makeText(this, "Error sending file", Toast.LENGTH_LONG).show(); // TODO i18n
-            Log.e(ImApp.LOG_TAG,"error sending file",e);
+        }
+        catch (Exception e)
+        {
+            //  Toast.makeText(this, "Error sending file", Toast.LENGTH_LONG).show(); // TODO i18n
+            Log.e(ImApp.LOG_TAG, "error sending file", e);
         }
     }
 
-    private boolean delete(Uri uri) {
-        if (uri.getScheme().equals("content")) {
-            int deleted = getContentResolver().delete(uri,null,null);
+    private boolean delete(Uri uri)
+    {
+        if (uri.getScheme().equals("content"))
+        {
+            int deleted = getContentResolver().delete(uri, null, null);
             return deleted == 1;
         }
-        if (uri.getScheme().equals("file")) {
+        if (uri.getScheme().equals("file"))
+        {
             java.io.File file = new java.io.File(uri.toString().substring(5));
             return file.delete();
         }
@@ -1223,12 +1347,16 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_SEND_IMAGE || requestCode == REQUEST_SEND_FILE || requestCode == REQUEST_SEND_AUDIO) {
-                Uri uri = resultIntent.getData() ;
-                if( uri == null ) {
-                    return ;
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent)
+    {
+        if (resultCode == RESULT_OK)
+        {
+            if (requestCode == REQUEST_SEND_IMAGE || requestCode == REQUEST_SEND_FILE || requestCode == REQUEST_SEND_AUDIO)
+            {
+                Uri uri = resultIntent.getData();
+                if (uri == null)
+                {
+                    return;
                 }
                 boolean deleteAudioFile = (requestCode == REQUEST_SEND_AUDIO);
                 boolean resizeImage = requestCode == REQUEST_SEND_IMAGE; //resize if is an image, not shared as "file"
@@ -1239,14 +1367,18 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 File file = new File(getRealPathFromURI(mLastPhoto));
                 final Handler handler = new Handler();
                 MediaScannerConnection.scanFile(
-                        this, new String[] { file.toString() }, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
+                        this, new String[]{file.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener()
+                        {
                             @Override
-                            public void onScanCompleted(String path, final Uri uri) {
+                            public void onScanCompleted(String path, final Uri uri)
+                            {
 
-                                handler.post( new Runnable() {
+                                handler.post(new Runnable()
+                                {
                                     @Override
-                                    public void run() {
+                                    public void run()
+                                    {
                                         handleSendDelete(mLastPhoto, true, true);
                                     }
                                 });
@@ -1258,15 +1390,18 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 String filename = resultIntent.getStringExtra(SecureCameraActivity.FILENAME);
                 String mimeType = resultIntent.getStringExtra(SecureCameraActivity.MIMETYPE);
                 Uri uri = Uri.parse("file:" + filename);
-                handleSend(uri,mimeType);
+                handleSend(uri, mimeType);
             }
             else if (requestCode == REQUEST_SETTINGS)
             {
 
-                try {
+                try
+                {
                     mApp.getRemoteImService().updateStateFromSettings();
-                } catch (Exception e) {
-                    Log.e(ImApp.LOG_TAG,"unable to update service settings",e);
+                }
+                catch (Exception e)
+                {
+                    Log.e(ImApp.LOG_TAG, "unable to update service settings", e);
                 }
 
                 finish();
@@ -1274,90 +1409,119 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 startActivity(intent);
 
             }
-            else if (requestCode == REQUEST_PICK_CONTACTS || requestCode == REQUEST_ADD_CONTACT) {
+            else if (requestCode == REQUEST_PICK_CONTACTS || requestCode == REQUEST_ADD_CONTACT)
+            {
 
                 String username = resultIntent.getStringExtra(ContactsPickerActivity.EXTRA_RESULT_USERNAME);
-                long providerId = resultIntent.getLongExtra(ContactsPickerActivity.EXTRA_RESULT_PROVIDER,-1);
+                long providerId = resultIntent.getLongExtra(ContactsPickerActivity.EXTRA_RESULT_PROVIDER, -1);
 
                 //String message = resultIntent.getStringExtra(ContactsPickerActivity.EXTRA_RESULT_MESSAGE);
-                try {
+                try
+                {
 
                     IChatSession chatSession = this.getCurrentChatSession();
-                    if (chatSession != null && chatSession.isGroupChatSession()) {
+                    if (chatSession != null && chatSession.isGroupChatSession())
+                    {
                         chatSession.inviteContact(username);
                         showInvitationHasSent(username);
-                    } else {
-                        startChat(providerId, username,Imps.ContactsColumns.TYPE_NORMAL,true, null);
                     }
-                } catch (RemoteException e) {
-                    mHandler.showServiceErrorAlert("Error picking contacts");
-                    Log.d(ImApp.LOG_TAG,"error picking contact",e);
+                    else
+                    {
+                        startChat(providerId, username, Imps.ContactsColumns.TYPE_NORMAL, true, null);
+                    }
                 }
-            }            
+                catch (RemoteException e)
+                {
+                    mHandler.showServiceErrorAlert("Error picking contacts");
+                    Log.d(ImApp.LOG_TAG, "error picking contact", e);
+                }
+            }
 
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
                     resultIntent);
 
-            if (scanResult != null) {
+            if (scanResult != null)
+            {
                 String scannedString = scanResult.getContents();
-                if (scannedString.startsWith("xmpp")) {
+                if (scannedString.startsWith("xmpp"))
+                {
                     String result = XmppUriHelper.getOtrFingerprint(scannedString);
-                    if (getCurrentChatView()!=null && result != null)
+                    if (getCurrentChatView() != null && result != null)
+                    {
                         getCurrentChatView().verifyScannedFingerprint(result);
-                } else {
+                    }
+                }
+                else
+                {
                     OtrAndroidKeyManagerImpl.handleKeyScanResult(scannedString, this);
                 }
             }
         }
     }
 
-    IChatSession getCurrentChatSession() {
+    IChatSession getCurrentChatSession()
+    {
         int currentPos = mChatPager.getCurrentItem();
         if (currentPos == 0)
+        {
             return null;
+        }
         Cursor cursorChats = mChatPagerAdapter.getCursor();
         cursorChats.moveToPosition(currentPos - 1);
         long providerId = cursorChats.getLong(ChatView.PROVIDER_COLUMN);
         String username = cursorChats.getString(ChatView.USERNAME_COLUMN);
         IChatSessionManager sessionMgr = getChatSessionManager(providerId);
-        if (sessionMgr != null) {
-            try {
+        if (sessionMgr != null)
+        {
+            try
+            {
                 IChatSession session = sessionMgr.getChatSession(username);
 
                 if (session == null)
+                {
                     session = sessionMgr.createChatSession(username, false);
+                }
 
                 return session;
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
 
                 mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-                LogCleaner.error(ImApp.LOG_TAG, "send message error",e);
+                LogCleaner.error(ImApp.LOG_TAG, "send message error", e);
             }
         }
 
         return null;
     }
 
-    private String getCurrentSessionId() throws Exception {
-        return ""+getCurrentChatSession().getId();
+    private String getCurrentSessionId() throws Exception
+    {
+        return "" + getCurrentChatSession().getId();
     }
 
-    private IChatSessionManager getChatSessionManager(long providerId) {
+    private IChatSessionManager getChatSessionManager(long providerId)
+    {
         IImConnection conn = mApp.getConnection(providerId);
 
-        if (conn != null) {
-            try {
+        if (conn != null)
+        {
+            try
+            {
                 return conn.getChatSessionManager();
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-                LogCleaner.error(ImApp.LOG_TAG, "send message error",e);
+                LogCleaner.error(ImApp.LOG_TAG, "send message error", e);
             }
         }
         return null;
     }
 
 
-  //----------------------------------------
+    //----------------------------------------
+
     /**
      * This method is used to get real path of file from from uri
      *
@@ -1381,26 +1545,37 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         }
     }
 
-    private boolean handleSend(Uri uri, String mimeType) {
-        try {
+    private boolean handleSend(Uri uri, String mimeType)
+    {
+        try
+        {
             FileInfo info = SystemServices.getFileInfoFromURI(this, uri);
 
             if (mimeType != null)
+            {
                 info.type = mimeType;
-            
+            }
+
             if (info != null && info.path != null && ChatFileStore.exists(info.path))
             {
                 IChatSession session = getCurrentChatSession();
 
-                if (session != null) {
+                if (session != null)
+                {
                     if (info.type == null)
+                    {
                         if (mimeType != null)
+                        {
                             info.type = mimeType;
+                        }
                         else
+                        {
                             info.type = "application/octet-stream";
+                        }
+                    }
 
                     String offerId = UUID.randomUUID().toString();
-                    session.offerData(offerId, info.path, info.type );
+                    session.offerData(offerId, info.path, info.type);
                     ChatView cView = getCurrentChatView();
                     int type = cView.isOtrSessionVerified() ? Imps.MessageType.OUTGOING_ENCRYPTED_VERIFIED : Imps.MessageType.OUTGOING_ENCRYPTED;
                     Imps.insertMessageInDb(
@@ -1414,117 +1589,145 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             {
                 Toast.makeText(this, R.string.sorry_we_cannot_share_that_file_type, Toast.LENGTH_LONG).show();
             }
-        } catch (RemoteException e) {
-           Log.e(ImApp.LOG_TAG,"error sending file",e);
+        }
+        catch (RemoteException e)
+        {
+            Log.e(ImApp.LOG_TAG, "error sending file", e);
         }
         return false; // was not sent
     }
 
-    void showInvitationHasSent(String contact) {
+    void showInvitationHasSent(String contact)
+    {
         Toast.makeText(NewChatActivity.this, getString(R.string.invitation_sent_prompt, contact),
                 Toast.LENGTH_SHORT).show();
     }
 
-    /** Show the context menu on a history item. */
+    /**
+     * Show the context menu on a history item.
+     */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
+    {
 
-        ChatView chatView = getCurrentChatView ();
+        ChatView chatView = getCurrentChatView();
 
         if (chatView != null)
         {
             AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
             mMessageContextMenuHandler.mPosition = info.position;
-            Cursor cursor =  chatView.getMessageAtPosition(info.position);
+            Cursor cursor = chatView.getMessageAtPosition(info.position);
             int type = cursor.getInt(cursor.getColumnIndexOrThrow(Imps.Messages.TYPE));
-            if (type == Imps.MessageType.OUTGOING) {
+            if (type == Imps.MessageType.OUTGOING)
+            {
                 android.view.MenuItem mi = menu.add(0, MENU_RESEND, 0, R.string.menu_resend);
 
                 mi.setOnMenuItemClickListener(
                         mMessageContextMenuHandler);
 
 
-
             }
 
 
         }
     }
 
-    final class MessageContextMenuHandler implements android.view.MenuItem.OnMenuItemClickListener {
+    final class MessageContextMenuHandler implements android.view.MenuItem.OnMenuItemClickListener
+    {
         int mPosition;
 
 
         @Override
-        public boolean onMenuItemClick(android.view.MenuItem item) {
+        public boolean onMenuItemClick(android.view.MenuItem item)
+        {
 
-            ChatView chatView = getCurrentChatView ();
+            ChatView chatView = getCurrentChatView();
 
             if (chatView != null)
             {
                 Cursor c;
-                c =  chatView.getMessageAtPosition(mPosition);
+                c = chatView.getMessageAtPosition(mPosition);
 
-                switch (item.getItemId()) {
-                case MENU_RESEND:
-                    String text = c.getString(c.getColumnIndexOrThrow(Imps.Messages.BODY));
-                    chatView.getComposedMessage().setText(text);
-                    break;
-                default:
-                    return false;
-                }            return false;
+                switch (item.getItemId())
+                {
+                    case MENU_RESEND:
+                        String text = c.getString(c.getColumnIndexOrThrow(Imps.Messages.BODY));
+                        chatView.getComposedMessage().setText(text);
+                        break;
+                    default:
+                        return false;
+                }
+                return false;
             }
             else
+            {
                 return false;
+            }
         }
     }
 
-    public class ChatViewPagerAdapter extends DynamicPagerAdapter {
+    public class ChatViewPagerAdapter extends DynamicPagerAdapter
+    {
         Cursor mCursor;
         boolean mDataValid;
 
-        public ChatViewPagerAdapter(FragmentManager fm) {
+        public ChatViewPagerAdapter(FragmentManager fm)
+        {
             super(fm);
         }
 
-        public Cursor getCursor() {
+        public Cursor getCursor()
+        {
             return mCursor;
         }
 
-        public Cursor swapCursor(Cursor newCursor) {
-            if (newCursor == mCursor) {
+        public Cursor swapCursor(Cursor newCursor)
+        {
+            if (newCursor == mCursor)
+            {
                 return null;
             }
             Cursor oldCursor = mCursor;
             mCursor = newCursor;
-            if (newCursor != null) {
+            if (newCursor != null)
+            {
                 mDataValid = true;
 
 
-            } else {
+            }
+            else
+            {
                 mDataValid = false;
             }
             notifyDataSetChanged();
             // notify the observers about the new cursor
             refreshChatViews();
-            
+
             return oldCursor;
         }
 
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             if (mCursor != null)
+            {
                 return mCursor.getCount() + 1;
+            }
             else
+            {
                 return 0;
+            }
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(int position)
+        {
             if (position == 0)
             {
                 if (mContactList == null)
+                {
                     mContactList = new ContactListFragment();
+                }
 
 
                 return mContactList;
@@ -1537,20 +1740,21 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 long contactChatId = mCursor.getLong(ChatView.CONTACT_ID_COLUMN);
                 String contactName = mCursor.getString(ChatView.USERNAME_COLUMN);
                 long providerId = mCursor.getLong(ChatView.PROVIDER_COLUMN);
-                
+
                 int chatType = mCursor.getInt(ChatView.TYPE_COLUMN);
-                
+
 
                 return ChatViewFragment.newInstance(contactChatId, contactName, providerId);
             }
         }
 
         @Override
-        public int getItemPosition(Object object) {
+        public int getItemPosition(Object object)
+        {
 
             if (object instanceof ChatViewFragment)
             {
-                ChatViewFragment cvFrag = (ChatViewFragment)object;
+                ChatViewFragment cvFrag = (ChatViewFragment) object;
                 ChatView view = cvFrag.getChatView();
                 long viewChatId = view.mLastChatId;
                 int position = PagerAdapter.POSITION_NONE;
@@ -1562,7 +1766,8 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
                     int posIdx = 1;
 
-                    do {
+                    do
+                    {
                         long chatId = mCursor.getLong(ChatView.CHAT_ID_COLUMN);
 
                         if (chatId == viewChatId)
@@ -1577,7 +1782,7 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
                 }
 
-               //` Log.d(TAG, "position of " + cvFrag.getArguments().getString("contactName") + " = " + position);
+                //` Log.d(TAG, "position of " + cvFrag.getArguments().getString("contactName") + " = " + position);
                 return position;
 
             }
@@ -1586,21 +1791,27 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 return 0;
 
             }
-            else {
+            else
+            {
                 throw new RuntimeException("got asked about an unknown fragment");
             }
         }
 
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(int position)
+        {
 
             if (position == 0 || mCursor == null)
             {
                 if (mShowChatsOnly)
+                {
                     return getString(R.string.title_chats);
+                }
                 else
+                {
                     return getString(R.string.contacts);
+                }
             }
             else
             {
@@ -1641,29 +1852,36 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
                 }
                 else
+                {
                     return "";//unknown title
+                }
             }
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int pos) {
+        public Object instantiateItem(ViewGroup container, int pos)
+        {
             Object item = super.instantiateItem(container, pos);
             return item;
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int pos, Object object) {
+        public void destroyItem(ViewGroup container, int pos, Object object)
+        {
 
             super.destroyItem(container, pos, object);
         }
 
-        public ChatView getChatViewAt(int pos) {
+        public ChatView getChatViewAt(int pos)
+        {
             if (pos > 0)
             {
-                ChatViewFragment frag = ((ChatViewFragment)getItemAt(pos));
+                ChatViewFragment frag = ((ChatViewFragment) getItemAt(pos));
 
                 if (frag != null)
+                {
                     return frag.getChatView();
+                }
             }
 
             return null; //this can happen if the user is quickly closing chats; just return null and swallow the event
@@ -1672,23 +1890,26 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
 
-    private void initConnections ()
+    private void initConnections()
     {
-        getSupportLoaderManager().initLoader(CHAT_PAGE_LOADER_ID, null, new LoaderCallbacks<Cursor>() {
+        getSupportLoaderManager().initLoader(CHAT_PAGE_LOADER_ID, null, new LoaderCallbacks<Cursor>()
+        {
 
             @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            public Loader<Cursor> onCreateLoader(int id, Bundle args)
+            {
                 CursorLoader loader = new CursorLoader(NewChatActivity.this, Imps.Provider.CONTENT_URI_WITH_ACCOUNT, ContactListFragment.PROVIDER_PROJECTION,
                         Imps.Provider.CATEGORY + "=?" + " AND " + Imps.Provider.ACTIVE_ACCOUNT_USERNAME + " NOT NULL",
 
-                        new String[] { ImApp.IMPS_CATEGORY } ,
+                        new String[]{ImApp.IMPS_CATEGORY},
                         Imps.Provider.DEFAULT_SORT_ORDER);
                 loader.setUpdateThrottle(50L);
                 return loader;
             }
 
             @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor newCursor) {
+            public void onLoadFinished(Loader<Cursor> loader, Cursor newCursor)
+            {
 
                 if (newCursor != null && newCursor.getCount() > 0)
                 {
@@ -1707,13 +1928,15 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                     }
 
                     for (int i = 0; i < mAccountIds.length; i++)
-                        initConnection(mAccountIds[i][0],mAccountIds[i][1]);
+                    {
+                        initConnection(mAccountIds[i][0], mAccountIds[i][1]);
+                    }
 
                     mLastAccountId = mAccountIds[0][0];
                     mLastProviderId = mAccountIds[0][1];
 
                     newCursor.moveToFirst();
-                    
+
                     initChats();
 
 
@@ -1730,7 +1953,8 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             }
 
             @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
+            public void onLoaderReset(Loader<Cursor> loader)
+            {
                 mAccountIds = null;
             }
         });
@@ -1738,48 +1962,59 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
 
-    public void unregisterSubListeners ()
+    public void unregisterSubListeners()
     {
         if (mAccountIds != null)
+        {
             for (int i = 0; i < mAccountIds.length; i++)
             {
-                IImConnection conn = initConnection(mAccountIds[i][0],mAccountIds[i][1]);
+                IImConnection conn = initConnection(mAccountIds[i][0], mAccountIds[i][1]);
                 if (conn != null)
                 {
-                    try {
+                    try
+                    {
                         conn.getContactListManager().unregisterSubscriptionListener(mSubscriptionListener);
-                    } catch (RemoteException e1) {
-                        Log.e(ImApp.LOG_TAG,"error registering listener",e1);
+                    }
+                    catch (RemoteException e1)
+                    {
+                        Log.e(ImApp.LOG_TAG, "error registering listener", e1);
 
                     }
 
                 }
             }
+        }
     }
 
-    public IImConnection initConnection (long accountId, long providerId)
+    public IImConnection initConnection(long accountId, long providerId)
     {
 
-        IImConnection conn = ((ImApp)getApplication()).getConnection(providerId);
+        IImConnection conn = ((ImApp) getApplication()).getConnection(providerId);
 
         if (conn == null)
         {
-            try {
-             conn =  ((ImApp)getApplication()).createConnection(providerId, accountId);
-            } catch (RemoteException e) {
-               Log.e(ImApp.LOG_TAG,"error creating connection",e);
+            try
+            {
+                conn = ((ImApp) getApplication()).createConnection(providerId, accountId);
+            }
+            catch (RemoteException e)
+            {
+                Log.e(ImApp.LOG_TAG, "error creating connection", e);
             }
 
-      
+
             if (conn != null)
             {
-    
-                try {
+
+                try
+                {
                     conn.getContactListManager().registerSubscriptionListener(mSubscriptionListener);
-                   // conn.getContactListManager().registerContactListListener(mContactListListener);
-                } catch (RemoteException e1) {
-                    Log.e(ImApp.LOG_TAG,"error registering listener",e1);
-    
+                    // conn.getContactListManager().registerContactListListener(mContactListListener);
+                }
+                catch (RemoteException e1)
+                {
+                    Log.e(ImApp.LOG_TAG, "error registering listener", e1);
+
                 }
             }
 
@@ -1790,21 +2025,20 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
     }
 
-    public void updateChatList ()
+    public void updateChatList()
     {
 
         if (mContactList != null && mContactList.mFilterView != null)
         {
             mLastPagePosition = -1;
-              Uri baseUri = Imps.Contacts.CONTENT_URI_CHAT_CONTACTS_BY;
-              Uri.Builder builder = baseUri.buildUpon();
+            Uri baseUri = Imps.Contacts.CONTENT_URI_CHAT_CONTACTS_BY;
+            Uri.Builder builder = baseUri.buildUpon();
 
-              mContactList.mFilterView.doFilter(builder.build(), null);
+            mContactList.mFilterView.doFilter(builder.build(), null);
         }
-        
+
         mChatPager.invalidate();
     }
-
 
 
     public static class ContactListFragment extends Fragment implements ContactListListener
@@ -1812,18 +2046,17 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
 
         private static final String[] PROVIDER_PROJECTION = {
-                                                             Imps.Provider._ID,
-                                                             Imps.Provider.NAME,
-                                                             Imps.Provider.FULLNAME,
-                                                             Imps.Provider.CATEGORY,
-                                                             Imps.Provider.ACTIVE_ACCOUNT_ID,
-                                                             Imps.Provider.ACTIVE_ACCOUNT_USERNAME,
-                                                             Imps.Provider.ACTIVE_ACCOUNT_PW,
-                                                             Imps.Provider.ACTIVE_ACCOUNT_LOCKED,
-                                                             Imps.Provider.ACTIVE_ACCOUNT_KEEP_SIGNED_IN,
-                                                             Imps.Provider.ACCOUNT_PRESENCE_STATUS,
-                                                             Imps.Provider.ACCOUNT_CONNECTION_STATUS, };
-
+                Imps.Provider._ID,
+                Imps.Provider.NAME,
+                Imps.Provider.FULLNAME,
+                Imps.Provider.CATEGORY,
+                Imps.Provider.ACTIVE_ACCOUNT_ID,
+                Imps.Provider.ACTIVE_ACCOUNT_USERNAME,
+                Imps.Provider.ACTIVE_ACCOUNT_PW,
+                Imps.Provider.ACTIVE_ACCOUNT_LOCKED,
+                Imps.Provider.ACTIVE_ACCOUNT_KEEP_SIGNED_IN,
+                Imps.Provider.ACCOUNT_PRESENCE_STATUS,
+                Imps.Provider.ACCOUNT_CONNECTION_STATUS,};
 
 
         static final int PROVIDER_ID_COLUMN = 0;
@@ -1846,10 +2079,11 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         {
 
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(Message msg)
+            {
 
 
-           //     mPresenceView.refreshLogginInStatus();
+                //     mPresenceView.refreshLogginInStatus();
 
                 super.handleMessage(msg);
             }
@@ -1857,55 +2091,59 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
 
         /**
-          * The Fragment's UI is just a simple text view showing its
-          * instance number.
-          */
-         @Override
-         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                 Bundle savedInstanceState) {
+         * The Fragment's UI is just a simple text view showing its
+         * instance number.
+         */
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState)
+        {
 
-              mFilterView = (ContactListFilterView) inflater.inflate(
-                     R.layout.contact_list_filter_view, null);
+            mFilterView = (ContactListFilterView) inflater.inflate(
+                    R.layout.contact_list_filter_view, null);
 
 
-             mFilterView.setListener(this);
-             mFilterView.setLoaderManager(getLoaderManager(), CONTACT_LIST_LOADER_ID);
+            mFilterView.setListener(this);
+            mFilterView.setLoaderManager(getLoaderManager(), CONTACT_LIST_LOADER_ID);
 
-             TextView txtEmpty = (TextView)mFilterView.findViewById(R.id.empty);
+            TextView txtEmpty = (TextView) mFilterView.findViewById(R.id.empty);
 
-             txtEmpty.setOnClickListener(new OnClickListener ()
-             {
+            txtEmpty.setOnClickListener(new OnClickListener()
+            {
 
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
 
-                        ((NewChatActivity)getActivity()).startContactPicker();
+                    ((NewChatActivity) getActivity()).startContactPicker();
                 }
 
-             });
+            });
 
-             ((AbsListView)mFilterView.findViewById(R.id.filteredList)).setEmptyView(txtEmpty);
+            ((AbsListView) mFilterView.findViewById(R.id.filteredList)).setEmptyView(txtEmpty);
 
-             Uri baseUri = Imps.Contacts.CONTENT_URI_CHAT_CONTACTS_BY;
-             Uri.Builder builder = baseUri.buildUpon();
-             mFilterView.doFilter(builder.build(), null);
+            Uri baseUri = Imps.Contacts.CONTENT_URI_CHAT_CONTACTS_BY;
+            Uri.Builder builder = baseUri.buildUpon();
+            mFilterView.doFilter(builder.build(), null);
 
-              return mFilterView;
+            return mFilterView;
 
-         }
+        }
 
-         @Override
-        public void onAttach(Activity activity) {
+        @Override
+        public void onAttach(Activity activity)
+        {
             super.onAttach(activity);
 
-            mApp = ((ImApp)activity.getApplication());
+            mApp = ((ImApp) activity.getApplication());
             mApp.registerForConnEvents(mPresenceHandler);
 
 
         }
 
         @Override
-        public void onDetach() {
+        public void onDetach()
+        {
             super.onDetach();
 
             mApp.unregisterForConnEvents(mPresenceHandler);
@@ -1914,24 +2152,26 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         }
 
         @Override
-        public void onDestroyView() {
+        public void onDestroyView()
+        {
             super.onDestroyView();
         }
 
 
-
         @Override
-        public void openChat(Cursor c) {
+        public void openChat(Cursor c)
+        {
 
-            NewChatActivity activity = (NewChatActivity)getActivity();
+            NewChatActivity activity = (NewChatActivity) getActivity();
             activity.openExistingChat(c);
 
         }
 
         @Override
-        public void showProfile (Cursor c)
+        public void showProfile(Cursor c)
         {
-            if (c != null) {
+            if (c != null)
+            {
                 long chatContactId = c.getLong(c.getColumnIndexOrThrow(Imps.Contacts._ID));
 
                 long providerId = c.getLong(c.getColumnIndexOrThrow(Imps.Contacts.PROVIDER));
@@ -1952,44 +2192,53 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
 
+    private void openExistingChat(Cursor c)
+    {
 
-
-    private void openExistingChat(Cursor c) {
-
-        if (c != null && (!  c.isAfterLast())) {
-            int type =  c.getInt(c.getColumnIndexOrThrow(Imps.Contacts.TYPE));
+        if (c != null && (!c.isAfterLast()))
+        {
+            int type = c.getInt(c.getColumnIndexOrThrow(Imps.Contacts.TYPE));
             String username = c.getString(c.getColumnIndexOrThrow(Imps.Contacts.USERNAME));
             long providerId = c.getLong(c.getColumnIndexOrThrow(Imps.Contacts.PROVIDER));
 
-            startChat(providerId,username,type, false, null);
+            startChat(providerId, username, type, false, null);
         }
         else
+        {
             updateChatList();
+        }
     }
 
-    private void startChat (long providerId, String address,int userType, boolean isNewChat, String message)
+    private void startChat(long providerId, String address, int userType, boolean isNewChat, String message)
     {
         IImConnection conn = mApp.getConnection(providerId);
 
         if (conn != null)
         {
-            try {
+            try
+            {
                 IChatSessionManager manager = conn.getChatSessionManager();
                 IChatSession session = manager.getChatSession(address);
-                
-                if (session == null && manager != null) {
-                    
+
+                if (session == null && manager != null)
+                {
+
                     // Create session.  Stash requested contact ID for when we get called back.
                     if (userType == Imps.ContactsColumns.TYPE_GROUP)
+                    {
                         session = manager.createMultiUserChatSession(address, null, isNewChat);
+                    }
                     else
+                    {
                         session = manager.createChatSession(address, isNewChat);
-                    
+                    }
+
                     if (session != null)
                     {
                         mRequestedChatId = session.getId();
 
-                        if (!showChat(session.getId())) {
+                        if (!showChat(session.getId()))
+                        {
                             // We have a session, but it's not in the cursor yet
                             mRequestedChatId = session.getId();
                             session.reInit();
@@ -1998,14 +2247,19 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                         {
                             mRequestedChatId = -1;//we showed the chat, so set this to -1;
                         }
-                        
+
                         if (message != null)
+                        {
                             session.sendMessage(message);
+                        }
                     }
 
-                } else {
+                }
+                else
+                {
                     // Already have session
-                    if (!showChat(session.getId())) {
+                    if (!showChat(session.getId()))
+                    {
                         // We have a session, but it's not in the cursor yet
                         mRequestedChatId = session.getId();
                         session.reInit();
@@ -2014,8 +2268,10 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
                 }
 
                 updateChatList();
-            } catch (RemoteException e) {
-              //  mHandler.showServiceErrorAlert(e.getMessage());
+            }
+            catch (RemoteException e)
+            {
+                //  mHandler.showServiceErrorAlert(e.getMessage());
                 LogCleaner.debug(ImApp.LOG_TAG, "remote exception starting chat");
 
             }
@@ -2027,17 +2283,20 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         }
     }
 
-    public static class ChatViewFragment extends Fragment {
+    public static class ChatViewFragment extends Fragment
+    {
 
-         ChatView mChatView;
+        ChatView mChatView;
 
         /**
          * Create a new instance of CountingFragment, providing "num"
          * as an argument.
+         *
          * @param providerId
          * @param contactName
          */
-        static ChatViewFragment newInstance(long chatContactId, String contactName, long providerId) {
+        static ChatViewFragment newInstance(long chatContactId, String contactName, long providerId)
+        {
 
             ChatViewFragment f = new ChatViewFragment();
 
@@ -2052,35 +2311,44 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             return f;
         }
 
-        public ChatViewFragment() {
+        public ChatViewFragment()
+        {
 //            Log.d(TAG, "CVF construct " + super.toString());
         }
 
         @Override
-        public String toString() {
+        public String toString()
+        {
             return super.toString() + " -> " + getArguments().getString("contactName");
         }
 
-        public void onSelected(ImApp app) {
+        public void onSelected(ImApp app)
+        {
 
             //app.dismissChatNotification(getArguments().getLong("providerId"), getArguments().getString("contactName"));
 
             if (mChatView != null)
+            {
                 mChatView.setSelected(true);
+            }
 
 
         }
 
-        public void onDeselected(ImApp app) {
+        public void onDeselected(ImApp app)
+        {
             if (mChatView != null)
+            {
                 mChatView.setSelected(false);
+            }
         }
 
         /**
          * When creating, retrieve this instance's number from its arguments.
          */
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(Bundle savedInstanceState)
+        {
             super.onCreate(savedInstanceState);
 
 //            Log.d(TAG, "CVF create " + getArguments().getString("contactName"));
@@ -2092,47 +2360,54 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
          */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState)
+        {
 
             long chatContactId = getArguments().getLong("contactChatId");
-            mChatView = (ChatView)inflater.inflate(R.layout.chat_view, container, false);
+            mChatView = (ChatView) inflater.inflate(R.layout.chat_view, container, false);
             mChatView.bindChat(chatContactId);
 
             return mChatView;
         }
 
-        public void onServiceConnected() {
-            if (isResumed()) {
+        public void onServiceConnected()
+        {
+            if (isResumed())
+            {
                 mChatView.onServiceConnected();
             }
         }
 
         @Override
-        public void onResume() {
+        public void onResume()
+        {
             super.onResume();
 
             mChatView.startListening();
         }
 
         @Override
-        public void onPause() {
+        public void onPause()
+        {
             super.onPause();
 
             mChatView.stopListening();
         }
 
         @Override
-        public void onDestroy() {
+        public void onDestroy()
+        {
             mChatView.unbind();
             super.onDestroy();
         }
 
-        public ChatView getChatView() {
+        public ChatView getChatView()
+        {
             return mChatView;
         }
     }
 
-    public ChatView getCurrentChatView ()
+    public ChatView getCurrentChatView()
     {
         int cItemIdx;
 
@@ -2142,90 +2417,98 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             return mChatPagerAdapter.getChatViewAt(cItemIdx);
         }
         else
+        {
             return null;
+        }
     }
-
 
 
     View mDialogGroup = null;
-    
-    private void showGroupChatDialog ()
+
+    private void showGroupChatDialog()
     {
 
-     // This example shows how to add a custom layout to an AlertDialog
+        // This example shows how to add a custom layout to an AlertDialog
         LayoutInflater factory = LayoutInflater.from(this);
 
         mDialogGroup = factory.inflate(R.layout.alert_dialog_group_chat, null);
-        
+
         final Spinner listAccounts = (Spinner) mDialogGroup.findViewById(R.id.choose_list);
         setupAccountSpinner(listAccounts);
-        
+
         new AlertDialog.Builder(this)
-            .setTitle(R.string.create_or_join_group_chat)
-            .setView(mDialogGroup)
-            .setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int whichButton) {
+                .setTitle(R.string.create_or_join_group_chat)
+                .setView(mDialogGroup)
+                .setPositiveButton(R.string.connect, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton)
+                    {
 
                     /* User clicked OK so do some stuff */
 
-                    String chatRoom = null;
-                    String chatServer = null;
-                    String nickname = null;
+                        String chatRoom = null;
+                        String chatServer = null;
+                        String nickname = null;
 
-                    TextView tv = (TextView)mDialogGroup.findViewById(R.id.chat_room);
-                    chatRoom = tv.getText().toString();
+                        TextView tv = (TextView) mDialogGroup.findViewById(R.id.chat_room);
+                        chatRoom = tv.getText().toString();
 
-                    tv = (TextView) mDialogGroup.findViewById(R.id.chat_server);
-                    chatServer = tv.getText().toString();
+                        tv = (TextView) mDialogGroup.findViewById(R.id.chat_server);
+                        chatServer = tv.getText().toString();
 
-                    tv = (TextView) mDialogGroup.findViewById(R.id.nickname);
-                    nickname = tv.getText().toString();
+                        tv = (TextView) mDialogGroup.findViewById(R.id.nickname);
+                        nickname = tv.getText().toString();
 
-                    try
-                    {
-                        IImConnection conn = mApp.getConnection(mLastProviderId);
-                        if (conn.getState() == ImConnection.LOGGED_IN)
-                            startGroupChat (chatRoom, chatServer, nickname, conn);
-                        else
+                        try
                         {
-                            //can't start group chat
-                            mHandler.showAlert("Group Chat","Please enable your account to join a group chat");
+                            IImConnection conn = mApp.getConnection(mLastProviderId);
+                            if (conn.getState() == ImConnection.LOGGED_IN)
+                            {
+                                startGroupChat(chatRoom, chatServer, nickname, conn);
+                            }
+                            else
+                            {
+                                //can't start group chat
+                                mHandler.showAlert("Group Chat", "Please enable your account to join a group chat");
+                            }
                         }
-                    } catch (RemoteException re) {
+                        catch (RemoteException re)
+                        {
+
+                        }
+
+                        dialog.dismiss();
 
                     }
-
-                    dialog.dismiss();
-
-                }
-            })
-            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int whichButton) {
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton)
+                    {
 
                     /* User clicked cancel so do some stuff */
-                    dialog.dismiss();
-                }
-            })
-            .create().show();
-
+                        dialog.dismiss();
+                    }
+                })
+                .create().show();
 
 
     }
 
-    private void setupAccountSpinner (Spinner spinner)
+    private void setupAccountSpinner(Spinner spinner)
     {
         final Uri uri = Imps.Provider.CONTENT_URI_WITH_ACCOUNT;
 
-        final Cursor cursorProviders = managedQuery(uri,  PROVIDER_PROJECTION,
-        Imps.Provider.CATEGORY + "=?" + " AND " + Imps.Provider.ACTIVE_ACCOUNT_USERNAME + " NOT NULL" /* selection */,
-        new String[] { ImApp.IMPS_CATEGORY } /* selection args */,
-        Imps.Provider.DEFAULT_SORT_ORDER);
+        final Cursor cursorProviders = managedQuery(uri, PROVIDER_PROJECTION,
+                Imps.Provider.CATEGORY + "=?" + " AND " + Imps.Provider.ACTIVE_ACCOUNT_USERNAME + " NOT NULL" /* selection */,
+                new String[]{ImApp.IMPS_CATEGORY} /* selection args */,
+                Imps.Provider.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_spinner_dropdown_item, cursorProviders, new String[] { Imps.Provider.ACTIVE_ACCOUNT_USERNAME},
-                new int[] { android.R.id.text1 });
+                android.R.layout.simple_spinner_dropdown_item, cursorProviders, new String[]{Imps.Provider.ACTIVE_ACCOUNT_USERNAME},
+                new int[]{android.R.id.text1});
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         if (cursorProviders.getCount() > 0)
@@ -2235,41 +2518,49 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             mLastAccountId = cursorProviders.getLong(ACTIVE_ACCOUNT_ID_COLUMN);
 
             spinner.setAdapter(adapter);
-            spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            spinner.setOnItemSelectedListener(new OnItemSelectedListener()
+            {
 
                 @Override
                 public void onItemSelected(AdapterView<?> arg0, View arg1,
-                        int arg2, long arg3) {
+                                           int arg2, long arg3)
+                {
                     cursorProviders.moveToPosition(arg2);
 
                     mLastProviderId = cursorProviders.getLong(PROVIDER_ID_COLUMN);
                     mLastAccountId = cursorProviders.getLong(ACTIVE_ACCOUNT_ID_COLUMN);
-                    
+
                     mHandler.post(new Runnable()
                     {
-                        
-                        public void run ()
+
+                        public void run()
                         {
                             TextView tvServer = (TextView) mDialogGroup.findViewById(R.id.chat_server);
-                    
+
                             IChatSessionManager manager;
-                            try {
+                            try
+                            {
                                 IImConnection conn = mApp.getConnection(mLastProviderId);
                                 manager = conn.getChatSessionManager();
                                 String server = manager.getDefaultMultiUserChatServer();
                                 if (server != null)
+                                {
                                     tvServer.setText(server);
-                            } catch (RemoteException e) {
+                                }
+                            }
+                            catch (RemoteException e)
+                            {
                                 e.printStackTrace();
                             }
 
                         }
                     });
-                    
-                 }
+
+                }
 
                 @Override
-                public void onNothingSelected(AdapterView<?> arg0) {
+                public void onNothingSelected(AdapterView<?> arg0)
+                {
                 }
             });
         }
@@ -2281,20 +2572,21 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
     }
 
 
-
     private IImConnection mLastConnGroup = null;
 
-    public void startGroupChat (String room, String server, String nickname, IImConnection conn)
+    public void startGroupChat(String room, String server, String nickname, IImConnection conn)
     {
         mLastConnGroup = conn;
 
-        new AsyncTask<String, Long, String>() {
+        new AsyncTask<String, Long, String>()
+        {
 
             private ProgressDialog dialog;
 
 
             @Override
-            protected void onPreExecute() {
+            protected void onPreExecute()
+            {
                 dialog = new ProgressDialog(NewChatActivity.this);
 
                 dialog.setMessage(getString(R.string.connecting_to_group_chat_));
@@ -2303,49 +2595,61 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
             }
 
             @Override
-            protected String doInBackground(String... params) {
+            protected String doInBackground(String... params)
+            {
 
                 String roomAddress = (params[0] + '@' + params[1]).toLowerCase(Locale.US).replace(' ', '_');
                 String nickname = params[2];
 
-                try {
+                try
+                {
                     IChatSessionManager manager = mLastConnGroup.getChatSessionManager();
                     IChatSession session = manager.getChatSession(roomAddress);
-                    if (session == null) {
+                    if (session == null)
+                    {
                         session = manager.createMultiUserChatSession(roomAddress, nickname, true);
-                        
+
                         if (session != null)
                         {
                             mRequestedChatId = session.getId();
                             publishProgress(mRequestedChatId);
 
-                        } else {
+                        }
+                        else
+                        {
                             return getString(R.string.unable_to_create_or_join_group_chat);
 
                         }
-                    } else {
+                    }
+                    else
+                    {
                         mRequestedChatId = session.getId();
                         publishProgress(mRequestedChatId);
                     }
 
                     return null;
 
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     return e.toString();
                 }
 
-              }
+            }
 
-			@Override
-            protected void onProgressUpdate(Long... showChatId) {
+            @Override
+            protected void onProgressUpdate(Long... showChatId)
+            {
                 showChat(showChatId[0]);
             }
 
             @Override
-            protected void onPostExecute(String result) {
+            protected void onPostExecute(String result)
+            {
                 super.onPostExecute(result);
 
-                if (dialog.isShowing()) {
+                if (dialog.isShowing())
+                {
                     dialog.dismiss();
                 }
 
@@ -2360,120 +2664,148 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         }.execute(room, server, nickname);
 
 
-
     }
 
-    void acceptInvitation(long providerId, long invitationId) {
-        try {
+    void acceptInvitation(long providerId, long invitationId)
+    {
+        try
+        {
 
             IImConnection conn = mApp.getConnection(providerId);
-            if (conn != null) {
+            if (conn != null)
+            {
                 conn.acceptInvitation(invitationId);
             }
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
 
             mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-            LogCleaner.error(ImApp.LOG_TAG, "accept invite error",e);
+            LogCleaner.error(ImApp.LOG_TAG, "accept invite error", e);
         }
     }
 
-    void declineInvitation(long providerId, long invitationId) {
-        try {
+    void declineInvitation(long providerId, long invitationId)
+    {
+        try
+        {
             IImConnection conn = mApp.getConnection(providerId);
-            if (conn != null) {
+            if (conn != null)
+            {
                 conn.rejectInvitation(invitationId);
             }
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
 
             mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-            LogCleaner.error(ImApp.LOG_TAG, "decline invite error",e);
+            LogCleaner.error(ImApp.LOG_TAG, "decline invite error", e);
         }
     }
 
-    void showSubscriptionDialog (final long subProviderId, final String subFrom)
+    void showSubscriptionDialog(final long subProviderId, final String subFrom)
     {
-        if (! ((Activity) this).isFinishing()) {
+        if (!((Activity) this).isFinishing())
+        {
 
             mHandler.postDelayed(new Runnable()
             {
 
                 @Override
-                public void run ()
+                public void run()
                 {
                     new AlertDialog.Builder(NewChatActivity.this)
-                    .setTitle(getString(R.string.subscriptions))
-                    .setMessage(getString(R.string.subscription_prompt,subFrom))
-                    .setPositiveButton(R.string.approve_subscription, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int whichButton) {
+                            .setTitle(getString(R.string.subscriptions))
+                            .setMessage(getString(R.string.subscription_prompt, subFrom))
+                            .setPositiveButton(R.string.approve_subscription, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int whichButton)
+                                {
 
-                            approveSubscription(subProviderId, subFrom);
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton(R.string.decline_subscription, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int whichButton) {
+                                    approveSubscription(subProviderId, subFrom);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton(R.string.decline_subscription, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int whichButton)
+                                {
 
-                            declineSubscription(subProviderId, subFrom);
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
+                                    declineSubscription(subProviderId, subFrom);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create().show();
                 }
-            },500);
+            }, 500);
         }
     }
 
-    void approveSubscription(long providerId, String userName) {
+    void approveSubscription(long providerId, String userName)
+    {
         IImConnection conn = mApp.getConnection(providerId);
 
         if (conn != null)
         {
-            try {
+            try
+            {
                 IContactListManager manager = conn.getContactListManager();
 
-                manager.approveSubscription(new Contact(new XmppAddress(userName),userName));
-            } catch (RemoteException e) {
+                manager.approveSubscription(new Contact(new XmppAddress(userName), userName));
+            }
+            catch (RemoteException e)
+            {
 
                 mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-                LogCleaner.error(ImApp.LOG_TAG, "approve sub error",e);
+                LogCleaner.error(ImApp.LOG_TAG, "approve sub error", e);
             }
         }
     }
 
-    void declineSubscription(long providerId, String userName) {
+    void declineSubscription(long providerId, String userName)
+    {
         IImConnection conn = mApp.getConnection(providerId);
 
         if (conn != null)
         {
-            try {
+            try
+            {
                 IContactListManager manager = conn.getContactListManager();
-                manager.declineSubscription(new Contact(new XmppAddress(userName),userName));
-            } catch (RemoteException e) {
+                manager.declineSubscription(new Contact(new XmppAddress(userName), userName));
+            }
+            catch (RemoteException e)
+            {
                 mHandler.showServiceErrorAlert(e.getLocalizedMessage());
-                LogCleaner.error(ImApp.LOG_TAG, "decline sub error",e);
+                LogCleaner.error(ImApp.LOG_TAG, "decline sub error", e);
             }
         }
     }
 
 
-    long getLastAccountId() {
+    long getLastAccountId()
+    {
         return mLastAccountId;
     }
 
-    long getLastProviderId() {
+    long getLastProviderId()
+    {
         return mLastProviderId;
     }
 
-    void setLastProviderId(long mLastProviderId) {
+    void setLastProviderId(long mLastProviderId)
+    {
         this.mLastProviderId = mLastProviderId;
     }
 
-    public class ProviderListItemFactory implements LayoutInflater.Factory {
+    public class ProviderListItemFactory implements LayoutInflater.Factory
+    {
         @Override
-        public View onCreateView(String name, Context context, AttributeSet attrs) {
-            if (name != null && name.equals(ProviderListItem.class.getName())) {
+        public View onCreateView(String name, Context context, AttributeSet attrs)
+        {
+            if (name != null && name.equals(ProviderListItem.class.getName()))
+            {
                 return new ProviderListItem(context, NewChatActivity.this, null);
             }
             return null;
@@ -2481,73 +2813,86 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
 
     }
 
-    private final ISubscriptionListener.Stub mSubscriptionListener = new ISubscriptionListener.Stub() {
+    private final ISubscriptionListener.Stub mSubscriptionListener = new ISubscriptionListener.Stub()
+    {
 
         @Override
-        public void onSubScriptionRequest(Contact from, long providerId, long accountId) {
+        public void onSubScriptionRequest(Contact from, long providerId, long accountId)
+        {
 
-            showSubscriptionDialog (providerId, from.getAddress().getAddress());
+            showSubscriptionDialog(providerId, from.getAddress().getAddress());
 
         }
 
         @Override
-        public void onSubscriptionApproved(Contact contact, long providerId, long accountId) {
+        public void onSubscriptionApproved(Contact contact, long providerId, long accountId)
+        {
 
         }
 
         @Override
-        public void onSubscriptionDeclined(Contact contact, long providerId, long accountId) {
+        public void onSubscriptionDeclined(Contact contact, long providerId, long accountId)
+        {
 
         }
 
     };
-    
-    private final IContactListListener.Stub mContactListListener = new IContactListListener.Stub ()
+
+    private final IContactListListener.Stub mContactListListener = new IContactListListener.Stub()
     {
-        
+
         @Override
-        public IBinder asBinder() {
-            
+        public IBinder asBinder()
+        {
+
             return null;
         }
 
         @Override
         public void onContactChange(int type, IContactList list, Contact contact)
-                throws RemoteException {
-           
-            
+                throws RemoteException
+        {
+
+
         }
 
         @Override
-        public void onAllContactListsLoaded() throws RemoteException {
-          
+        public void onAllContactListsLoaded() throws RemoteException
+        {
+
             Log.d(ImApp.LOG_TAG, "onAllContactListsLoaded");
         }
 
         @Override
-        public void onContactsPresenceUpdate(Contact[] contacts) throws RemoteException {
-          
-            
+        public void onContactsPresenceUpdate(Contact[] contacts) throws RemoteException
+        {
+
+
         }
 
         @Override
         public void onContactError(int errorType, ImErrorInfo error, String listName,
-                Contact contact) throws RemoteException {
-          
-            
+                                   Contact contact) throws RemoteException
+        {
+
+
         }
-        
+
     };
 
-    private synchronized Imps.ProviderSettings.QueryMap getGlobalSettings() {
-        if (mGlobalSettings == null) {
+    private synchronized Imps.ProviderSettings.QueryMap getGlobalSettings()
+    {
+        if (mGlobalSettings == null)
+        {
 
             ContentResolver contentResolver = getContentResolver();
 
-            Cursor cursor = contentResolver.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+            Cursor cursor = contentResolver.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
             if (cursor == null)
+            {
                 return null;
+            }
 
             mGlobalSettings = new Imps.ProviderSettings.QueryMap(cursor, contentResolver, Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, true, mHandler);
         }
@@ -2555,38 +2900,46 @@ public class NewChatActivity extends FragmentActivity implements View.OnCreateCo
         return mGlobalSettings;
     }
 
-    public int getOtrPolicy() {
+    public int getOtrPolicy()
+    {
         int otrPolicy = OtrPolicy.OPPORTUNISTIC;
 
         String otrModeSelect = getGlobalSettings().getOtrMode();
 
-        if (otrModeSelect.equals("auto")) {
+        if (otrModeSelect.equals("auto"))
+        {
             otrPolicy = OtrPolicy.OPPORTUNISTIC;
-        } else if (otrModeSelect.equals("disabled")) {
+        }
+        else if (otrModeSelect.equals("disabled"))
+        {
             otrPolicy = OtrPolicy.NEVER;
 
-        } else if (otrModeSelect.equals("force")) {
+        }
+        else if (otrModeSelect.equals("force"))
+        {
             otrPolicy = OtrPolicy.OTRL_POLICY_ALWAYS;
 
-        } else if (otrModeSelect.equals("requested")) {
+        }
+        else if (otrModeSelect.equals("requested"))
+        {
             otrPolicy = OtrPolicy.OTRL_POLICY_MANUAL;
         }
         return otrPolicy;
     }
 
     private static final String[] PROVIDER_PROJECTION = {
-                                                         Imps.Provider._ID,
-                                                         Imps.Provider.NAME,
-                                                         Imps.Provider.FULLNAME,
-                                                         Imps.Provider.CATEGORY,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_ID,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_USERNAME,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_PW,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_LOCKED,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_KEEP_SIGNED_IN,
-                                                         Imps.Provider.ACCOUNT_PRESENCE_STATUS,
-                                                         Imps.Provider.ACCOUNT_CONNECTION_STATUS
-                                                        };
+            Imps.Provider._ID,
+            Imps.Provider.NAME,
+            Imps.Provider.FULLNAME,
+            Imps.Provider.CATEGORY,
+            Imps.Provider.ACTIVE_ACCOUNT_ID,
+            Imps.Provider.ACTIVE_ACCOUNT_USERNAME,
+            Imps.Provider.ACTIVE_ACCOUNT_PW,
+            Imps.Provider.ACTIVE_ACCOUNT_LOCKED,
+            Imps.Provider.ACTIVE_ACCOUNT_KEEP_SIGNED_IN,
+            Imps.Provider.ACCOUNT_PRESENCE_STATUS,
+            Imps.Provider.ACCOUNT_CONNECTION_STATUS
+    };
 
     static final int PROVIDER_ID_COLUMN = 0;
     static final int PROVIDER_NAME_COLUMN = 1;

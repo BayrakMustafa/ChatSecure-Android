@@ -23,7 +23,8 @@ package info.guardianproject.otr.app.im.engine;
  * created session so that it will be notified when new message arrived to the
  * session. Listeners are registered with ChatSessionManager.
  */
-public interface ChatSessionListener {
+public interface ChatSessionListener
+{
 
     /**
      * Called when a new ChatSession is created.

@@ -17,21 +17,21 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.provider.Imps;
-import info.guardianproject.otr.app.im.R;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
-public class ChatBackgroundMaker {
+import info.guardianproject.otr.app.im.R;
+
+public class ChatBackgroundMaker
+{
     private final Drawable mIncomingBg;
     private final Drawable mDivider;
     private final Rect mPadding;
 
-    public ChatBackgroundMaker(Context context) {
+    public ChatBackgroundMaker(Context context)
+    {
         Resources res = context.getResources();
         mIncomingBg = res.getDrawable(R.drawable.textfield_im_received);
         mDivider = res.getDrawable(R.drawable.text_divider_horizontal);
@@ -39,7 +39,8 @@ public class ChatBackgroundMaker {
         mIncomingBg.getPadding(mPadding);
     }
 
-    public void setBackground(MessageView view, String contact, int type) {
+    public void setBackground(MessageView view, String contact, int type)
+    {
 
     }
 }

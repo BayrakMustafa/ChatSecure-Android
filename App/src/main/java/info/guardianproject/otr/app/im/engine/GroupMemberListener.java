@@ -17,7 +17,8 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-public interface GroupMemberListener {
+public interface GroupMemberListener
+{
     /**
      * Notifies that a contact has joined into this group.
      *

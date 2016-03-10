@@ -16,10 +16,6 @@
  */
 package info.guardianproject.otr.app.im.app;
 
-import java.util.List;
-
-import info.guardianproject.otr.app.im.R;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -30,10 +26,18 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-/** A general image list adapter. */
-public class ImageListAdapter extends BaseAdapter implements ListAdapter {
+import java.util.List;
 
-    public static interface ImageListItem {
+import info.guardianproject.otr.app.im.R;
+
+/**
+ * A general image list adapter.
+ */
+public class ImageListAdapter extends BaseAdapter implements ListAdapter
+{
+
+    public static interface ImageListItem
+    {
         public Drawable getDrawable();
 
         public CharSequence getText();
@@ -47,12 +51,14 @@ public class ImageListAdapter extends BaseAdapter implements ListAdapter {
     private final boolean mAreAllItemsSelectable;
     private final int mSeparatorId;
 
-    public ImageListAdapter(Context context, List<? extends ImageListItem> data) {
+    public ImageListAdapter(Context context, List<? extends ImageListItem> data)
+    {
         this(context, data, R.layout.imglist_item, R.id.image, R.id.text, R.id.separator);
     }
 
     public ImageListAdapter(Context context, List<? extends ImageListItem> data, int itemViewId,
-            int imgId, int textId, int separatorId) {
+                            int imgId, int textId, int separatorId)
+    {
         mData = data;
         mItemViewId = itemViewId;
         mImageId = imgId;
@@ -62,54 +68,71 @@ public class ImageListAdapter extends BaseAdapter implements ListAdapter {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public int getCount() {
+    public int getCount()
+    {
         return mData.size();
     }
 
-    public Object getItem(int position) {
+    public Object getItem(int position)
+    {
         return mData.get(position);
     }
 
-    public long getItemId(int position) {
+    public long getItemId(int position)
+    {
         return position;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
         View v;
-        if (convertView == null) {
+        if (convertView == null)
+        {
             v = mInflater.inflate(mItemViewId, parent, false);
-        } else {
+        }
+        else
+        {
             v = convertView;
         }
         setupView(position, v);
         return v;
     }
 
-    private void setupView(int position, View view) {
+    private void setupView(int position, View view)
+    {
         ImageView iv = (ImageView) view.findViewById(mImageId);
         TextView tv = (TextView) view.findViewById(mTextId);
         View separator = view.findViewById(mSeparatorId);
 
-        if (!isEnabled(position)) {
-            if (iv != null) {
+        if (!isEnabled(position))
+        {
+            if (iv != null)
+            {
                 iv.setVisibility(View.GONE);
             }
-            if (tv != null) {
+            if (tv != null)
+            {
                 tv.setVisibility(View.GONE);
             }
-            if (separator != null) {
+            if (separator != null)
+            {
                 separator.setVisibility(View.VISIBLE);
             }
-        } else {
-            if (separator != null) {
+        }
+        else
+        {
+            if (separator != null)
+            {
                 separator.setVisibility(View.GONE);
             }
             final ImageListItem item = mData.get(position);
-            if (iv != null) {
+            if (iv != null)
+            {
                 iv.setVisibility(View.VISIBLE);
                 iv.setImageDrawable(item.getDrawable());
             }
-            if (tv != null) {
+            if (tv != null)
+            {
                 tv.setVisibility(View.VISIBLE);
                 tv.setText(item.getText());
             }
@@ -117,12 +140,14 @@ public class ImageListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public boolean areAllItemsEnabled() {
+    public boolean areAllItemsEnabled()
+    {
         return mAreAllItemsSelectable;
     }
 
     @Override
-    public boolean isEnabled(int position) {
+    public boolean isEnabled(int position)
+    {
         return mData.get(position) != null;
     }
 

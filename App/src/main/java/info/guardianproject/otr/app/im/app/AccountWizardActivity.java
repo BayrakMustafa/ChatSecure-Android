@@ -45,22 +45,21 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.viewpagerindicator.PageIndicator;
 
+import java.util.UUID;
+
 import info.guardianproject.onionkit.ui.OrbotHelper;
 import info.guardianproject.otr.OtrAndroidKeyManagerImpl;
-import info.guardianproject.otr.OtrDebugLogger;
 import info.guardianproject.otr.app.im.R;
 import info.guardianproject.otr.app.im.plugin.xmpp.auth.GTalkOAuth2;
 import info.guardianproject.otr.app.im.provider.Imps;
-import java.util.List;
-import java.util.UUID;
 
-public class AccountWizardActivity extends ThemeableActivity {
+public class AccountWizardActivity extends ThemeableActivity
+{
     private static final String TAG = ImApp.LOG_TAG;
 
     private AccountAdapter mAdapter;
@@ -90,20 +89,24 @@ public class AccountWizardActivity extends ThemeableActivity {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
-    protected void onCreate(Bundle icicle) {
+    protected void onCreate(Bundle icicle)
+    {
 
-        if(Build.VERSION.SDK_INT >= 11)
+        if (Build.VERSION.SDK_INT >= 11)
+        {
             getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        }
 
         super.onCreate(icicle);
 
         getSupportActionBar().hide();
 
-        mApp = (ImApp)getApplication();
+        mApp = (ImApp) getApplication();
         mApp.maybeInit(this);
         mApp.setAppTheme(this);
 
-        if (!Imps.isUnlocked(this)) {
+        if (!Imps.isUnlocked(this))
+        {
             onDBLocked();
             return;
         }
@@ -124,12 +127,14 @@ public class AccountWizardActivity extends ThemeableActivity {
         titleIndicator.setViewPager(mPager);
     }
 
-    AccountAdapter getAdapter() {
+    AccountAdapter getAdapter()
+    {
         return mAdapter;
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         mHandler.unregisterForBroadcastEvents();
 
         super.onPause();
@@ -137,12 +142,17 @@ public class AccountWizardActivity extends ThemeableActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         if (mSignInHelper != null) // if !Imps.isUnlocked(this)
+        {
             mSignInHelper.stop();
+        }
 
         if (mAdapter != null)
+        {
             mAdapter.swapCursor(null);
+        }
 
 
         unbindDrawables(findViewById(R.id.RootView));
@@ -151,14 +161,18 @@ public class AccountWizardActivity extends ThemeableActivity {
         super.onDestroy();
     }
 
-    private void unbindDrawables(View view) {
+    private void unbindDrawables(View view)
+    {
         if (view != null)
         {
-            if (view.getBackground() != null) {
+            if (view.getBackground() != null)
+            {
                 view.getBackground().setCallback(null);
             }
-            if (view instanceof ViewGroup) {
-                for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+            if (view instanceof ViewGroup)
+            {
+                for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++)
+                {
                     unbindDrawables(((ViewGroup) view).getChildAt(i));
                 }
                 ((ViewGroup) view).removeAllViews();
@@ -167,9 +181,9 @@ public class AccountWizardActivity extends ThemeableActivity {
     }
 
 
-
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
 
         super.onResume();
 
@@ -188,7 +202,8 @@ public class AccountWizardActivity extends ThemeableActivity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
         super.onPrepareOptionsMenu(menu);
         return true;
     }
@@ -201,14 +216,15 @@ public class AccountWizardActivity extends ThemeableActivity {
 
     Account[] mGoogleAccounts;
 
-    private void buildAccountList ()
+    private void buildAccountList()
     {
         int i = 0;
         int accountProviders = 0;
-        
+
         mGoogleAccounts = AccountManager.get(this).getAccountsByType(GTalkOAuth2.TYPE_GOOGLE_ACCT);
 
-        if (mGoogleAccounts.length > 0) {
+        if (mGoogleAccounts.length > 0)
+        {
             accountProviders = 5; //potentialProviders + google + create account + burner
 
             mAccountList = new String[accountProviders][3];
@@ -217,7 +233,9 @@ public class AccountWizardActivity extends ThemeableActivity {
             mAccountList[i][1] = getString(R.string.account_google_full);
             mAccountList[i][2] = GOOGLE_ACCOUNT;
             i++;
-        } else {
+        }
+        else
+        {
             accountProviders = 4;//listProviders.size() + 2; //potentialProviders + create account + burner
 
             mAccountList = new String[accountProviders][3];
@@ -246,55 +264,63 @@ public class AccountWizardActivity extends ThemeableActivity {
 
     }
 
-    private Handler mHandlerGoogleAuth = new Handler() {
+    private Handler mHandlerGoogleAuth = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             super.handleMessage(msg);
         }
     };
 
-    private void addGoogleAccount ()
+    private void addGoogleAccount()
     {
-       // mNewUser = newUser;
+        // mNewUser = newUser;
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(
                 this);
-      //  builderSingle.setTitle("Select One Name:-");
+        //  builderSingle.setTitle("Select One Name:-");
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.select_dialog_singlechoice);
 
         for (Account gAccount : mGoogleAccounts)
+        {
             arrayAdapter.add(gAccount.name);
+        }
 
         builderSingle.setNegativeButton(R.string.cancel,
-                new DialogInterface.OnClickListener() {
+                new DialogInterface.OnClickListener()
+                {
 
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
                         dialog.dismiss();
                     }
                 });
 
         builderSingle.setAdapter(arrayAdapter,
-                new DialogInterface.OnClickListener() {
+                new DialogInterface.OnClickListener()
+                {
 
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
 
                         mNewUser = arrayAdapter.getItem(which);
 
-                        Thread thread = new Thread ()
+                        Thread thread = new Thread()
                         {
                             @Override
-                            public void run ()
+                            public void run()
                             {
                                 //get the oauth token
 
-                              //don't store anything just make sure it works!
-                               String password = GTalkOAuth2.NAME + ':' + GTalkOAuth2.getGoogleAuthTokenAllow(mNewUser, getApplicationContext(), AccountWizardActivity.this,mHandlerGoogleAuth);
+                                //don't store anything just make sure it works!
+                                String password = GTalkOAuth2.NAME + ':' + GTalkOAuth2.getGoogleAuthTokenAllow(mNewUser, getApplicationContext(), AccountWizardActivity.this, mHandlerGoogleAuth);
 
-                               //use the XMPP type plugin for google accounts, and the .NAME "X-GOOGLE-TOKEN" as the password
-                                showSetupAccountForm(helper.getProviderNames().get(0), mNewUser,password, false, getString(R.string.google_account),false);
+                                //use the XMPP type plugin for google accounts, and the .NAME "X-GOOGLE-TOKEN" as the password
+                                showSetupAccountForm(helper.getProviderNames().get(0), mNewUser, password, false, getString(R.string.google_account), false);
                             }
                         };
                         thread.start();
@@ -305,10 +331,10 @@ public class AccountWizardActivity extends ThemeableActivity {
     }
 
 
-    public void showSetupAccountForm (String providerType, String username, String token, boolean createAccount, String formTitle, boolean hideTor)
+    public void showSetupAccountForm(String providerType, String username, String token, boolean createAccount, String formTitle, boolean hideTor)
     {
         long providerId = helper.createAdditionalProvider(providerType);//xmpp
-    //    mApp.resetProviderSettings(); //clear cached provider list
+        //    mApp.resetProviderSettings(); //clear cached provider list
 
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_INSERT);
@@ -317,22 +343,28 @@ public class AccountWizardActivity extends ThemeableActivity {
         intent.addCategory(ImApp.IMPS_CATEGORY);
 
         if (username != null)
+        {
             intent.putExtra("newuser", username);
+        }
 
         if (token != null)
+        {
             intent.putExtra("newpass", token);
+        }
 
         if (formTitle != null)
+        {
             intent.putExtra("title", formTitle);
+        }
 
         intent.putExtra("hideTor", hideTor);
 
         intent.putExtra("register", createAccount);
 
-        startActivityForResult(intent,REQUEST_CREATE_ACCOUNT);
+        startActivityForResult(intent, REQUEST_CREATE_ACCOUNT);
     }
 
-    public void createBurnerAccount ()
+    public void createBurnerAccount()
     {
 
         OrbotHelper oh = new OrbotHelper(this);
@@ -348,8 +380,8 @@ public class AccountWizardActivity extends ThemeableActivity {
         }
 
         //need to generate proper IMA url for account setup
-        String regUser = java.util.UUID.randomUUID().toString().substring(0,10).replace('-','a');
-        String regPass =  UUID.randomUUID().toString().substring(0,16);
+        String regUser = java.util.UUID.randomUUID().toString().substring(0, 10).replace('-', 'a');
+        String regPass = UUID.randomUUID().toString().substring(0, 16);
         String regDomain = "jabber.calyxinstitute.org";
         Uri uriAccountData = Uri.parse("ima://" + regUser + ':' + regPass + '@' + regDomain);
 
@@ -357,20 +389,24 @@ public class AccountWizardActivity extends ThemeableActivity {
         intent.setAction(Intent.ACTION_INSERT);
         intent.setData(uriAccountData);
         intent.putExtra("useTor", true);
-        startActivityForResult(intent,REQUEST_CREATE_ACCOUNT);
+        startActivityForResult(intent, REQUEST_CREATE_ACCOUNT);
 
 
     }
 
-    private final class MyHandler extends SimpleAlertHandler {
+    private final class MyHandler extends SimpleAlertHandler
+    {
 
-        public MyHandler(Activity activity) {
+        public MyHandler(Activity activity)
+        {
             super(activity);
         }
 
         @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == ImApp.EVENT_CONNECTION_DISCONNECTED) {
+        public void handleMessage(Message msg)
+        {
+            if (msg.what == ImApp.EVENT_CONNECTION_DISCONNECTED)
+            {
                 promptDisconnectedEvent(msg);
             }
             super.handleMessage(msg);
@@ -379,27 +415,31 @@ public class AccountWizardActivity extends ThemeableActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == IntentIntegrator.REQUEST_CODE) {
+        if (requestCode == IntentIntegrator.REQUEST_CODE)
+        {
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
                     data);
-            if (scanResult != null) {
+            if (scanResult != null)
+            {
                 OtrAndroidKeyManagerImpl.handleKeyScanResult(scanResult.getContents(), this);
             }
         }
         else if (requestCode == REQUEST_CREATE_ACCOUNT)
         {
-           // if (resultCode == RESULT_OK)
-           // {
-                gotoChats();
-           // }
+            // if (resultCode == RESULT_OK)
+            // {
+            gotoChats();
+            // }
         }
     }
 
 
-    public void onDBLocked() {
+    public void onDBLocked()
+    {
 
         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -407,7 +447,8 @@ public class AccountWizardActivity extends ThemeableActivity {
         finish();
     }
 
-    public static class WizardPageFragment extends Fragment {
+    public static class WizardPageFragment extends Fragment
+    {
 
         private TextView mAccountInfo = null;
         private TextView mAccountDetail = null;
@@ -420,17 +461,20 @@ public class AccountWizardActivity extends ThemeableActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState)
+        {
             ViewGroup rootView = (ViewGroup) inflater.inflate(
                     R.layout.account_wizard_slider, container, false);
 
-            mAccountInfo = (TextView)rootView.findViewById(R.id.lblAccountTypeInfo);
-            mAccountDetail = (TextView)rootView.findViewById(R.id.lblAccountTypeDetail);
+            mAccountInfo = (TextView) rootView.findViewById(R.id.lblAccountTypeInfo);
+            mAccountDetail = (TextView) rootView.findViewById(R.id.lblAccountTypeDetail);
 
-            mButtonAddAccount = (Button)rootView.findViewById(R.id.btnAddAccount);
+            mButtonAddAccount = (Button) rootView.findViewById(R.id.btnAddAccount);
 
             if (mButtonText != null)
+            {
                 mButtonAddAccount.setText(mButtonText);
+            }
 
             mAccountInfo.setText(mAccountInfoText);
             mAccountDetail.setText(mAccountDetailText);
@@ -441,7 +485,7 @@ public class AccountWizardActivity extends ThemeableActivity {
             return rootView;
         }
 
-        public void setAccountInfo (String accountInfoText, String accountDetailText, String mButtonText)
+        public void setAccountInfo(String accountInfoText, String accountDetailText, String mButtonText)
         {
             mAccountInfoText = accountInfoText;
             mAccountDetailText = accountDetailText;
@@ -458,35 +502,39 @@ public class AccountWizardActivity extends ThemeableActivity {
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
      * sequence.
      */
-    private class WizardPagerAdapter extends FragmentStatePagerAdapter {
-        public WizardPagerAdapter(FragmentManager fm) {
+    private class WizardPagerAdapter extends FragmentStatePagerAdapter
+    {
+        public WizardPagerAdapter(FragmentManager fm)
+        {
             super(fm);
         }
 
         @Override
-        public Fragment getItem(final int pos) {
+        public Fragment getItem(final int pos)
+        {
             WizardPageFragment wpf = new WizardPageFragment();
-            wpf.setAccountInfo(mAccountList[pos][0],mAccountList[pos][1],null);
+            wpf.setAccountInfo(mAccountList[pos][0], mAccountList[pos][1], null);
             wpf.setOnClickListener(new OnClickListener()
             {
 
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
                     String accountType = mAccountList[pos][2];
                     if (TextUtils.equals(accountType, EXISTING_ACCOUNT))
                     {
                         //otherwise support the actual plugin-type
-                        showSetupAccountForm(helper.getProviderNames().get(0),null, null, false,helper.getProviderNames().get(0),false);
+                        showSetupAccountForm(helper.getProviderNames().get(0), null, null, false, helper.getProviderNames().get(0), false);
                     }
                     else if (TextUtils.equals(accountType, BONJOUR_ACCOUNT))
                     {
                         String username = "";
                         String passwordPlaceholder = "password";//zeroconf doesn't need a password
-                        showSetupAccountForm(helper.getProviderNames().get(1),username,passwordPlaceholder, false,helper.getProviderNames().get(1),true);
+                        showSetupAccountForm(helper.getProviderNames().get(1), username, passwordPlaceholder, false, helper.getProviderNames().get(1), true);
                     }
                     else if (TextUtils.equals(accountType, NEW_ACCOUNT))
                     {
-                        showSetupAccountForm(helper.getProviderNames().get(0), null, null, true, null,false);
+                        showSetupAccountForm(helper.getProviderNames().get(0), null, null, true, null, false);
                     }
                     else if (TextUtils.equals(accountType, BURNER_ACCOUNT))
                     {
@@ -497,7 +545,9 @@ public class AccountWizardActivity extends ThemeableActivity {
                         addGoogleAccount();
                     }
                     else
+                    {
                         throw new IllegalArgumentException("Mystery account type!");
+                    }
                 }
 
             });
@@ -506,13 +556,15 @@ public class AccountWizardActivity extends ThemeableActivity {
         }
 
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             return mAccountList.length;
         }
     }
 
     @Override
-    public void onAttachedToWindow() {
+    public void onAttachedToWindow()
+    {
         super.onAttachedToWindow();
         Window window = getWindow();
         window.setFormat(PixelFormat.RGBA_8888);

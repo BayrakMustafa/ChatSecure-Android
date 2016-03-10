@@ -17,10 +17,10 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import java.io.Serializable;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.Serializable;
 
 /**
  * Represents a generic error returned from the server. The IM servers can
@@ -28,7 +28,8 @@ import android.os.Parcelable;
  * of the problem. Different IM protocol may have different set of error codes
  * and descriptions.
  */
-public class ImErrorInfo implements Parcelable, Serializable {
+public class ImErrorInfo implements Parcelable, Serializable
+{
     public static final int NO_ERROR = 0;
 
     public static final int ILLEGAL_CONTACT_LIST_MANAGER_STATE = -100;
@@ -65,15 +66,17 @@ public class ImErrorInfo implements Parcelable, Serializable {
     /**
      * Creates a new error with specified code and description.
      *
-     * @param code the error code.
+     * @param code        the error code.
      * @param description the description of the error.
      */
-    public ImErrorInfo(int code, String description) {
+    public ImErrorInfo(int code, String description)
+    {
         mCode = code;
         mDescription = description;
     }
 
-    public ImErrorInfo(Parcel source) {
+    public ImErrorInfo(Parcel source)
+    {
         mCode = source.readInt();
         mDescription = source.readString();
     }
@@ -83,7 +86,8 @@ public class ImErrorInfo implements Parcelable, Serializable {
      *
      * @return the error code.
      */
-    public int getCode() {
+    public int getCode()
+    {
         return mCode;
     }
 
@@ -92,30 +96,37 @@ public class ImErrorInfo implements Parcelable, Serializable {
      *
      * @return the description of the error.
      */
-    public String getDescription() {
+    public String getDescription()
+    {
         return mDescription;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return mCode + " - " + mDescription;
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags)
+    {
         dest.writeInt(mCode);
         dest.writeString(mDescription);
     }
 
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
-    public static final Parcelable.Creator<ImErrorInfo> CREATOR = new Parcelable.Creator<ImErrorInfo>() {
-        public ImErrorInfo createFromParcel(Parcel source) {
+    public static final Parcelable.Creator<ImErrorInfo> CREATOR = new Parcelable.Creator<ImErrorInfo>()
+    {
+        public ImErrorInfo createFromParcel(Parcel source)
+        {
             return new ImErrorInfo(source);
         }
 
-        public ImErrorInfo[] newArray(int size) {
+        public ImErrorInfo[] newArray(int size)
+        {
             return new ImErrorInfo[size];
         }
     };

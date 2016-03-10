@@ -21,7 +21,8 @@ package info.guardianproject.otr.app.im.engine;
  * A generic exception that is thrown by the IM engine. If it's caused by an
  * error condition returned by the IM server, an IMError is associated with it.
  */
-public class ImException extends Exception {
+public class ImException extends Exception
+{
     private ImErrorInfo mError;
 
     /**
@@ -29,7 +30,8 @@ public class ImException extends Exception {
      *
      * @param message the detail message.
      */
-    public ImException(String message) {
+    public ImException(String message)
+    {
         super(message);
     }
 
@@ -39,7 +41,8 @@ public class ImException extends Exception {
      *
      * @param error the cause of the exception.
      */
-    public ImException(ImErrorInfo error) {
+    public ImException(ImErrorInfo error)
+    {
         super(error.getDescription());
         mError = error;
     }
@@ -49,7 +52,8 @@ public class ImException extends Exception {
      *
      * @param cause the cause.
      */
-    public ImException(Throwable cause) {
+    public ImException(Throwable cause)
+    {
         super(cause);
     }
 
@@ -57,9 +61,10 @@ public class ImException extends Exception {
      * Creates a new ImException with the specified detail message and cause.
      *
      * @param message the detail message.
-     * @param cause the cause.
+     * @param cause   the cause.
      */
-    public ImException(String message, Throwable cause) {
+    public ImException(String message, Throwable cause)
+    {
         super(message, cause);
     }
 
@@ -69,7 +74,8 @@ public class ImException extends Exception {
      * @param imErrorCode
      * @param string
      */
-    public ImException(int imErrorCode, String description) {
+    public ImException(int imErrorCode, String description)
+    {
         this(new ImErrorInfo(imErrorCode, description));
     }
 
@@ -79,11 +85,13 @@ public class ImException extends Exception {
      *
      * @return the IMError which caused the exception.
      */
-    public ImErrorInfo getImError() {
+    public ImErrorInfo getImError()
+    {
         return mError;
     }
 
-    public void printStackTrace() {
+    public void printStackTrace()
+    {
         System.err.println("ImError: " + mError);
         super.printStackTrace();
     }

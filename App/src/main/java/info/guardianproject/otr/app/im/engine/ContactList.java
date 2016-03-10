@@ -17,13 +17,14 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import info.guardianproject.otr.app.im.plugin.xmpp.XmppAddress;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class ContactList extends ImEntity {
+import info.guardianproject.otr.app.im.plugin.xmpp.XmppAddress;
+
+public class ContactList extends ImEntity
+{
 
     protected Address mAddress;
     protected String mName;
@@ -33,44 +34,55 @@ public class ContactList extends ImEntity {
     private HashMap<String, Contact> mContactsCache;
 
     public ContactList(Address address, String name, boolean isDefault,
-            Collection<Contact> contacts, ContactListManager manager) {
+                       Collection<Contact> contacts, ContactListManager manager)
+    {
         mAddress = address;
         mDefault = isDefault;
         mName = name;
         mManager = manager;
 
         mContactsCache = new HashMap<String, Contact>();
-        if (contacts != null) {
-            for (Contact c : contacts) {
+        if (contacts != null)
+        {
+            for (Contact c : contacts)
+            {
                 String aKey = mManager.normalizeAddress(address.getAddress());
                 if (!mContactsCache.containsKey(aKey))
+                {
                     mContactsCache.put(aKey, c);
+                }
             }
         }
     }
 
     @Override
-    public Address getAddress() {
+    public Address getAddress()
+    {
         return mAddress;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return mName;
     }
 
-    public void setName(String name) {
-        if (null == name) {
+    public void setName(String name)
+    {
+        if (null == name)
+        {
             throw new NullPointerException();
         }
 
         mManager.setListNameAsync(name, this);
     }
 
-    public void setDefault(boolean isDefault) {
+    public void setDefault(boolean isDefault)
+    {
         this.mDefault = isDefault;
     }
 
-    public boolean isDefault() {
+    public boolean isDefault()
+    {
         return mDefault;
     }
 
@@ -80,37 +92,44 @@ public class ContactList extends ImEntity {
      *
      * @param address the address string specifies the contact.
      * @throws IllegalArgumentException if the address is invalid.
-     * @throws NullPointerException if the address string is null
-     * @throws ImException if the contact is not allowed to be added
+     * @throws NullPointerException     if the address string is null
+     * @throws ImException              if the contact is not allowed to be added
      */
-    public void addContact(final String address) throws ImException {
+    public void addContact(final String address) throws ImException
+    {
 
-        if (null == address) {
+        if (null == address)
+        {
             throw new NullPointerException();
         }
 
-        if (mManager.getState() == ContactListManager.BLOCKED_LIST_LOADED) {
-            if (mManager.isBlocked(address)) {
+        if (mManager.getState() == ContactListManager.BLOCKED_LIST_LOADED)
+        {
+            if (mManager.isBlocked(address))
+            {
                 throw new ImException(ImErrorInfo.CANT_ADD_BLOCKED_CONTACT,
                         "Contact has been blocked");
             }
         }
 
-        new Thread ()
+        new Thread()
         {
-            
-            public void run ()
+
+            public void run()
             {
                 Contact contact = getContact(address);
-        
+
                 if (contact == null)
                 {
-                    contact = new Contact (new XmppAddress(address),address);
+                    contact = new Contact(new XmppAddress(address), address);
                 }
-        
-                try {
+
+                try
+                {
                     mManager.addContactToListAsync(contact, ContactList.this);
-                } catch (ImException e) {
+                }
+                catch (ImException e)
+                {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -124,21 +143,25 @@ public class ContactList extends ImEntity {
      *
      * @param address the address string specifies the contact.
      * @throws IllegalArgumentException if the address is invalid.
-     * @throws NullPointerException if the address string is null
-     * @throws ImException if the contact is not allowed to be added
+     * @throws NullPointerException     if the address string is null
+     * @throws ImException              if the contact is not allowed to be added
      */
-    public void addExistingContact(Contact contact) throws ImException {
+    public void addExistingContact(Contact contact) throws ImException
+    {
 
         String aKey = mManager.normalizeAddress(contact.getAddress().getAddress());
 
-        if (mManager.getState() == ContactListManager.BLOCKED_LIST_LOADED) {
-            if (mManager.isBlocked(aKey)) {
+        if (mManager.getState() == ContactListManager.BLOCKED_LIST_LOADED)
+        {
+            if (mManager.isBlocked(aKey))
+            {
                 throw new ImException(ImErrorInfo.CANT_ADD_BLOCKED_CONTACT,
                         "Contact has been blocked");
             }
         }
 
-        if (containsContact(aKey)) {
+        if (containsContact(aKey))
+        {
             throw new ImException(ImErrorInfo.CONTACT_EXISTS_IN_LIST,
                     "Contact already exists in the list");
         }
@@ -154,12 +177,15 @@ public class ContactList extends ImEntity {
      * @param address the address of the contact to be removed from the list
      * @throws NullPointerException If the address is null
      */
-    public void removeContact(Address address) throws ImException {
-        if (address == null) {
+    public void removeContact(Address address) throws ImException
+    {
+        if (address == null)
+        {
             throw new NullPointerException();
         }
         Contact c = getContact(address);
-        if (c != null) {
+        if (c != null)
+        {
             removeContact(c);
         }
     }
@@ -172,52 +198,64 @@ public class ContactList extends ImEntity {
      * @param contact the contact to be removed from the list
      * @throws NullPointerException If the contact is null
      */
-    public void removeContact(Contact contact) throws ImException {
-        if (contact == null) {
+    public void removeContact(Contact contact) throws ImException
+    {
+        if (contact == null)
+        {
             throw new NullPointerException();
         }
 
-        if (containsContact(contact)) {
+        if (containsContact(contact))
+        {
             mManager.removeContactFromListAsync(contact, this);
             mContactsCache.remove(mManager.normalizeAddress(contact.getAddress().getAddress()));
         }
     }
 
-    public Contact getContact(Address address) {
+    public Contact getContact(Address address)
+    {
         return getContact(mManager.normalizeAddress(address.getAddress()));
     }
 
-    public Contact getContact(String address) {
+    public Contact getContact(String address)
+    {
         return mContactsCache.get(address);
     }
 
-    public int getContactsCount() {
+    public int getContactsCount()
+    {
         return mContactsCache.size();
     }
 
-    public Collection<Contact> getContacts() {
+    public Collection<Contact> getContacts()
+    {
         return new ArrayList<Contact>(mContactsCache.values());
     }
 
-    public boolean containsContact(String address) {
+    public boolean containsContact(String address)
+    {
         return mContactsCache.containsKey(mManager.normalizeAddress(address));
     }
 
-    public boolean containsContact(Address address) {
+    public boolean containsContact(Address address)
+    {
         return address == null ? false : mContactsCache.containsKey(mManager
                 .normalizeAddress(address.getAddress()));
     }
 
-    public synchronized boolean containsContact(Contact c) {
+    public synchronized boolean containsContact(Contact c)
+    {
         return c == null ? false : mContactsCache.containsKey(mManager.normalizeAddress(c
                 .getAddress().getAddress()));
     }
 
-    protected void insertToCache(Contact contact) {
+    protected void insertToCache(Contact contact)
+    {
         mContactsCache.put(mManager.normalizeAddress(contact.getAddress().getAddress()), contact);
     }
 
-    protected void removeFromCache(Contact contact) {
+    protected void removeFromCache(Contact contact)
+    {
         mContactsCache.remove(mManager.normalizeAddress(contact.getAddress().getAddress()));
     }
 

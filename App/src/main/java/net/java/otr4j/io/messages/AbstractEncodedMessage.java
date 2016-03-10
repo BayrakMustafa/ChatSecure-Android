@@ -5,20 +5,25 @@
  */
 package net.java.otr4j.io.messages;
 
-/** @author George Politis */
-public abstract class AbstractEncodedMessage extends AbstractMessage {
+/**
+ * @author George Politis
+ */
+public abstract class AbstractEncodedMessage extends AbstractMessage
+{
     // Fields.
     public int protocolVersion;
 
     // Ctor.
-    public AbstractEncodedMessage(int messageType, int protocolVersion) {
+    public AbstractEncodedMessage(int messageType, int protocolVersion)
+    {
         super(messageType);
         this.protocolVersion = protocolVersion;
     }
 
     // Methods.
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + protocolVersion;
@@ -26,16 +31,25 @@ public abstract class AbstractEncodedMessage extends AbstractMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         AbstractEncodedMessage other = (AbstractEncodedMessage) obj;
         if (protocolVersion != other.protocolVersion)
+        {
             return false;
+        }
         return true;
     }
 

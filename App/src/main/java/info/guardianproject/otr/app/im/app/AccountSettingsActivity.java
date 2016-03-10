@@ -17,9 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.provider.Imps;
-import info.guardianproject.otr.app.im.service.ImServiceConstants;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,8 +29,13 @@ import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.provider.Imps;
+import info.guardianproject.otr.app.im.service.ImServiceConstants;
+
 public class AccountSettingsActivity extends PreferenceActivity implements
-        OnSharedPreferenceChangeListener {
+        OnSharedPreferenceChangeListener
+{
 
     private long mProviderId;
 
@@ -45,31 +47,36 @@ public class AccountSettingsActivity extends PreferenceActivity implements
     private CheckBoxPreference mRequireTls;
     private CheckBoxPreference mDoDnsSrv;
 
-    private void setInitialValues() {
+    private void setInitialValues()
+    {
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(mProviderId)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(mProviderId)}, null);
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, cr,
                 mProviderId, false /* keep updated */, null /* no handler */);
         String text;
 
         text = settings.getXmppResource();
         mXmppResource.setText(text);
-        if (text != null) {
+        if (text != null)
+        {
             mXmppResource.setSummary(text);
         }
         text = Integer.toString(settings.getXmppResourcePrio());
         mXmppResourcePrio.setText(text);
-        if (text != null) {
+        if (text != null)
+        {
             mXmppResourcePrio.setSummary(text);
         }
         text = Integer.toString(settings.getPort());
         mPort.setText(text);
-        if (text != null && settings.getPort() != 0) {
+        if (text != null && settings.getPort() != 0)
+        {
             mPort.setSummary(text);
         }
         text = settings.getServer();
         mServer.setText(text);
-        if (text != null) {
+        if (text != null)
+        {
             mServer.setSummary(text);
         }
         mAllowPlainAuth.setChecked(settings.getAllowPlainAuth());
@@ -81,59 +88,85 @@ public class AccountSettingsActivity extends PreferenceActivity implements
 
     /* save the preferences in Imps so they are accessible everywhere */
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    {
 
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(mProviderId)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(mProviderId)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
                 pCursor, cr, mProviderId, true /* don't keep updated */, null /* no handler */);
         String value;
 
-        if (key.equals("pref_account_xmpp_resource")) {
+        if (key.equals("pref_account_xmpp_resource"))
+        {
             value = prefs.getString(key, null);
             settings.setXmppResource(value);
-            if (value != null) {
+            if (value != null)
+            {
                 value = value.trim();
                 mXmppResource.setSummary(value);
                 mXmppResource.setText(value); // In case it was trimmed
             }
-        } else if (key.equals("pref_account_xmpp_resource_prio")) {
+        }
+        else if (key.equals("pref_account_xmpp_resource_prio"))
+        {
 
             value = prefs.getString(key, "20");
-            try {
+            try
+            {
                 settings.setXmppResourcePrio(Integer.parseInt(value));
-            } catch (NumberFormatException nfe) {
+            }
+            catch (NumberFormatException nfe)
+            {
                 Toast.makeText(getBaseContext(),
                         getString(R.string.error_account_settings_priority), Toast.LENGTH_SHORT)
                         .show();
             }
             mXmppResourcePrio.setSummary(value);
-        } else if (key.equals("pref_account_port")) {
+        }
+        else if (key.equals("pref_account_port"))
+        {
             value = prefs.getString(key, "0");
-            try {
+            try
+            {
                 settings.setPort(Integer.parseInt(value));
-            } catch (NumberFormatException nfe) {
+            }
+            catch (NumberFormatException nfe)
+            {
                 Toast.makeText(getBaseContext(), getString(R.string.error_account_settings_port), Toast.LENGTH_SHORT)
                         .show();
             }
             if (settings.getPort() != 0)
+            {
                 mPort.setSummary(value);
-        } else if (key.equals("pref_account_server")) {
+            }
+        }
+        else if (key.equals("pref_account_server"))
+        {
             value = prefs.getString(key, null);
             settings.setServer(value);
-            if (value != null) {
+            if (value != null)
+            {
                 value = value.trim();
                 mServer.setSummary(value);
                 mServer.setText(value); // In case it was trimmed
             }
-        } else if (key.equals("pref_security_allow_plain_auth")) {
+        }
+        else if (key.equals("pref_security_allow_plain_auth"))
+        {
             settings.setAllowPlainAuth(prefs.getBoolean(key, false));
-        } else if (key.equals("pref_security_require_tls")) {
+        }
+        else if (key.equals("pref_security_require_tls"))
+        {
             settings.setRequireTls(prefs.getBoolean(key, true));
-        } else if (key.equals("pref_security_tls_cert_verify")) {
+        }
+        else if (key.equals("pref_security_tls_cert_verify"))
+        {
             settings.setTlsCertVerify(prefs.getBoolean(key, true));
-        } else if (key.equals("pref_security_do_dns_srv")) {
+        }
+        else if (key.equals("pref_security_do_dns_srv"))
+        {
             settings.setDoDnsSrv(prefs.getBoolean(key, true));
         }
 
@@ -142,7 +175,8 @@ public class AccountSettingsActivity extends PreferenceActivity implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         // Set dummy name for preferences so that they don't mix with global ones.
         // FIXME we should not be writing these out to a file, since they are written to
@@ -151,7 +185,8 @@ public class AccountSettingsActivity extends PreferenceActivity implements
         addPreferencesFromResource(R.xml.account_settings);
         Intent intent = getIntent();
         mProviderId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_PROVIDER_ID, -1);
-        if (mProviderId < 0) {
+        if (mProviderId < 0)
+        {
             Log.e(ImApp.LOG_TAG, "AccountSettingsActivity intent requires provider id extra");
             throw new RuntimeException(
                     "AccountSettingsActivity must be created with an provider id");
@@ -166,7 +201,8 @@ public class AccountSettingsActivity extends PreferenceActivity implements
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
 
         setInitialValues();
@@ -175,7 +211,8 @@ public class AccountSettingsActivity extends PreferenceActivity implements
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
 
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(

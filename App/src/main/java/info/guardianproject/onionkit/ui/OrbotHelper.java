@@ -1,7 +1,5 @@
-
 package info.guardianproject.onionkit.ui;
 
-import info.guardianproject.otr.app.im.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,7 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-public class OrbotHelper {
+import info.guardianproject.otr.app.im.R;
+
+public class OrbotHelper
+{
 
     private final static int REQUEST_CODE_STATUS = 100;
 
@@ -40,13 +41,17 @@ public class OrbotHelper {
         return isAppInstalled(URI_ORBOT);
     }
 
-    private boolean isAppInstalled(String uri) {
+    private boolean isAppInstalled(String uri)
+    {
         PackageManager pm = mContext.getPackageManager();
         boolean installed = false;
-        try {
+        try
+        {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             installed = true;
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
             installed = false;
         }
         return installed;
@@ -62,20 +67,25 @@ public class OrbotHelper {
     }
 
     private static AlertDialog showDownloadDialog(final Activity activity,
-            CharSequence stringTitle, CharSequence stringMessage, CharSequence stringButtonYes,
-            CharSequence stringButtonNo, final String uriString) {
+                                                  CharSequence stringTitle, CharSequence stringMessage, CharSequence stringButtonYes,
+                                                  CharSequence stringButtonNo, final String uriString)
+    {
         AlertDialog.Builder downloadDialog = new AlertDialog.Builder(activity);
         downloadDialog.setTitle(stringTitle);
         downloadDialog.setMessage(stringMessage);
-        downloadDialog.setPositiveButton(stringButtonYes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
+        downloadDialog.setPositiveButton(stringButtonYes, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
                 Uri uri = Uri.parse(uriString);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 activity.startActivity(intent);
             }
         });
-        downloadDialog.setNegativeButton(stringButtonNo, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
+        downloadDialog.setNegativeButton(stringButtonNo, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
             }
         });
         return downloadDialog.show();
@@ -88,15 +98,19 @@ public class OrbotHelper {
         downloadDialog.setTitle(R.string.start_orbot_);
         downloadDialog
                 .setMessage(R.string.orbot_doesn_t_appear_to_be_running_would_you_like_to_start_it_up_and_connect_to_tor_);
-        downloadDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
+        downloadDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
                 Intent intent = new Intent(URI_ORBOT);
                 intent.setAction(ACTION_START_TOR);
                 activity.startActivityForResult(intent, 1);
             }
         });
-        downloadDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
+        downloadDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
             }
         });
         downloadDialog.show();

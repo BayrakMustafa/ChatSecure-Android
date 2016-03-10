@@ -18,28 +18,30 @@
  */
 -->
 <info.guardianproject.otr.app.im.app.ActiveChatListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/ActiveChatListView"
-    android:orientation="vertical">
+                                                        android:layout_width="fill_parent"
+                                                        android:layout_height="fill_parent"
+                                                        android:id="@+id/ActiveChatListView"
+                                                        android:orientation="vertical">
 
 
-    <ListView android:id="@+id/chatsList"
+    <ListView
+        android:id="@+id/chatsList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-          android:background="#00000000"
-        android:cacheColorHint="#00000000" 
-        
+        android:background="#00000000"
+        android:cacheColorHint="#00000000"
+
 
         />
-	<TextView
-	    android:id="@+id/empty"
-	    android:text="@string/no_messages"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:gravity="center"
-	    android:textSize="24dp"
-	    		            android:fontFamily="sans-serif-light"
 
-	    />
+    <TextView
+        android:id="@+id/empty"
+        android:text="@string/no_messages"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:textSize="24dp"
+        android:fontFamily="sans-serif-light"
+
+        />
 </info.guardianproject.otr.app.im.app.ActiveChatListView>

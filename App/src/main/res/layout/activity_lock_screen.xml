@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/llRoot"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical" >
+              android:id="@+id/llRoot"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/frameRoot"
@@ -11,19 +11,19 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:background="#ddffffff"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/llCreatePassphrase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <ViewFlipper
                 android:id="@+id/viewFlipper1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inAnimation="@anim/push_right_in" >
+                android:inAnimation="@anim/push_right_in">
 
                 <LinearLayout
                     android:id="@+id/flipView1"
@@ -31,19 +31,19 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:gravity="center"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal" >
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_toStartOf="@+id/languageButton"
                             android:fontFamily="sans-serif"
-                            android:text="@string/lock_screen_passphrase_not_set_enter" />
+                            android:text="@string/lock_screen_passphrase_not_set_enter"/>
 
                         <ImageButton
                             android:id="@+id/languageButton"
@@ -54,7 +54,7 @@
                             android:background="@drawable/ab_transparent_chatsecure"
                             android:contentDescription="@string/menu_locale"
                             android:padding="0dp"
-                            android:src="@drawable/ic_settings_language" />
+                            android:src="@drawable/ic_settings_language"/>
                     </RelativeLayout>
 
                     <EditText
@@ -65,7 +65,7 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/lock_screen_passphrase_hint"
-                        android:inputType="textPassword" />
+                        android:inputType="textPassword"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:gravity="center"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <EditText
                         android:id="@+id/editConfirmNewPassphrase"
@@ -84,7 +84,7 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/lock_screen_passphrase_not_set_confirm"
-                        android:inputType="textPassword" />
+                        android:inputType="textPassword"/>
                 </LinearLayout>
             </ViewFlipper>
 
@@ -95,7 +95,7 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="0dp"
-                android:text="@string/lock_screen_create_passphrase" />
+                android:text="@string/lock_screen_create_passphrase"/>
 
             <Button
                 android:id="@+id/btnSkip"
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
                 android:layout_marginTop="5dp"
-                android:text="@string/lock_screen_skip" />
+                android:text="@string/lock_screen_skip"/>
         </LinearLayout>
 
         <LinearLayout
@@ -111,14 +111,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone" >
+            android:visibility="gone">
 
             <LinearLayout
                 android:id="@+id/llManualAdd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <EditText
                     android:id="@+id/editEnterPassphrase"
@@ -127,9 +127,9 @@
                     android:ems="10"
                     android:hint="@string/lock_screen_passphrase_hint"
                     android:imeOptions="actionGo"
-                    android:inputType="textPassword" >
+                    android:inputType="textPassword">
 
-                    <requestFocus />
+                    <requestFocus/>
                 </EditText>
             </LinearLayout>
         </LinearLayout>

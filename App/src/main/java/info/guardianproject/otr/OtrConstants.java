@@ -1,6 +1,7 @@
 package info.guardianproject.otr;
 
-public interface OtrConstants {
+public interface OtrConstants
+{
 
     /*
      * If Alice wishes to communicate to Bob that she is willing to use OTR, she can attach a special whitespace tag to any plaintext message she sends him. This tag may occur anywhere in the message, and may be hidden from the user (as in the Query Messages, above).

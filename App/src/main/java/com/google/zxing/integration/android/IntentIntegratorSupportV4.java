@@ -23,21 +23,24 @@ import android.support.v4.app.Fragment;
  *
  * @author Lachezar Dobrev
  */
-public final class IntentIntegratorSupportV4 extends IntentIntegrator {
+public final class IntentIntegratorSupportV4 extends IntentIntegrator
+{
 
-  private final Fragment fragment;
+    private final Fragment fragment;
 
-  /**
-   * @param fragment Fragment to handle activity response.
-   */
-  public IntentIntegratorSupportV4(Fragment fragment) {
-    super(fragment.getActivity());
-    this.fragment = fragment;
-  }
+    /**
+     * @param fragment Fragment to handle activity response.
+     */
+    public IntentIntegratorSupportV4(Fragment fragment)
+    {
+        super(fragment.getActivity());
+        this.fragment = fragment;
+    }
 
-  @Override
-  protected void startActivityForResult(Intent intent, int code) {
-    fragment.startActivityForResult(intent, code);
-  }
+    @Override
+    protected void startActivityForResult(Intent intent, int code)
+    {
+        fragment.startActivityForResult(intent, code);
+    }
 
 }

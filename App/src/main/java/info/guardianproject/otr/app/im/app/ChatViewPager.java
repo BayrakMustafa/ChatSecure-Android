@@ -6,29 +6,36 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CompoundButton;
 
-public class ChatViewPager extends ViewPager {
+public class ChatViewPager extends ViewPager
+{
 
-    public ChatViewPager(Context context) {
+    public ChatViewPager(Context context)
+    {
         super(context);
 
     }
 
 
-    public ChatViewPager(Context context, AttributeSet attrs) {
+    public ChatViewPager(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
     }
 
 
     @Override
-    protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
-       if(v != this && v instanceof ViewPager) {
-          return true;
-       }
-       else if (v instanceof CompoundButton)
-       {
-           return false;
-       }
-       else
-           return super.canScroll(v, checkV, dx, x, y);
+    protected boolean canScroll(View v, boolean checkV, int dx, int x, int y)
+    {
+        if (v != this && v instanceof ViewPager)
+        {
+            return true;
+        }
+        else if (v instanceof CompoundButton)
+        {
+            return false;
+        }
+        else
+        {
+            return super.canScroll(v, checkV, dx, x, y);
+        }
     }
 }

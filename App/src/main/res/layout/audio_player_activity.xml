@@ -1,9 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFFFF"
-    android:orientation="vertical" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#FFFFFFFF"
+              android:orientation="vertical">
 
     <TextView
         android:id="@+id/audio_player_text"
@@ -14,7 +13,7 @@
         android:gravity="center"
         android:maxLines="3"
         android:scrollHorizontally="false"
-        android:text="Filename Here" >
+        android:text="Filename Here">
     </TextView>
 
     <Button
@@ -22,6 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="@string/play" />
-        
+        android:text="@string/play"/>
+
 </LinearLayout>

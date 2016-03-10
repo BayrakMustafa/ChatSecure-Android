@@ -1,9 +1,5 @@
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.R;
-
-import java.io.File;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,24 +12,30 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.View;
 
-public class ThemeableActivity extends ActionBarActivity {
+import java.io.File;
+
+import info.guardianproject.otr.app.im.R;
+
+public class ThemeableActivity extends ActionBarActivity
+{
 
     private static String mThemeBg = null;
     private static Drawable mThemeDrawable = null;
-    
+
     protected static boolean mHasBackground = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
-        ((ImApp)this.getApplication()).setAppTheme(this);
+        ((ImApp) this.getApplication()).setAppTheme(this);
 
-        mHasBackground = setBackgroundImage (this);
+        mHasBackground = setBackgroundImage(this);
 
         super.onCreate(savedInstanceState);
     }
 
-    public static boolean setBackgroundImage (Activity activity)
+    public static boolean setBackgroundImage(Activity activity)
     {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(activity);
         boolean themeDark = settings.getBoolean("themeDark", false);
@@ -43,13 +45,17 @@ public class ThemeableActivity extends ActionBarActivity {
         {
 
             if (activity != null)
+            {
                 activity.setTheme(R.style.AppThemeDark);
+            }
         }
         else
         {
 
             if (activity != null)
+            {
                 activity.setTheme(R.style.AppTheme);
+            }
         }
 
 
@@ -59,7 +65,9 @@ public class ThemeableActivity extends ActionBarActivity {
 
             File fileThemeBg = new File(themebg);
             if (!fileThemeBg.exists())
+            {
                 return false;
+            }
 
             if (mThemeBg == null || (!mThemeBg.equals(themebg)))
             {
@@ -75,13 +83,15 @@ public class ThemeableActivity extends ActionBarActivity {
 
                 Bitmap b = BitmapFactory.decodeFile(themebg, options);
                 if (b == null)
+                {
                     return false;
+                }
 
-                float ratio = ((float)width)/((float)height);
+                float ratio = ((float) width) / ((float) height);
                 int bgHeight = b.getHeight();
-                int bgWidth = (int)(((float)b.getHeight()) * ratio);
+                int bgWidth = (int) (((float) b.getHeight()) * ratio);
 
-                b = Bitmap.createBitmap(b, 0, 0,Math.min(b.getWidth(),bgWidth),bgHeight);
+                b = Bitmap.createBitmap(b, 0, 0, Math.min(b.getWidth(), bgWidth), bgHeight);
 
                 mThemeDrawable = new BitmapDrawable(b);
 
@@ -91,28 +101,34 @@ public class ThemeableActivity extends ActionBarActivity {
             activity.getWindow().setBackgroundDrawable(mThemeDrawable);
             return true;
         }
-        
+
         return false;
 
     }
 
-    public static void setBackgroundImage (View view, Activity activity)
+    public static void setBackgroundImage(View view, Activity activity)
     {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(activity);
         boolean themeDark = settings.getBoolean("themeDark", false);
         String themebg = settings.getString("pref_background", "");
 
-        if(themeDark)
+        if (themeDark)
+        {
             view.setBackgroundColor(activity.getResources().getColor(R.color.background_dark));
+        }
         else
+        {
             view.setBackgroundColor(activity.getResources().getColor(R.color.background_light));
+        }
 
         if (themebg != null && themebg.length() > 0)
         {
 
             File fileThemeBg = new File(themebg);
             if (!fileThemeBg.exists())
+            {
                 return;
+            }
 
             if (mThemeBg == null || (!mThemeBg.equals(themebg)))
             {
@@ -128,13 +144,15 @@ public class ThemeableActivity extends ActionBarActivity {
 
                 Bitmap b = BitmapFactory.decodeFile(themebg, options);
                 if (b == null)
+                {
                     return;
+                }
 
-                float ratio = ((float)width)/((float)height);
+                float ratio = ((float) width) / ((float) height);
                 int bgHeight = b.getHeight();
-                int bgWidth = (int)(((float)b.getHeight()) * ratio);
+                int bgWidth = (int) (((float) b.getHeight()) * ratio);
 
-                b = Bitmap.createBitmap(b, 0, 0,Math.min(b.getWidth(),bgWidth),bgHeight);
+                b = Bitmap.createBitmap(b, 0, 0, Math.min(b.getWidth(), bgWidth), bgHeight);
 
                 mThemeDrawable = new BitmapDrawable(b);
                 mThemeDrawable.setAlpha(200);
@@ -146,8 +164,9 @@ public class ThemeableActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onResume() {
-        ((ImApp)this.getApplication()).setAppTheme(this);
+    protected void onResume()
+    {
+        ((ImApp) this.getApplication()).setAppTheme(this);
         super.onResume();
     }
 

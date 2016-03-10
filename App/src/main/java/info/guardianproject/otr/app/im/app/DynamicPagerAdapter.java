@@ -16,8 +16,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -29,11 +27,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 /**
  * Implementation of {@link android.support.v4.view.PagerAdapter} that
  * uses a {@link Fragment} to manage each page. This class also handles
  * saving and restoring of fragment's state.
- *
+ * <p/>
  * <p>This version of the pager is more useful when there are a large number
  * of pages, working more like a list view.  When pages are not visible to
  * the user, their entire fragment may be destroyed, only keeping the saved
@@ -41,31 +41,32 @@ import android.view.ViewGroup;
  * memory associated with each visited page as compared to
  * {@link FragmentPagerAdapter} at the cost of potentially more overhead when
  * switching between pages.
- *
+ * <p/>
  * <p>When using FragmentPagerAdapter the host ViewPager must have a
  * valid ID set.</p>
- *
+ * <p/>
  * <p>Subclasses only need to implement {@link #getItem(int)}
  * and {@link #getCount()} to have a working adapter.
- *
+ * <p/>
  * <p>Here is an example implementation of a pager containing fragments of
  * lists:
- *
+ * <p/>
  * {@sample development/samples/Support13Demos/src/com/example/android/supportv13/app/FragmentStatePagerSupport.java
- *      complete}
- *
+ * complete}
+ * <p/>
  * <p>The <code>R.layout.fragment_pager</code> resource of the top-level fragment is:
- *
+ * <p/>
  * {@sample development/samples/Support13Demos/res/layout/fragment_pager.xml
- *      complete}
- *
+ * complete}
+ * <p/>
  * <p>The <code>R.layout.fragment_pager_list</code> resource containing each
  * individual fragment's layout is:
- *
+ * <p/>
  * {@sample development/samples/Support13Demos/res/layout/fragment_pager_list.xml
- *      complete}
+ * complete}
  */
-public abstract class DynamicPagerAdapter extends PagerAdapter {
+public abstract class DynamicPagerAdapter extends PagerAdapter
+{
     private static final String TAG = "FragmentStatePagerAdapter";
     private static final boolean DEBUG = false;
 
@@ -76,7 +77,8 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
     private ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
     private Fragment mCurrentPrimaryItem = null;
 
-    public DynamicPagerAdapter(FragmentManager fm) {
+    public DynamicPagerAdapter(FragmentManager fm)
+    {
         mFragmentManager = fm;
     }
 
@@ -85,43 +87,58 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
      */
     public abstract Fragment getItem(int position);
 
-    public Fragment getItemAt(int position) {
+    public Fragment getItemAt(int position)
+    {
         if (position >= mFragments.size())
+        {
             return null;
+        }
         return mFragments.get(position);
     }
 
     @Override
-    public void startUpdate(ViewGroup container) {
+    public void startUpdate(ViewGroup container)
+    {
     }
 
     @Override
-    public void notifyDataSetChanged() {
+    public void notifyDataSetChanged()
+    {
         // Fragments may have moved.  Regenerate the fragment list.
         ArrayList<Fragment> old = mFragments;
         ArrayList<Fragment.SavedState> oldState = mSavedState;
         mFragments = new ArrayList<Fragment>();
         mSavedState = new ArrayList<Fragment.SavedState>();
-        for (int i = 0 ; i < old.size() ; i++) {
+        for (int i = 0; i < old.size(); i++)
+        {
             Fragment frag = old.get(i);
-            if (frag != null) {
+            if (frag != null)
+            {
                 int position = getItemPosition(frag);
                 if (position == POSITION_NONE)
+                {
                     continue;
+                }
                 if (position == POSITION_UNCHANGED)
+                {
                     position = i;
-                while (mFragments.size() <= position) {
+                }
+                while (mFragments.size() <= position)
+                {
                     mFragments.add(null);
                     mSavedState.add(null);
                 }
                 mFragments.set(position, frag);
                 if (oldState.size() > i)
+                {
                     mSavedState.set(position, oldState.get(i));
+                }
             }
         }
 
         // The list must never shrink because other methods depend on it
-        while (mFragments.size() < old.size()) {
+        while (mFragments.size() < old.size())
+        {
             mFragments.add(null);
             mSavedState.add(null);
         }
@@ -130,31 +147,41 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, int position)
+    {
         // If we already have this item instantiated, there is nothing
         // to do.  This can happen when we are restoring the entire pager
         // from its saved state, where the fragment manager has already
         // taken care of restoring the fragments we previously had instantiated.
-        if (mFragments.size() > position) {
+        if (mFragments.size() > position)
+        {
             Fragment f = mFragments.get(position);
-            if (f != null) {
+            if (f != null)
+            {
                 return f;
             }
         }
 
-        if (mCurTransaction == null) {
+        if (mCurTransaction == null)
+        {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
 
         Fragment fragment = getItem(position);
-        if (DEBUG) Log.v(TAG, "Adding item #" + position + ": f=" + fragment);
-        if (mSavedState.size() > position) {
+        if (DEBUG)
+        {
+            Log.v(TAG, "Adding item #" + position + ": f=" + fragment);
+        }
+        if (mSavedState.size() > position)
+        {
             Fragment.SavedState fss = mSavedState.get(position);
-            if (fss != null) {
+            if (fss != null)
+            {
                 fragment.setInitialSavedState(fss);
             }
         }
-        while (mFragments.size() <= position) {
+        while (mFragments.size() <= position)
+        {
             mFragments.add(null);
         }
 
@@ -167,23 +194,29 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int _position, Object object) {
-        Fragment fragment = (Fragment)object;
+    public void destroyItem(ViewGroup container, int _position, Object object)
+    {
+        Fragment fragment = (Fragment) object;
         // The supplied position is unreliable.  When an item is deleted, the pre-reorg position is supplied,
         // but when an item is scrolled off screen due to an insert, the post-reorg position is supplied.
         // Find the item ourselves.
         int position = mFragments.indexOf(fragment);
 
-        if (mCurTransaction == null) {
+        if (mCurTransaction == null)
+        {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
 
         // Fragment might already have been reorged out of the list
         if (position >= 0)
         {
-            if (DEBUG) Log.v(TAG, "Removing item #" + position + ": f=" + object
-                    + " v=" + ((Fragment)object).getView());
-            while (mSavedState.size() <= position) {
+            if (DEBUG)
+            {
+                Log.v(TAG, "Removing item #" + position + ": f=" + object
+                        + " v=" + ((Fragment) object).getView());
+            }
+            while (mSavedState.size() <= position)
+            {
                 mSavedState.add(null);
             }
             mSavedState.set(position, mFragmentManager.saveFragmentInstanceState(fragment));
@@ -192,21 +225,27 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
 
         // TODO do we need to unset the visible hint, etc.?
         if (mCurrentPrimaryItem == fragment)
+        {
             mCurrentPrimaryItem = null;
+        }
 
         mCurTransaction.remove(fragment);
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        Fragment fragment = (Fragment)object;
-        if (fragment != mCurrentPrimaryItem) {
-            if (mCurrentPrimaryItem != null) {
+    public void setPrimaryItem(ViewGroup container, int position, Object object)
+    {
+        Fragment fragment = (Fragment) object;
+        if (fragment != mCurrentPrimaryItem)
+        {
+            if (mCurrentPrimaryItem != null)
+            {
                 mCurrentPrimaryItem.setMenuVisibility(false);
                 mCurrentPrimaryItem.setUserVisibleHint(false);
             }
             mCurrentPrimaryItem = fragment;
-            if (fragment != null) {
+            if (fragment != null)
+            {
                 fragment.setMenuVisibility(true);
                 fragment.setUserVisibleHint(true);
             }
@@ -214,8 +253,10 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void finishUpdate(ViewGroup container) {
-        if (mCurTransaction != null) {
+    public void finishUpdate(ViewGroup container)
+    {
+        if (mCurTransaction != null)
+        {
             mCurTransaction.commitAllowingStateLoss();
             mCurTransaction = null;
             mFragmentManager.executePendingTransactions();
@@ -223,12 +264,14 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return ((Fragment)object).getView() == view;
+    public boolean isViewFromObject(View view, Object object)
+    {
+        return ((Fragment) object).getView() == view;
     }
 
     @Override
-    public Parcelable saveState() {
+    public Parcelable saveState()
+    {
         Bundle state = null;
 // FIXME don't save internal fragment state for now, until we figure out classloader issue
 //        if (mSavedState.size() > 0) {
@@ -237,10 +280,13 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
 //            mSavedState.toArray(fss);
 //            state.putParcelableArray("states", fss);
 //        }
-        for (int i=0; i<mFragments.size(); i++) {
+        for (int i = 0; i < mFragments.size(); i++)
+        {
             Fragment f = mFragments.get(i);
-            if (f != null) {
-                if (state == null) {
+            if (f != null)
+            {
+                if (state == null)
+                {
                     state = new Bundle();
                 }
                 String key = "f" + i;
@@ -251,30 +297,40 @@ public abstract class DynamicPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void restoreState(Parcelable state, ClassLoader loader) {
-        if (state != null) {
-            Bundle bundle = (Bundle)state;
+    public void restoreState(Parcelable state, ClassLoader loader)
+    {
+        if (state != null)
+        {
+            Bundle bundle = (Bundle) state;
             bundle.setClassLoader(loader);
             Parcelable[] fss = bundle.getParcelableArray("states");
             mSavedState.clear();
             mFragments.clear();
-            if (fss != null) {
-                for (int i=0; i<fss.length; i++) {
-                    mSavedState.add((Fragment.SavedState)fss[i]);
+            if (fss != null)
+            {
+                for (int i = 0; i < fss.length; i++)
+                {
+                    mSavedState.add((Fragment.SavedState) fss[i]);
                 }
             }
             Iterable<String> keys = bundle.keySet();
-            for (String key: keys) {
-                if (key.startsWith("f")) {
+            for (String key : keys)
+            {
+                if (key.startsWith("f"))
+                {
                     int index = Integer.parseInt(key.substring(1));
                     Fragment f = mFragmentManager.getFragment(bundle, key);
-                    if (f != null) {
-                        while (mFragments.size() <= index) {
+                    if (f != null)
+                    {
+                        while (mFragments.size() <= index)
+                        {
                             mFragments.add(null);
                         }
                         f.setMenuVisibility(false);
                         mFragments.set(index, f);
-                    } else {
+                    }
+                    else
+                    {
                         Log.w(TAG, "Bad fragment at key " + key);
                     }
                 }

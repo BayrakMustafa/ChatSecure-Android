@@ -16,49 +16,80 @@
  */
 package info.guardianproject.otr.app.im.plugin;
 
-/** Defines the configuration names for IMPS engine. */
-public interface ImpsConfigNames extends ImConfigNames {
+/**
+ * Defines the configuration names for IMPS engine.
+ */
+public interface ImpsConfigNames extends ImConfigNames
+{
 
-    /** The version of the protocol. */
+    /**
+     * The version of the protocol.
+     */
     public static final String VERSION = "imps.version";
 
-    /** The data channel banding. */
+    /**
+     * The data channel banding.
+     */
     public static final String DATA_CHANNEL = "imps.data-channel";
 
-    /** The data channel encoding. */
+    /**
+     * The data channel encoding.
+     */
     public static final String DATA_ENCODING = "imps.data-encoding";
 
-    /** The CIR channel banding. */
+    /**
+     * The CIR channel banding.
+     */
     public static final String CIR_CHANNEL = "imps.cir-channel";
 
-    /** The backup CIR channel used when the application is in background. */
+    /**
+     * The backup CIR channel used when the application is in background.
+     */
     public static final String BACKUP_CIR_CHANNEL = "imps.backup-cir-channel";
 
-    /** The host of the IMPS server. */
+    /**
+     * The host of the IMPS server.
+     */
     public static final String HOST = "imps.host";
 
-    /** The address for SMS binding. */
+    /**
+     * The address for SMS binding.
+     */
     public static final String SMS_ADDR = "imps.sms.addr";
 
-    /** The port number for SMS binding. */
+    /**
+     * The port number for SMS binding.
+     */
     public static final String SMS_PORT = "imps.sms.port";
 
-    /** The address for the SMS CIR channel. */
+    /**
+     * The address for the SMS CIR channel.
+     */
     public static final String SMS_CIR_ADDR = "imps.sms.cir.addr";
 
-    /** The port number for SMS CIR channel. */
+    /**
+     * The port number for SMS CIR channel.
+     */
     public static final String SMS_CIR_PORT = "imps.sms.cir.port";
 
-    /** The client ID. */
+    /**
+     * The client ID.
+     */
     public static final String CLIENT_ID = "imps.client-id";
 
-    /** The MSISDN of the client. */
+    /**
+     * The MSISDN of the client.
+     */
     public static final String MSISDN = "imps.msisdn";
 
-    /** Determines whether 4-way login is to be used. */
+    /**
+     * Determines whether 4-way login is to be used.
+     */
     public static final String SECURE_LOGIN = "imps.secure-login";
 
-    /** Determines whether to send authentication through sms or not. */
+    /**
+     * Determines whether to send authentication through sms or not.
+     */
     public static final String SMS_AUTH = "imps.sms-auth";
 
     /**
@@ -91,6 +122,8 @@ public interface ImpsConfigNames extends ImConfigNames {
      */
     public static final String CUSTOM_PASSWORD_DIGEST = "imps.custom-password-digest";
 
-    /** Determines whether the provider support user-defined presence text. */
+    /**
+     * Determines whether the provider support user-defined presence text.
+     */
     public static final String SUPPORT_USER_DEFINED_PRESENCE = "imps.support-user-defined-presence";
 }

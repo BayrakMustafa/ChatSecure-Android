@@ -17,19 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.OtrAndroidKeyManagerImpl;
-import info.guardianproject.otr.app.im.IContactList;
-import info.guardianproject.otr.app.im.IContactListManager;
-import info.guardianproject.otr.app.im.IImConnection;
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.engine.ImErrorInfo;
-import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
-import info.guardianproject.otr.app.im.provider.Imps;
-import info.guardianproject.util.XmppUriHelper;
-
-import java.util.List;
-import java.util.Map;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -60,11 +47,25 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class AddContactActivity extends ActionBarActivity {
+import java.util.List;
+import java.util.Map;
+
+import info.guardianproject.otr.OtrAndroidKeyManagerImpl;
+import info.guardianproject.otr.app.im.IContactList;
+import info.guardianproject.otr.app.im.IContactListManager;
+import info.guardianproject.otr.app.im.IImConnection;
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.engine.ImErrorInfo;
+import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
+import info.guardianproject.otr.app.im.provider.Imps;
+import info.guardianproject.util.XmppUriHelper;
+
+public class AddContactActivity extends ActionBarActivity
+{
     private static final String TAG = "AddContactActivity";
 
-    private static final String[] CONTACT_LIST_PROJECTION = { Imps.ContactList._ID,
-                                                             Imps.ContactList.NAME, };
+    private static final String[] CONTACT_LIST_PROJECTION = {Imps.ContactList._ID,
+            Imps.ContactList.NAME,};
     private static final int CONTACT_LIST_NAME_COLUMN = 1;
 
     private MultiAutoCompleteTextView mAddressList;
@@ -78,10 +79,11 @@ public class AddContactActivity extends ActionBarActivity {
     private long mProviderId, mAccountId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
-        mApp = (ImApp)getApplication();
+        mApp = (ImApp) getApplication();
         mApp.setAppTheme(this);
         mHandler = new SimpleAlertHandler(this);
 
@@ -116,37 +118,38 @@ public class AddContactActivity extends ActionBarActivity {
             addContactFromUri(intent.getData());
         }
     }
-    
-    
+
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         super.onDestroy();
-        
+
         if (mCursorProviders != null && (!mCursorProviders.isClosed()))
-                mCursorProviders.close();
-        
+        {
+            mCursorProviders.close();
+        }
+
     }
 
 
-
-    private void setupAccountSpinner ()
+    private void setupAccountSpinner()
     {
         final Uri uri = Imps.Provider.CONTENT_URI_WITH_ACCOUNT;
 
-        mCursorProviders = managedQuery(uri,  PROVIDER_PROJECTION,
-        Imps.Provider.CATEGORY + "=?" + " AND " + Imps.Provider.ACTIVE_ACCOUNT_USERNAME + " NOT NULL" /* selection */,
-        new String[] { ImApp.IMPS_CATEGORY } /* selection args */,
-        Imps.Provider.DEFAULT_SORT_ORDER);
-        
+        mCursorProviders = managedQuery(uri, PROVIDER_PROJECTION,
+                Imps.Provider.CATEGORY + "=?" + " AND " + Imps.Provider.ACTIVE_ACCOUNT_USERNAME + " NOT NULL" /* selection */,
+                new String[]{ImApp.IMPS_CATEGORY} /* selection args */,
+                Imps.Provider.DEFAULT_SORT_ORDER);
+
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_spinner_item, mCursorProviders, 
-                new String[] { 
-                       Imps.Provider.ACTIVE_ACCOUNT_USERNAME
-                       },
-                new int[] { android.R.id.text1 });
+                android.R.layout.simple_spinner_item, mCursorProviders,
+                new String[]{
+                        Imps.Provider.ACTIVE_ACCOUNT_USERNAME
+                },
+                new int[]{android.R.id.text1});
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        
+
         // TODO Something is causing the managedQuery() to return null, use null guard for now
         if (mCursorProviders != null && mCursorProviders.getCount() > 0)
         {
@@ -156,31 +159,39 @@ public class AddContactActivity extends ActionBarActivity {
         }
 
         mListSpinner.setAdapter(adapter);
-        mListSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        mListSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
-                    int arg2, long arg3) {
+                                       int arg2, long arg3)
+            {
                 if (mCursorProviders == null)
+                {
                     return;
+                }
                 mCursorProviders.moveToPosition(arg2);
                 mProviderId = mCursorProviders.getLong(PROVIDER_ID_COLUMN);
                 mAccountId = mCursorProviders.getLong(ACTIVE_ACCOUNT_ID_COLUMN);
-             }
+            }
 
             @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
+            public void onNothingSelected(AdapterView<?> arg0)
+            {
                 // TODO Auto-generated method stub
 
             }
         });
 
     }
-    
-    public class ProviderListItemFactory implements LayoutInflater.Factory {
+
+    public class ProviderListItemFactory implements LayoutInflater.Factory
+    {
         @Override
-        public View onCreateView(String name, Context context, AttributeSet attrs) {
-            if (name != null && name.equals(ProviderListItem.class.getName())) {
+        public View onCreateView(String name, Context context, AttributeSet attrs)
+        {
+            if (name != null && name.equals(ProviderListItem.class.getName()))
+            {
                 return new ProviderListItem(context, AddContactActivity.this, null);
             }
             return null;
@@ -188,25 +199,29 @@ public class AddContactActivity extends ActionBarActivity {
 
     }
 
-    private int searchInitListPos(Cursor c, String listName) {
-        if (TextUtils.isEmpty(listName)) {
+    private int searchInitListPos(Cursor c, String listName)
+    {
+        if (TextUtils.isEmpty(listName))
+        {
             return 0;
         }
         c.moveToPosition(-1);
-        while (c.moveToNext()) {
-            if (listName.equals(c.getString(CONTACT_LIST_NAME_COLUMN))) {
+        while (c.moveToNext())
+        {
+            if (listName.equals(c.getString(CONTACT_LIST_NAME_COLUMN)))
+            {
                 return c.getPosition();
             }
         }
         return 0;
     }
 
-    private String getDomain (long providerId)
+    private String getDomain(long providerId)
     {
         //mDefaultDomain = Imps.ProviderSettings.getStringValue(getContentResolver(), mProviderId,
-          //      ImpsConfigNames.DEFAULT_DOMAIN);
+        //      ImpsConfigNames.DEFAULT_DOMAIN);
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(providerId)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(providerId)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
                 pCursor, cr, providerId, false /* don't keep updated */, null /* no handler */);
@@ -219,30 +234,39 @@ public class AddContactActivity extends ActionBarActivity {
         return domain;
     }
 
-    void inviteBuddies() {
+    void inviteBuddies()
+    {
         Rfc822Token[] recipients = Rfc822Tokenizer.tokenize(mAddressList.getText());
-        try {
+        try
+        {
             IImConnection conn = mApp.getConnection(mProviderId);
             IContactList list = getContactList(conn);
-            if (list == null) {
-               // Log.e(ImApp.LOG_TAG, "<AddContactActivity> can't find given contact list:"
-                 //                    + getSelectedListName());
+            if (list == null)
+            {
+                // Log.e(ImApp.LOG_TAG, "<AddContactActivity> can't find given contact list:"
+                //                    + getSelectedListName());
                 finish();
-            } else {
+            }
+            else
+            {
                 boolean fail = false;
                 String username = null;
 
-                for (Rfc822Token recipient : recipients) {
+                for (Rfc822Token recipient : recipients)
+                {
                     username = recipient.getAddress();
-                    if (username.indexOf('@') == -1) {
+                    if (username.indexOf('@') == -1)
+                    {
                         username = username + "@" + getDomain(mProviderId);
                     }
-                    if (Log.isLoggable(ImApp.LOG_TAG, Log.DEBUG)) {
+                    if (Log.isLoggable(ImApp.LOG_TAG, Log.DEBUG))
+                    {
                         log("addContact:" + username);
                     }
-                    
+
                     int res = list.addContact(username);
-                    if (res != ImErrorInfo.NO_ERROR) {
+                    if (res != ImErrorInfo.NO_ERROR)
+                    {
                         fail = true;
                         mHandler.showAlert(R.string.error,
                                 ErrorResUtils.getErrorRes(getResources(), res, username));
@@ -250,11 +274,12 @@ public class AddContactActivity extends ActionBarActivity {
 
                 }
                 // close the screen if there's no error.
-                if (!fail) {
+                if (!fail)
+                {
 
                     if (username != null)
                     {
-                        Intent intent=new Intent();
+                        Intent intent = new Intent();
                         intent.putExtra(ContactsPickerActivity.EXTRA_RESULT_USERNAME, username);
                         intent.putExtra(ContactsPickerActivity.EXTRA_RESULT_PROVIDER, mProviderId);
                         setResult(RESULT_OK, intent);
@@ -264,53 +289,71 @@ public class AddContactActivity extends ActionBarActivity {
 
                 }
             }
-        } catch (RemoteException ex) {
+        }
+        catch (RemoteException ex)
+        {
             Log.e(ImApp.LOG_TAG, "<AddContactActivity> inviteBuddies: caught " + ex);
         }
     }
 
-    private IContactList getContactList(IImConnection conn) {
-        if (conn == null) {
+    private IContactList getContactList(IImConnection conn)
+    {
+        if (conn == null)
+        {
             return null;
         }
 
-        try {
+        try
+        {
             IContactListManager contactListMgr = conn.getContactListManager();
             String listName = "";//getSelectedListName();
 
-            if (!TextUtils.isEmpty(listName)) {
+            if (!TextUtils.isEmpty(listName))
+            {
                 return contactListMgr.getContactList(listName);
-            } else {
+            }
+            else
+            {
                 // Use the default list
                 List<IBinder> lists = contactListMgr.getContactLists();
-                for (IBinder binder : lists) {
+                for (IBinder binder : lists)
+                {
                     IContactList list = IContactList.Stub.asInterface(binder);
-                    if (list.isDefault()) {
+                    if (list.isDefault())
+                    {
                         return list;
                     }
                 }
                 // No default list, use the first one as default list
-                if (!lists.isEmpty()) {
+                if (!lists.isEmpty())
+                {
                     return IContactList.Stub.asInterface(lists.get(0));
                 }
                 return null;
             }
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
             // If the service has died, there is no list for now.
             return null;
         }
     }
 
     /**
-    private String getSelectedListName() {
-        Cursor c = (Cursor) mListSpinner.getSelectedItem();
-        return (c == null) ? null : c.getString(CONTACT_LIST_NAME_COLUMN);
-    }*/
+     * private String getSelectedListName() {
+     * Cursor c = (Cursor) mListSpinner.getSelectedItem();
+     * return (c == null) ? null : c.getString(CONTACT_LIST_NAME_COLUMN);
+     * }
+     */
 
-    private View.OnClickListener mButtonHandler = new View.OnClickListener() {
-        public void onClick(View v) {
-            mApp.callWhenServiceConnected(mHandler, new Runnable() {
-                public void run() {
+    private View.OnClickListener mButtonHandler = new View.OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            mApp.callWhenServiceConnected(mHandler, new Runnable()
+            {
+                public void run()
+                {
                     inviteBuddies();
                 }
             });
@@ -318,53 +361,68 @@ public class AddContactActivity extends ActionBarActivity {
     };
 
 
-    private View.OnClickListener mScanHandler = new View.OnClickListener() {
-        public void onClick(View v) {
+    private View.OnClickListener mScanHandler = new View.OnClickListener()
+    {
+        public void onClick(View v)
+        {
             new IntentIntegrator(AddContactActivity.this).initiateScan();
 
         }
     };
 
-    private TextWatcher mTextWatcher = new TextWatcher() {
-        public void afterTextChanged(Editable s) {
+    private TextWatcher mTextWatcher = new TextWatcher()
+    {
+        public void afterTextChanged(Editable s)
+        {
             mInviteButton.setEnabled(s.length() != 0);
         }
 
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after)
+        {
             // noop
         }
 
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {
             // noop
         }
     };
 
-    private static void log(String msg) {
+    private static void log(String msg)
+    {
         Log.d(ImApp.LOG_TAG, "<AddContactActivity> " + msg);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
-        if (resultCode == RESULT_OK) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent)
+    {
+        if (resultCode == RESULT_OK)
+        {
 
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
                     resultIntent);
-            if (scanResult != null) {
+            if (scanResult != null)
+            {
                 String qrContents = scanResult.getContents();
                 if (!TextUtils.isEmpty(qrContents))
+                {
                     addContactFromUri(Uri.parse(qrContents));
+                }
             }
         }
     }
 
     /**
      * Implement {@code xmpp:} URI parsing according to the RFC: http://tools.ietf.org/html/rfc5122
+     *
      * @param uri the URI to be parsed
      */
-    private void addContactFromUri(Uri uri) {
+    private void addContactFromUri(Uri uri)
+    {
         Log.i(TAG, "addContactFromUri: " + uri + "  scheme: " + uri.getScheme());
         Map<String, String> parsedUri = XmppUriHelper.parse(uri);
-        if (!parsedUri.containsKey(XmppUriHelper.KEY_ADDRESS)) {
+        if (!parsedUri.containsKey(XmppUriHelper.KEY_ADDRESS))
+        {
             Toast.makeText(this, "error parsing address: " + uri, Toast.LENGTH_LONG).show();
             return;
         }
@@ -374,26 +432,27 @@ public class AddContactActivity extends ActionBarActivity {
 
         //store this for future use... ideally the user comes up as verified the first time!
         String fingerprint = parsedUri.get(XmppUriHelper.KEY_OTR_FINGERPRINT);
-        if (!TextUtils.isEmpty(fingerprint)) {
+        if (!TextUtils.isEmpty(fingerprint))
+        {
             Log.i(TAG, "fingerprint: " + fingerprint);
             OtrAndroidKeyManagerImpl.getInstance(this).verifyUser(address, fingerprint);
         }
     }
 
     private static final String[] PROVIDER_PROJECTION = {
-                                                         Imps.Provider._ID,
-                                                         Imps.Provider.NAME,
-                                                         Imps.Provider.FULLNAME,
-                                                         Imps.Provider.CATEGORY,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_ID,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_USERNAME,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_PW,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_LOCKED,
-                                                         Imps.Provider.ACTIVE_ACCOUNT_KEEP_SIGNED_IN,
-                                                         Imps.Provider.ACCOUNT_PRESENCE_STATUS,
-                                                         Imps.Provider.ACCOUNT_CONNECTION_STATUS
-                                                         
-                                                        };
+            Imps.Provider._ID,
+            Imps.Provider.NAME,
+            Imps.Provider.FULLNAME,
+            Imps.Provider.CATEGORY,
+            Imps.Provider.ACTIVE_ACCOUNT_ID,
+            Imps.Provider.ACTIVE_ACCOUNT_USERNAME,
+            Imps.Provider.ACTIVE_ACCOUNT_PW,
+            Imps.Provider.ACTIVE_ACCOUNT_LOCKED,
+            Imps.Provider.ACTIVE_ACCOUNT_KEEP_SIGNED_IN,
+            Imps.Provider.ACCOUNT_PRESENCE_STATUS,
+            Imps.Provider.ACCOUNT_CONNECTION_STATUS
+
+    };
 
     static final int PROVIDER_ID_COLUMN = 0;
     static final int PROVIDER_NAME_COLUMN = 1;

@@ -1,13 +1,13 @@
 /**
  * Copyright (C) 2008 Esmertec AG. Copyright (C) 2008 The Android Open Source
  * Project
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,9 +16,6 @@
  */
 
 package info.guardianproject.otr.app.im.app;
-
-import info.guardianproject.otr.app.im.provider.Imps;
-import info.guardianproject.otr.app.im.service.ImServiceConstants;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -31,36 +28,45 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import info.guardianproject.otr.app.im.provider.Imps;
+import info.guardianproject.otr.app.im.service.ImServiceConstants;
+
 /** RingtonePreference subclass to save/restore ringtone value from ImProvider. */
-public class ImRingtonePreference extends RingtonePreference {
+public class ImRingtonePreference extends RingtonePreference
+{
     private long mProviderId;
 
-    public ImRingtonePreference(Context context, AttributeSet attrs) {
+    public ImRingtonePreference(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
         Intent intent = ((Activity) context).getIntent();
         mProviderId = intent.getLongExtra(ImServiceConstants.EXTRA_INTENT_PROVIDER_ID, -1);
-        if (mProviderId < 0) {
+        if (mProviderId < 0)
+        {
             Log.e(ImApp.LOG_TAG, "ImRingtonePreference intent requires provider id extra");
             throw new RuntimeException("ImRingtonePreference must be created with an provider id");
         }
     }
 
     @Override
-    protected Uri onRestoreRingtone() {
+    protected Uri onRestoreRingtone()
+    {
 
         ContentResolver cr = getContext().getContentResolver();
 
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
         final Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
-                pCursor,cr,  Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, false /* keep updated */, null /* no handler */);
+                pCursor, cr, Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, false /* keep updated */, null /* no handler */);
 
         String uri = settings.getRingtoneURI();
-        if (Log.isLoggable(ImApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ImApp.LOG_TAG, Log.VERBOSE))
+        {
             Log.v(ImApp.LOG_TAG, "onRestoreRingtone() finds uri=" + uri + " key=" + getKey());
         }
 
-        if (TextUtils.isEmpty(uri)) {
+        if (TextUtils.isEmpty(uri))
+        {
             return null;
         }
 
@@ -72,11 +78,12 @@ public class ImRingtonePreference extends RingtonePreference {
     }
 
     @Override
-    protected void onSaveRingtone(Uri ringtoneUri) {
+    protected void onSaveRingtone(Uri ringtoneUri)
+    {
 
         ContentResolver cr = getContext().getContentResolver();
 
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
 
         Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(
                 pCursor, cr, Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, false /* keep updated */, null /* no handler */);

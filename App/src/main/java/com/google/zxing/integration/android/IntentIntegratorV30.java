@@ -24,21 +24,24 @@ import android.content.Intent;
  *
  * @author Lachezar Dobrev
  */
-public final class IntentIntegratorV30 extends IntentIntegrator {
+public final class IntentIntegratorV30 extends IntentIntegrator
+{
 
-  private final Fragment fragment;
+    private final Fragment fragment;
 
-  /**
-   * @param fragment Fragment to handle activity response.
-   */
-  public IntentIntegratorV30(Fragment fragment) {
-    super(fragment.getActivity());
-    this.fragment = fragment;
-  }
+    /**
+     * @param fragment Fragment to handle activity response.
+     */
+    public IntentIntegratorV30(Fragment fragment)
+    {
+        super(fragment.getActivity());
+        this.fragment = fragment;
+    }
 
-  @Override
-  protected void startActivityForResult(Intent intent, int code) {
-    fragment.startActivityForResult(intent, code);
-  }
+    @Override
+    protected void startActivityForResult(Intent intent, int code)
+    {
+        fragment.startActivityForResult(intent, code);
+    }
 
 }

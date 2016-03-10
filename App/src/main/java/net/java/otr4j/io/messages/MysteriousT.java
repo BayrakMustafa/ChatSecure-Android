@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import javax.crypto.interfaces.DHPublicKey;
 
-public class MysteriousT {
+public class MysteriousT
+{
     // Fields.
     public int protocolVersion;
     public int messageType;
@@ -17,7 +18,8 @@ public class MysteriousT {
 
     // Ctor.
     public MysteriousT(int protocolVersion, int flags, int senderKeyID, int recipientKeyID,
-            DHPublicKey nextDH, byte[] ctr, byte[] encryptedMessage) {
+                       DHPublicKey nextDH, byte[] ctr, byte[] encryptedMessage)
+    {
 
         this.protocolVersion = protocolVersion;
         this.messageType = AbstractEncodedMessage.MESSAGE_DATA;
@@ -31,7 +33,8 @@ public class MysteriousT {
 
     // Methods.
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         // TODO: Needs work.
         final int prime = 31;
         int result = 1;
@@ -47,34 +50,61 @@ public class MysteriousT {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         // TODO: Needs work.
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         MysteriousT other = (MysteriousT) obj;
         if (!Arrays.equals(ctr, other.ctr))
+        {
             return false;
+        }
         if (!Arrays.equals(encryptedMessage, other.encryptedMessage))
+        {
             return false;
+        }
         if (flags != other.flags)
+        {
             return false;
+        }
         if (messageType != other.messageType)
+        {
             return false;
-        if (nextDH == null) {
+        }
+        if (nextDH == null)
+        {
             if (other.nextDH != null)
+            {
                 return false;
-        } else if (!nextDH.equals(other.nextDH))
+            }
+        }
+        else if (!nextDH.equals(other.nextDH))
+        {
             return false;
+        }
         if (protocolVersion != other.protocolVersion)
+        {
             return false;
+        }
         if (recipientKeyID != other.recipientKeyID)
+        {
             return false;
+        }
         if (senderKeyID != other.senderKeyID)
+        {
             return false;
+        }
         return true;
     }
 

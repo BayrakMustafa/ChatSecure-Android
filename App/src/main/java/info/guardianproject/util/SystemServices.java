@@ -3,14 +3,6 @@
  */
 package info.guardianproject.util;
 
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.app.ChatFileStore;
-
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -24,10 +16,16 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.app.ChatFileStore;
+
 /**
- *
  * @author liorsaar
- *
  */
 
 /*
@@ -40,10 +38,13 @@ import android.webkit.MimeTypeMap;
  * Uri uri = getIntent().getData() ;
  * SystemServices.Viewer.viewImage( context, uri ) ;
  */
-public class SystemServices {
-    static class Ntfcation {
-        public static void send(Context aContext, Uri aUri, Class<Activity> aTargetActivityClass) {
-            NotificationManager mNotificationManager = (NotificationManager)aContext.getSystemService(Context.NOTIFICATION_SERVICE);
+public class SystemServices
+{
+    static class Ntfcation
+    {
+        public static void send(Context aContext, Uri aUri, Class<Activity> aTargetActivityClass)
+        {
+            NotificationManager mNotificationManager = (NotificationManager) aContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
             int icon = R.drawable.ic_action_message;
             CharSequence tickerText = "Secured download completed!"; // TODO string
@@ -60,9 +61,11 @@ public class SystemServices {
         }
     }
 
-    public static class Scanner {
+    public static class Scanner
+    {
         // after writing the file to sd, invoke this to scan a single file without callback
-        public static Uri scan(Context aContext, String aPath) {
+        public static Uri scan(Context aContext, String aPath)
+        {
             File file = new File(aPath);
             Uri uri = Uri.fromFile(file);
             Intent scanFileIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
@@ -71,19 +74,23 @@ public class SystemServices {
         }
     }
 
-    public static class Viewer {
-        public static void viewImage(Context aContext, Uri aUri) {
+    public static class Viewer
+    {
+        public static void viewImage(Context aContext, Uri aUri)
+        {
             view(aContext, aUri, "image/*");
         }
 
-        public static void view(Context aContext, Uri aUri, String aMime) {
+        public static void view(Context aContext, Uri aUri, String aMime)
+        {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             intent.setDataAndType(aUri, aMime);
             aContext.startActivity(intent);
         }
 
-        public static Intent getViewIntent(Uri uri, String type) {
+        public static Intent getViewIntent(Uri uri, String type)
+        {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             intent.setDataAndType(uri, type);
@@ -91,56 +98,72 @@ public class SystemServices {
         }
     }
 
-    public static String sanitize(String path) {
-        try {
+    public static String sanitize(String path)
+    {
+        try
+        {
             return URLEncoder.encode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e)
+        {
             throw new RuntimeException(e);
         }
     }
 
-    public static class FileInfo {
+    public static class FileInfo
+    {
         public String path;
         public String type;
     }
-    
+
     public final static String MIME_TYPE_JPEG = "image/jpeg";
     public final static String MIME_TYPE_PNG = "image/png";
-    
+
     public static String getMimeType(String url)
     {
         String type = null;
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if (extension != null) {
+        if (extension != null)
+        {
             MimeTypeMap mime = MimeTypeMap.getSingleton();
-            type = mime.getMimeTypeFromExtension(extension);            
+            type = mime.getMimeTypeFromExtension(extension);
         }
-        
+
         if (type == null)
+        {
             if (url.endsWith("jpg"))
-                return MIME_TYPE_JPEG;        
+            {
+                return MIME_TYPE_JPEG;
+            }
             else if (url.endsWith("jpg"))
+            {
                 return MIME_TYPE_PNG;
-        
+            }
+        }
+
         return type;
     }
 
-    public static FileInfo getFileInfoFromURI(Context aContext, Uri uri) throws IllegalArgumentException {
+    public static FileInfo getFileInfoFromURI(Context aContext, Uri uri) throws IllegalArgumentException
+    {
         FileInfo info = new FileInfo();
         info.path = uri.toString();
-        
-        if (ChatFileStore.isVfsUri(uri)) {
+
+        if (ChatFileStore.isVfsUri(uri))
+        {
             info.path = uri.getPath();
             info.type = getMimeType(uri.toString());
             return info;
         }
-        if (uri.getScheme() != null && uri.getScheme().equals("file")) {
+        if (uri.getScheme() != null && uri.getScheme().equals("file"))
+        {
             info.path = uri.getPath();
             info.type = getMimeType(uri.toString());
             return info;
         }
 
-        if (uri.toString().startsWith("content://org.openintents.filemanager/")) {
+        if (uri.toString().startsWith("content://org.openintents.filemanager/"))
+        {
             // Work around URI escaping brokenness
             info.path = uri.toString().replaceFirst("content://org.openintents.filemanager", "");
             info.type = getMimeType(uri.toString());
@@ -197,17 +220,23 @@ public class SystemServices {
         }
 
         if (cursor != null)
+        {
             cursor.close();
+        }
 
         if (info.type == null)
+        {
             info.type = getMimeType(info.path);
+        }
 
         return info;
     }
 
-    public static FileInfo getContactAsVCardFile(Context context, Uri uri) {
+    public static FileInfo getContactAsVCardFile(Context context, Uri uri)
+    {
         AssetFileDescriptor fd;
-        try {
+        try
+        {
             fd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
             java.io.FileInputStream in = fd.createInputStream();
             byte[] buf = new byte[(int) fd.getDeclaredLength()];
@@ -222,7 +251,9 @@ public class SystemServices {
             info.path = ChatFileStore.vfsUri(targetPath).toString();
             info.type = "text/vcard";
             return info;
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
         return null;

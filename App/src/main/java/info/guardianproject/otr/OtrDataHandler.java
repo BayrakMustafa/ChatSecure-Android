@@ -1,31 +1,13 @@
 package info.guardianproject.otr;
 
-import info.guardianproject.iocipher.File;
-import info.guardianproject.iocipher.FileInputStream;
-import info.guardianproject.iocipher.RandomAccessFile;
-import info.guardianproject.otr.app.im.IDataListener;
-import info.guardianproject.otr.app.im.app.ImApp;
-import info.guardianproject.otr.app.im.app.ChatFileStore;
-import info.guardianproject.otr.app.im.engine.Address;
-import info.guardianproject.otr.app.im.engine.ChatSession;
-import info.guardianproject.otr.app.im.engine.DataHandler;
-import info.guardianproject.otr.app.im.engine.Message;
-import info.guardianproject.util.Debug;
-import info.guardianproject.util.LogCleaner;
-import info.guardianproject.util.SystemServices;
+import android.net.Uri;
+import android.os.RemoteException;
+import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import net.java.otr4j.session.SessionStatus;
 
@@ -59,22 +41,41 @@ import org.apache.http.message.LineParser;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
-import android.net.Uri;
-import android.os.RemoteException;
-import android.util.Log;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import info.guardianproject.iocipher.File;
+import info.guardianproject.iocipher.FileInputStream;
+import info.guardianproject.iocipher.RandomAccessFile;
+import info.guardianproject.otr.app.im.IDataListener;
+import info.guardianproject.otr.app.im.app.ChatFileStore;
+import info.guardianproject.otr.app.im.app.ImApp;
+import info.guardianproject.otr.app.im.engine.Address;
+import info.guardianproject.otr.app.im.engine.ChatSession;
+import info.guardianproject.otr.app.im.engine.DataHandler;
+import info.guardianproject.otr.app.im.engine.Message;
+import info.guardianproject.util.Debug;
+import info.guardianproject.util.LogCleaner;
+import info.guardianproject.util.SystemServices;
 
-public class OtrDataHandler implements DataHandler {
+public class OtrDataHandler implements DataHandler
+{
     public static final String URI_PREFIX_OTR_IN_BAND = "otr-in-band:/storage/";
     private static final int MAX_OUTSTANDING = 5;
 
-    private static final int MAX_CHUNK_LENGTH = 32768/2;
+    private static final int MAX_CHUNK_LENGTH = 32768 / 2;
 
-    private static final int MAX_TRANSFER_LENGTH = 1024*1024*64;
+    private static final int MAX_TRANSFER_LENGTH = 1024 * 1024 * 64;
 
     private static final byte[] EMPTY_BODY = new byte[0];
 
@@ -93,42 +94,54 @@ public class OtrDataHandler implements DataHandler {
     private IDataListener mDataListener;
     private SessionStatus mOtrStatus;
 
-    public OtrDataHandler(ChatSession chatSession) {
+    public OtrDataHandler(ChatSession chatSession)
+    {
         this.mChatSession = chatSession;
     }
 
-    public void setChatId(long chatId) {
+    public void setChatId(long chatId)
+    {
         this.mChatId = chatId;
     }
 
-    public void onOtrStatusChanged(SessionStatus status) {
+    public void onOtrStatusChanged(SessionStatus status)
+    {
         mOtrStatus = status;
-        if (status == SessionStatus.ENCRYPTED) {
+        if (status == SessionStatus.ENCRYPTED)
+        {
             retryRequests();
         }
     }
 
-    private void retryRequests() {
+    private void retryRequests()
+    {
         // Resend all unfilled requests
-        for (Request request: requestCache.asMap().values()) {
+        for (Request request : requestCache.asMap().values())
+        {
             if (!request.isSeen())
+            {
                 sendRequest(request);
+            }
         }
     }
 
-    public void setDataListener (IDataListener dataListener)
+    public void setDataListener(IDataListener dataListener)
     {
         mDataListener = dataListener;
     }
 
-    public static class MyHttpRequestFactory implements HttpRequestFactory {
-        public MyHttpRequestFactory() {
+    public static class MyHttpRequestFactory implements HttpRequestFactory
+    {
+        public MyHttpRequestFactory()
+        {
             super();
         }
 
         public HttpRequest newHttpRequest(final RequestLine requestline)
-                throws MethodNotSupportedException {
-            if (requestline == null) {
+                throws MethodNotSupportedException
+        {
+            if (requestline == null)
+            {
                 throw new IllegalArgumentException("Request line may not be null");
             }
             //String method = requestline.getMethod();
@@ -136,46 +149,60 @@ public class OtrDataHandler implements DataHandler {
         }
 
         public HttpRequest newHttpRequest(final String method, final String uri)
-                throws MethodNotSupportedException {
+                throws MethodNotSupportedException
+        {
             return new BasicHttpRequest(method, uri);
         }
     }
 
-    static class MemorySessionInputBuffer extends AbstractSessionInputBuffer {
-        public MemorySessionInputBuffer(byte[] value) {
+    static class MemorySessionInputBuffer extends AbstractSessionInputBuffer
+    {
+        public MemorySessionInputBuffer(byte[] value)
+        {
             init(new ByteArrayInputStream(value), 1000, params);
         }
 
         @Override
-        public boolean isDataAvailable(int timeout) throws IOException {
+        public boolean isDataAvailable(int timeout) throws IOException
+        {
             throw new UnsupportedOperationException();
         }
     }
 
-    static class MemorySessionOutputBuffer extends AbstractSessionOutputBuffer {
+    static class MemorySessionOutputBuffer extends AbstractSessionOutputBuffer
+    {
         ByteArrayOutputStream outputStream;
-        public MemorySessionOutputBuffer() {
+
+        public MemorySessionOutputBuffer()
+        {
             outputStream = new ByteArrayOutputStream(1000);
             init(outputStream, 1000, params);
         }
 
-        public byte[] getOutput() {
+        public byte[] getOutput()
+        {
             return outputStream.toByteArray();
         }
     }
 
-    public void onIncomingRequest(Address requestThem, Address requestUs, byte[] value) {
+    public void onIncomingRequest(Address requestThem, Address requestUs, byte[] value)
+    {
         //Log.e( TAG, "onIncomingRequest:" + requestThem);
 
         SessionInputBuffer inBuf = new MemorySessionInputBuffer(value);
         HttpRequestParser parser = new HttpRequestParser(inBuf, lineParser, requestFactory, params);
         HttpRequest req;
 
-        try {
-            req = (HttpRequest)parser.parse();
-        } catch (IOException e) {
+        try
+        {
+            req = (HttpRequest) parser.parse();
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException(e);
-        } catch (HttpException e) {
+        }
+        catch (HttpException e)
+        {
             e.printStackTrace();
             return;
         }
@@ -184,9 +211,11 @@ public class OtrDataHandler implements DataHandler {
         String uid = req.getFirstHeader("Request-Id").getValue();
         String url = req.getRequestLine().getUri();
 
-        if (requestMethod.equals("OFFER")) {
+        if (requestMethod.equals("OFFER"))
+        {
             debug("incoming OFFER " + url);
-            if (!url.startsWith(URI_PREFIX_OTR_IN_BAND)) {
+            if (!url.startsWith(URI_PREFIX_OTR_IN_BAND))
+            {
                 debug("Unknown url scheme " + url);
                 sendResponse(requestUs, 400, "Unknown scheme", uid, EMPTY_BODY);
                 return;
@@ -205,15 +234,19 @@ public class OtrDataHandler implements DataHandler {
             }
             String sum = req.getFirstHeader("File-Hash-SHA1").getValue();
             String type = null;
-            if (req.containsHeader("Mime-Type")) {
+            if (req.containsHeader("Mime-Type"))
+            {
                 type = req.getFirstHeader("Mime-Type").getValue();
             }
             debug("Incoming sha1sum " + sum);
 
             VfsTransfer transfer;
-            try {
+            try
+            {
                 transfer = new VfsTransfer(url, type, length, requestUs, sum);
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
                 return;
             }
@@ -226,27 +259,34 @@ public class OtrDataHandler implements DataHandler {
 
             if (mDataListener != null)
             {
-                try {
-                    mDataListener.onTransferRequested(url, requestThem.getAddress(),requestUs.getAddress(),transfer.url);
+                try
+                {
+                    mDataListener.onTransferRequested(url, requestThem.getAddress(), requestUs.getAddress(), transfer.url);
 
                     //callback is now async, via "acceptTransfer" method
-                 //   if (accept)
-                   //     transfer.perform();
+                    //   if (accept)
+                    //     transfer.perform();
 
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     LogCleaner.error(ImApp.LOG_TAG, "error approving OTRDATA transfer request", e);
                 }
 
             }
 
-        } else if (requestMethod.equals("GET") && url.startsWith(URI_PREFIX_OTR_IN_BAND)) {
+        }
+        else if (requestMethod.equals("GET") && url.startsWith(URI_PREFIX_OTR_IN_BAND))
+        {
             debug("incoming GET " + url);
             ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
             int reqEnd;
 
-            try {
+            try
+            {
                 Offer offer = offerCache.getIfPresent(url);
-                if (offer == null) {
+                if (offer == null)
+                {
                     sendResponse(requestUs, 400, "No such offer made", uid, EMPTY_BODY);
                     return;
                 }
@@ -274,7 +314,8 @@ public class OtrDataHandler implements DataHandler {
 
                 int start = Integer.parseInt(startEnd[0]);
                 int end = Integer.parseInt(startEnd[1]);
-                if (end - start + 1 > MAX_CHUNK_LENGTH) {
+                if (end - start + 1 > MAX_CHUNK_LENGTH)
+                {
                     sendResponse(requestUs, 400, "Range must be at most " + MAX_CHUNK_LENGTH, uid, EMPTY_BODY);
                     return;
                 }
@@ -287,30 +328,40 @@ public class OtrDataHandler implements DataHandler {
 
                 if (mDataListener != null)
                 {
-                    float percent = ((float)end) / ((float)fileGet.length());
+                    float percent = ((float) end) / ((float) fileGet.length());
 
                     mDataListener.onTransferProgress(true, offer.getId(), requestThem.getAddress(), offer.getUri(),
-                        percent);
+                            percent);
 
                     String mimeType = null;
                     if (req.getFirstHeader("Mime-Type") != null)
+                    {
                         mimeType = req.getFirstHeader("Mime-Type").getValue();
+                    }
                     mDataListener.onTransferComplete(true, offer.getId(), requestThem.getAddress(), offer.getUri(), mimeType, offer.getUri());
-                
+
                 }
 
-            } catch (UnsupportedEncodingException e) {
-            //    throw new RuntimeException(e);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                //    throw new RuntimeException(e);
                 sendResponse(requestUs, 400, "Unsupported encoding", uid, EMPTY_BODY);
                 return;
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 //throw new RuntimeException(e);
                 sendResponse(requestUs, 400, "IOException", uid, EMPTY_BODY);
                 return;
-            } catch (NumberFormatException e) {
+            }
+            catch (NumberFormatException e)
+            {
                 sendResponse(requestUs, 400, "Range is not numeric", uid, EMPTY_BODY);
                 return;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 sendResponse(requestUs, 500, "Unknown error", uid, EMPTY_BODY);
                 return;
             }
@@ -321,13 +372,15 @@ public class OtrDataHandler implements DataHandler {
             sendResponse(requestUs, 200, "OK", uid, body);
 
 
-        } else {
+        }
+        else
+        {
             debug("Unknown method / url " + requestMethod + " " + url);
             sendResponse(requestUs, 400, "OK", uid, EMPTY_BODY);
         }
     }
 
-    public void acceptTransfer (String url)
+    public void acceptTransfer(String url)
     {
         Transfer transfer = transferCache.getIfPresent(url);
         if (transfer != null)
@@ -339,9 +392,11 @@ public class OtrDataHandler implements DataHandler {
     }
 
     private static void readIntoByteBuffer(ByteArrayOutputStream byteBuffer, FileInputStream is, int start, int end)
-            throws IOException {
+            throws IOException
+    {
         //Log.e( TAG, "readIntoByteBuffer:" + (end-start));
-        if (start != is.skip(start)) {
+        if (start != is.skip(start))
+        {
             return;
         }
         int size = end - start + 1;
@@ -349,8 +404,10 @@ public class OtrDataHandler implements DataHandler {
         byte[] buffer = new byte[buffersize];
 
         int len = 0;
-        while((len = is.read(buffer)) != -1){
-            if (len > size) {
+        while ((len = is.read(buffer)) != -1)
+        {
+            if (len > size)
+            {
                 len = size;
             }
             byteBuffer.write(buffer, 0, len);
@@ -359,29 +416,37 @@ public class OtrDataHandler implements DataHandler {
     }
 
     private static void readIntoByteBuffer(ByteArrayOutputStream byteBuffer, SessionInputBuffer sib)
-            throws IOException {
+            throws IOException
+    {
         //Log.e( TAG, "readIntoByteBuffer:");
         int buffersize = 1024;
         byte[] buffer = new byte[buffersize];
 
         int len = 0;
-        while((len = sib.read(buffer)) != -1){
+        while ((len = sib.read(buffer)) != -1)
+        {
             byteBuffer.write(buffer, 0, len);
         }
     }
 
-    private void sendResponse(Address us, int code, String statusString, String uid, byte[] body) {
+    private void sendResponse(Address us, int code, String statusString, String uid, byte[] body)
+    {
         MemorySessionOutputBuffer outBuf = new MemorySessionOutputBuffer();
         HttpMessageWriter writer = new HttpResponseWriter(outBuf, lineFormatter, params);
         HttpMessage response = new BasicHttpResponse(new BasicStatusLine(PROTOCOL_VERSION, code, statusString));
         response.addHeader("Request-Id", uid);
-        try {
+        try
+        {
             writer.write(response);
             outBuf.write(body);
             outBuf.flush();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException(e);
-        } catch (HttpException e) {
+        }
+        catch (HttpException e)
+        {
             throw new RuntimeException(e);
         }
         byte[] data = outBuf.getOutput();
@@ -391,142 +456,177 @@ public class OtrDataHandler implements DataHandler {
         mChatSession.sendDataAsync(message, true, data);
     }
 
-    public void onIncomingResponse(Address from, Address to, byte[] value) {
+    public void onIncomingResponse(Address from, Address to, byte[] value)
+    {
         //Log.e( TAG, "onIncomingResponse:" + value.length);
         SessionInputBuffer buffer = new MemorySessionInputBuffer(value);
         HttpResponseParser parser = new HttpResponseParser(buffer, lineParser, responseFactory, params);
         HttpResponse res;
-        try {
+        try
+        {
             res = (HttpResponse) parser.parse();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException(e);
-        } catch (HttpException e) {
+        }
+        catch (HttpException e)
+        {
             e.printStackTrace();
             return;
         }
 
         String uid = res.getFirstHeader("Request-Id").getValue();
         Request request = requestCache.getIfPresent(uid);
-        if (request == null) {
+        if (request == null)
+        {
             debug("Unknown request ID " + uid);
             return;
         }
 
-        if (request.isSeen()) {
+        if (request.isSeen())
+        {
             debug("Already seen request ID " + uid);
             return;
         }
 
         request.seen();
         int statusCode = res.getStatusLine().getStatusCode();
-        if (statusCode != 200) {
+        if (statusCode != 200)
+        {
             debug("got status " + statusCode + ": " + res.getStatusLine().getReasonPhrase());
             // TODO handle error
             return;
         }
 
         // TODO handle success
-        try {
+        try
+        {
             ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
             readIntoByteBuffer(byteBuffer, buffer);
             debug("Received sha1 @" + request.start + " is " + sha1sum(byteBuffer.toByteArray()));
-            if (request.method.equals("GET")) {
+            if (request.method.equals("GET"))
+            {
                 VfsTransfer transfer = transferCache.getIfPresent(request.url);
-                if (transfer == null) {
+                if (transfer == null)
+                {
                     debug("Transfer expired for url " + request.url);
                     return;
                 }
                 transfer.chunkReceived(request, byteBuffer.toByteArray());
-                if (transfer.isDone()) {
+                if (transfer.isDone())
+                {
                     //Log.e( TAG, "onIncomingResponse: isDone");
                     debug("Transfer complete for " + request.url);
                     String filename = transfer.closeFile();
                     Uri vfsUri = ChatFileStore.vfsUri(filename);
-                    if (transfer.checkSum()) {
+                    if (transfer.checkSum())
+                    {
 
                         //Log.e( TAG, "onIncomingResponse: writing");
                         if (mDataListener != null)
+                        {
                             mDataListener.onTransferComplete(
                                     false,
                                     null,
-                                mChatSession.getParticipant().getAddress().getAddress(),
-                                transfer.url,
-                                transfer.type,
-                                vfsUri.toString());
-                    } else {
+                                    mChatSession.getParticipant().getAddress().getAddress(),
+                                    transfer.url,
+                                    transfer.type,
+                                    vfsUri.toString());
+                        }
+                    }
+                    else
+                    {
                         if (mDataListener != null)
+                        {
                             mDataListener.onTransferFailed(
                                     false,
                                     null,
-                                mChatSession.getParticipant().getAddress().getAddress(),
-                                transfer.url,
-                                "checksum");
-                        debug( "Wrong checksum for file");
+                                    mChatSession.getParticipant().getAddress().getAddress(),
+                                    transfer.url,
+                                    "checksum");
+                        }
+                        debug("Wrong checksum for file");
                     }
-                } else {
+                }
+                else
+                {
                     if (mDataListener != null)
+                    {
                         mDataListener.onTransferProgress(true, null, mChatSession.getParticipant().getAddress().getAddress(), transfer.url,
-                            ((float)transfer.chunksReceived) / transfer.chunks);
+                                ((float) transfer.chunksReceived) / transfer.chunks);
+                    }
                     transfer.perform();
                     debug("Progress " + transfer.chunksReceived + " / " + transfer.chunks);
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             debug("Could not read line from response");
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
             debug("Could not read remote exception");
         }
 
     }
 
-    private String getFilenameFromUrl(String url) {
+    private String getFilenameFromUrl(String url)
+    {
         String[] path = url.split("/");
         String sanitizedPath = SystemServices.sanitize(path[path.length - 1]);
         return sanitizedPath;
     }
 
     /**
-    private File writeDataToStorage (String url, byte[] data)
-    {
-        debug( "writeDataToStorage:" + url + " " + data.length);
-
-        String[] path = url.split("/");
-        String sanitizedPath = SystemServices.sanitize(path[path.length - 1]);
-
-        File fileDownloadsDir = new File(Environment.DIRECTORY_DOWNLOADS);
-        fileDownloadsDir.mkdirs();
-
-        info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(fileDownloadsDir, sanitizedPath);
-        debug( "writeDataToStorage:" + file.getAbsolutePath() );
-
-        try {
-            OutputStream output = (new info.guardianproject.iocipher.FileOutputStream(file));
-            output.write(data);
-            output.flush();
-            output.close();
-            return file;
-        } catch (IOException e) {
-            OtrDebugLogger.log("error writing file", e);
-            return null;
-        }
-    }*/
+     * private File writeDataToStorage (String url, byte[] data)
+     * {
+     * debug( "writeDataToStorage:" + url + " " + data.length);
+     * <p/>
+     * String[] path = url.split("/");
+     * String sanitizedPath = SystemServices.sanitize(path[path.length - 1]);
+     * <p/>
+     * File fileDownloadsDir = new File(Environment.DIRECTORY_DOWNLOADS);
+     * fileDownloadsDir.mkdirs();
+     * <p/>
+     * info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(fileDownloadsDir, sanitizedPath);
+     * debug( "writeDataToStorage:" + file.getAbsolutePath() );
+     * <p/>
+     * try {
+     * OutputStream output = (new info.guardianproject.iocipher.FileOutputStream(file));
+     * output.write(data);
+     * output.flush();
+     * output.close();
+     * return file;
+     * } catch (IOException e) {
+     * OtrDebugLogger.log("error writing file", e);
+     * return null;
+     * }
+     * }
+     */
 
     @Override
-    public void offerData(String id, Address us, String localUri, Map<String, String> headers) throws IOException {
-        
+    public void offerData(String id, Address us, String localUri, Map<String, String> headers) throws IOException
+    {
+
         // TODO stash localUri and intended recipient
-        
-        
+
+
         long length = new File(localUri).length();
-        if (length > MAX_TRANSFER_LENGTH) {
+        if (length > MAX_TRANSFER_LENGTH)
+        {
             throw new IOException("Length too large: " + length);
         }
         if (headers == null)
+        {
             headers = Maps.newHashMap();
+        }
         headers.put("File-Length", String.valueOf(length));
 
-        try {
-            
+        try
+        {
+
             FileInputStream is = new FileInputStream(localUri);
             headers.put("File-Hash-SHA1", sha1sum(is));
             is.close();
@@ -537,12 +637,15 @@ public class OtrDataHandler implements DataHandler {
             offerCache.put(url, new Offer(id, localUri, request));
             sendRequest(request);
 
-        } catch (IOException e) {
-            Log.e(ImApp.LOG_TAG,"error opening file",e);
+        }
+        catch (IOException e)
+        {
+            Log.e(ImApp.LOG_TAG, "error opening file", e);
         }
     }
 
-    public Request performGetData(Address us, String url, Map<String, String> headers, int start, int end) {
+    public Request performGetData(Address us, String url, Map<String, String> headers, int start, int end)
+    {
         String rangeSpec = "bytes=" + start + "-" + end;
         headers.put("Range", rangeSpec);
         Request request = new Request("GET", us, url, start, end, headers, EMPTY_BODY);
@@ -551,37 +654,45 @@ public class OtrDataHandler implements DataHandler {
         return request;
     }
 
-    static class Offer {
+    static class Offer
+    {
         private String mId;
         private String mUri;
         private Request request;
 
-        public Offer(String id, String uri, Request request) {
+        public Offer(String id, String uri, Request request)
+        {
             this.mId = id;
             this.mUri = uri;
             this.request = request;
         }
 
-        public String getUri() {
+        public String getUri()
+        {
             return mUri;
         }
 
-        public String getId() {
+        public String getId()
+        {
             return mId;
         }
 
-        public Request getRequest() {
+        public Request getRequest()
+        {
             return request;
         }
 
-        public void seen() {
+        public void seen()
+        {
             request.seen();
         }
     }
 
-    static class Request {
+    static class Request
+    {
 
-        public Request(String method, Address us, String url, int start, int end, Map<String, String> headers, byte[] body) {
+        public Request(String method, Address us, String url, int start, int end, Map<String, String> headers, byte[] body)
+        {
             this.method = method;
             this.url = url;
             this.start = start;
@@ -591,7 +702,8 @@ public class OtrDataHandler implements DataHandler {
             this.body = body;
         }
 
-        public Request(String method, Address us, String url, Map<String, String> headers) {
+        public Request(String method, Address us, String url, Map<String, String> headers)
+        {
             this(method, us, url, -1, -1, headers, null);
         }
 
@@ -605,16 +717,19 @@ public class OtrDataHandler implements DataHandler {
         public Map<String, String> headers;
         public byte[] body;
 
-        public boolean isSeen() {
+        public boolean isSeen()
+        {
             return seen;
         }
 
-        public void seen() {
+        public void seen()
+        {
             seen = true;
         }
     }
 
-    public class Transfer {
+    public class Transfer
+    {
         public final String TAG = Transfer.class.getSimpleName();
         public String url;
         public String type;
@@ -627,7 +742,8 @@ public class OtrDataHandler implements DataHandler {
         private byte[] buffer;
         protected String sum;
 
-        public Transfer(String url, String type, int length, Address us, String sum) {
+        public Transfer(String url, String type, int length, Address us, String sum)
+        {
             this.url = url;
             this.type = type;
             this.length = length;
@@ -636,7 +752,8 @@ public class OtrDataHandler implements DataHandler {
 
             //Log.e(TAG, "url:"+url + " type:"+ type + " length:"+length) ;
 
-            if (length > MAX_TRANSFER_LENGTH || length <= 0) {
+            if (length > MAX_TRANSFER_LENGTH || length <= 0)
+            {
                 throw new RuntimeException("Invalid transfer size " + length);
             }
             chunks = ((length - 1) / MAX_CHUNK_LENGTH) + 1;
@@ -644,118 +761,149 @@ public class OtrDataHandler implements DataHandler {
             outstanding = Sets.newHashSet();
         }
 
-        public boolean checkSum() {
+        public boolean checkSum()
+        {
             return sum.equals(sha1sum(buffer));
         }
 
-        public boolean perform() {
+        public boolean perform()
+        {
             // TODO global throttle rather than this local hack
-            while (outstanding.size() < MAX_OUTSTANDING) {
+            while (outstanding.size() < MAX_OUTSTANDING)
+            {
                 if (current >= length)
+                {
                     return false;
+                }
                 int end = current + MAX_CHUNK_LENGTH - 1;
-                if (end >= length) {
+                if (end >= length)
+                {
                     end = length - 1;
                 }
                 Map<String, String> headers = Maps.newHashMap();
-                Request request= performGetData(us, url, headers, current, end);
+                Request request = performGetData(us, url, headers, current, end);
                 outstanding.add(request);
                 current = end + 1;
             }
             return true;
         }
 
-        public boolean isDone() {
+        public boolean isDone()
+        {
             //Log.e( TAG, "isDone:" + chunksReceived + " " + chunks);
             return chunksReceived == chunks;
         }
 
-        public void chunkReceived(Request request, byte[] bs) {
+        public void chunkReceived(Request request, byte[] bs)
+        {
             //Log.e( TAG, "chunkReceived:" + bs.length);
             chunksReceived++;
             System.arraycopy(bs, 0, buffer, request.start, bs.length);
             outstanding.remove(request);
         }
 
-        public String getSum() {
+        public String getSum()
+        {
             return sum;
         }
     }
 
-    public class VfsTransfer extends Transfer {
+    public class VfsTransfer extends Transfer
+    {
         String localFilename;
         private RandomAccessFile raf;
 
-        public VfsTransfer(String url, String type, int length, Address us, String sum) throws FileNotFoundException {
+        public VfsTransfer(String url, String type, int length, Address us, String sum) throws FileNotFoundException
+        {
             super(url, type, length, us, sum);
         }
 
         @Override
-        public void chunkReceived(Request request, byte[] bs) {
-            debug( "chunkReceived: start: :" + request.start + " length " + bs.length) ;
+        public void chunkReceived(Request request, byte[] bs)
+        {
+            debug("chunkReceived: start: :" + request.start + " length " + bs.length);
             chunksReceived++;
-            try {
-                raf.seek( request.start );
-                raf.write(bs) ;
-            } catch (IOException e) {
+            try
+            {
+                raf.seek(request.start);
+                raf.write(bs);
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
             }
             outstanding.remove(request);
         }
 
         @Override
-        public boolean checkSum() {
-            try {
+        public boolean checkSum()
+        {
+            try
+            {
                 File file = new File(localFilename);
-                return sum.equals( checkSum(file.getAbsolutePath()) );
-            } catch (IOException e) {
+                return sum.equals(checkSum(file.getAbsolutePath()));
+            }
+            catch (IOException e)
+            {
                 debug("checksum IOException");
                 return false;
             }
         }
 
         @Override
-        public boolean perform() {
+        public boolean perform()
+        {
             boolean result = super.perform();
-            try {
-                if (raf == null) {
+            try
+            {
+                if (raf == null)
+                {
                     raf = openFile(url);
                 }
-            } catch (FileNotFoundException e) {
+            }
+            catch (FileNotFoundException e)
+            {
                 e.printStackTrace();
                 return false;
             }
             return result;
         }
 
-        private RandomAccessFile openFile(String url) throws FileNotFoundException {
-            debug( "openFile: url " + url) ;
-            String sessionId = ""+ mChatId;
+        private RandomAccessFile openFile(String url) throws FileNotFoundException
+        {
+            debug("openFile: url " + url);
+            String sessionId = "" + mChatId;
             String filename = getFilenameFromUrl(url);
-            localFilename = ChatFileStore.getDownloadFilename( sessionId, filename );
-            debug( "openFile: localFilename " + localFilename) ;
+            localFilename = ChatFileStore.getDownloadFilename(sessionId, filename);
+            debug("openFile: localFilename " + localFilename);
             info.guardianproject.iocipher.RandomAccessFile ras = new info.guardianproject.iocipher.RandomAccessFile(localFilename, "rw");
             return ras;
         }
 
-        public String closeFile() throws IOException {
+        public String closeFile() throws IOException
+        {
             //Log.e(TAG, "closeFile") ;
             raf.close();
             File file = new File(localFilename);
             String newPath = file.getCanonicalPath();
-            if(true) return newPath;
+            if (true)
+            {
+                return newPath;
+            }
 
-            newPath = newPath.substring(0,newPath.length()-4); // remove the .tmp
+            newPath = newPath.substring(0, newPath.length() - 4); // remove the .tmp
             //Log.e(TAG, "vfsCloseFile: rename " + newPath) ;
             File newPathFile = new File(newPath);
             boolean success = file.renameTo(newPathFile);
-            if (!success) {
-                throw new IOException("Rename error " + newPath );
+            if (!success)
+            {
+                throw new IOException("Rename error " + newPath);
             }
             return newPath;
         }
 
-        private String checkSum(String filename) throws IOException {
+        private String checkSum(String filename) throws IOException
+        {
             FileInputStream fis = new FileInputStream(new File(filename));
             String sum = sha1sum(fis);
             fis.close();
@@ -767,87 +915,113 @@ public class OtrDataHandler implements DataHandler {
     Cache<String, Request> requestCache = CacheBuilder.newBuilder().maximumSize(100).build();
     Cache<String, VfsTransfer> transferCache = CacheBuilder.newBuilder().maximumSize(100).build();
 
-    private void sendRequest(Request request) {
+    private void sendRequest(Request request)
+    {
         MemorySessionOutputBuffer outBuf = new MemorySessionOutputBuffer();
         HttpMessageWriter writer = new HttpRequestWriter(outBuf, lineFormatter, params);
         HttpMessage req = new BasicHttpRequest(request.method, request.url, PROTOCOL_VERSION);
         String uid = UUID.randomUUID().toString();
         req.addHeader("Request-Id", uid);
-        if (request.headers != null) {
-            for (Entry<String, String> entry : request.headers.entrySet()) {
+        if (request.headers != null)
+        {
+            for (Entry<String, String> entry : request.headers.entrySet())
+            {
                 req.addHeader(entry.getKey(), entry.getValue());
             }
         }
 
-        try {
+        try
+        {
             writer.write(req);
             outBuf.write(request.body);
             outBuf.flush();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException(e);
-        } catch (HttpException e) {
+        }
+        catch (HttpException e)
+        {
             throw new RuntimeException(e);
         }
         byte[] data = outBuf.getOutput();
         Message message = new Message("");
         message.setFrom(request.us);
         if (req.containsHeader("Range"))
+        {
             debug("send request " + request.method + " " + request.url + " " + req.getFirstHeader("Range"));
+        }
         else
+        {
             debug("send request " + request.method + " " + request.url);
+        }
         requestCache.put(uid, request);
         mChatSession.sendDataAsync(message, false, data);
     }
 
-    private static String hexChr(int b) {
+    private static String hexChr(int b)
+    {
         return Integer.toHexString(b & 0xF);
     }
 
-    private static String toHex(int b) {
+    private static String toHex(int b)
+    {
         return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
     }
 
-    private String sha1sum(byte[] bytes) {
+    private String sha1sum(byte[] bytes)
+    {
         MessageDigest digest;
-        try {
+        try
+        {
             digest = MessageDigest.getInstance("SHA1");
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             throw new RuntimeException(e);
         }
         digest.update(bytes, 0, bytes.length);
         byte[] sha1sum = digest.digest();
         String display = "";
-        for(byte b : sha1sum)
+        for (byte b : sha1sum)
+        {
             display += toHex(b);
+        }
         return display;
     }
 
-    private String sha1sum(java.io.InputStream is) {
+    private String sha1sum(java.io.InputStream is)
+    {
         MessageDigest digest;
-        try {
+        try
+        {
             digest = MessageDigest.getInstance("SHA1");
 
             DigestInputStream dig = new DigestInputStream(is, digest);
-            IOUtils.copy( dig, new NullOutputStream() );
+            IOUtils.copy(dig, new NullOutputStream());
 
             byte[] sha1sum = digest.digest();
             String display = "";
-            for(byte b : sha1sum)
+            for (byte b : sha1sum)
+            {
                 display += toHex(b);
+            }
             return display;
         }
         catch (Exception npe)
         {
-            Log.e(ImApp.LOG_TAG,"unable to hash file",npe);
+            Log.e(ImApp.LOG_TAG, "unable to hash file", npe);
             return null;
         }
 
     }
 
 
-    private void debug (String msg)
+    private void debug(String msg)
     {
         if (Debug.DEBUG_ENABLED)
-            Log.d(ImApp.LOG_TAG,msg);
+        {
+            Log.d(ImApp.LOG_TAG, msg);
+        }
     }
 }

@@ -5,7 +5,10 @@
  */
 package net.java.otr4j.session;
 
-/** @author George Politis */
-public enum SessionStatus {
+/**
+ * @author George Politis
+ */
+public enum SessionStatus
+{
     PLAINTEXT, ENCRYPTED, FINISHED
 }

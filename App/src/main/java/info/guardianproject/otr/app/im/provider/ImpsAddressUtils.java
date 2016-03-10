@@ -16,10 +16,13 @@
  */
 package info.guardianproject.otr.app.im.provider;
 
-public class ImpsAddressUtils {
+public class ImpsAddressUtils
+{
 
-    public static String getDisplayableAddress(String impsAddress) {
-        if (impsAddress.startsWith("wv:")) {
+    public static String getDisplayableAddress(String impsAddress)
+    {
+        if (impsAddress.startsWith("wv:"))
+        {
             return impsAddress.substring(3);
         }
         return impsAddress;

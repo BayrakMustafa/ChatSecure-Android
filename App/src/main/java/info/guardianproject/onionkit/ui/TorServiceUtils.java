@@ -3,6 +3,8 @@
 
 package info.guardianproject.onionkit.ui;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +13,8 @@ import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
-import android.util.Log;
-
-public class TorServiceUtils {
+public class TorServiceUtils
+{
 
     private final static String TAG = "TorUtils";
     // various console cmds
@@ -30,48 +31,62 @@ public class TorServiceUtils {
 
         StringBuilder log = new StringBuilder();
 
-        try {
+        try
+        {
 
             // Check if Superuser.apk exists
             File fileSU = new File("/system/app/Superuser.apk");
             if (fileSU.exists())
+            {
                 return true;
+            }
 
             fileSU = new File("/system/app/superuser.apk");
             if (fileSU.exists())
+            {
                 return true;
+            }
 
             fileSU = new File("/system/bin/su");
             if (fileSU.exists())
             {
                 String[] cmd = {
-                    "su"
+                        "su"
                 };
                 int exitCode = TorServiceUtils.doShellCommand(cmd, log, false, true);
                 if (exitCode != 0)
+                {
                     return false;
+                }
                 else
+                {
                     return true;
+                }
             }
 
             // Check for 'su' binary
             String[] cmd = {
-                "which su"
+                    "which su"
             };
             int exitCode = TorServiceUtils.doShellCommand(cmd, log, false, true);
 
-            if (exitCode == 0) {
+            if (exitCode == 0)
+            {
                 Log.d(TAG, "root exists, but not sure about permissions");
                 return true;
 
             }
 
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             // this means that there is no root to be had (normally) so we won't
             // log anything
             Log.e(TAG, "Error checking for root access", e);
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             Log.e(TAG, "Error checking for root access", e);
             // this means that there is no root to be had (normally)
         }
@@ -90,13 +105,17 @@ public class TorServiceUtils {
             procId = findProcessIdWithPidOf(command);
 
             if (procId == -1)
+            {
                 procId = findProcessIdWithPS(command);
-        } catch (Exception e)
+            }
+        }
+        catch (Exception e)
         {
             try
             {
                 procId = findProcessIdWithPS(command);
-            } catch (Exception e2)
+            }
+            catch (Exception e2)
             {
                 Log.e(TAG, "Unable to get proc id for command: " + URLEncoder.encode(command), e2);
             }
@@ -117,7 +136,7 @@ public class TorServiceUtils {
 
         String baseName = new File(command).getName();
         // fix contributed my mikos on 2010.12.10
-        procPs = r.exec(new String[] {
+        procPs = r.exec(new String[]{
                 SHELL_CMD_PIDOF, baseName
         });
         // procPs = r.exec(SHELL_CMD_PIDOF);
@@ -133,7 +152,8 @@ public class TorServiceUtils {
                 // this line should just be the process id
                 procId = Integer.parseInt(line.trim());
                 break;
-            } catch (NumberFormatException e)
+            }
+            catch (NumberFormatException e)
             {
                 Log.e("TorServiceUtils", "unable to parse process pid: " + line, e);
             }
@@ -177,16 +197,20 @@ public class TorServiceUtils {
     }
 
     public static int doShellCommand(String[] cmds, StringBuilder log, boolean runAsRoot,
-            boolean waitFor) throws Exception
+                                     boolean waitFor) throws Exception
     {
 
         Process proc = null;
         int exitCode = -1;
 
         if (runAsRoot)
+        {
             proc = Runtime.getRuntime().exec("su");
+        }
         else
+        {
             proc = Runtime.getRuntime().exec("sh");
+        }
 
         OutputStreamWriter out = new OutputStreamWriter(proc.getOutputStream());
 
@@ -211,17 +235,23 @@ public class TorServiceUtils {
             // Consume the "stdout"
             InputStreamReader reader = new InputStreamReader(proc.getInputStream());
             int read = 0;
-            while ((read = reader.read(buf)) != -1) {
+            while ((read = reader.read(buf)) != -1)
+            {
                 if (log != null)
+                {
                     log.append(buf, 0, read);
+                }
             }
 
             // Consume the "stderr"
             reader = new InputStreamReader(proc.getErrorStream());
             read = 0;
-            while ((read = reader.read(buf)) != -1) {
+            while ((read = reader.read(buf)) != -1)
+            {
                 if (log != null)
+                {
                     log.append(buf, 0, read);
+                }
             }
 
             exitCode = proc.waitFor();

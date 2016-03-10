@@ -5,8 +5,11 @@
  */
 package net.java.otr4j.io;
 
-/** @author George Politis */
-public interface SerializationConstants {
+/**
+ * @author George Politis
+ */
+public interface SerializationConstants
+{
 
     public static final String HEAD = "?OTR";
     public static final char HEAD_ENCODED = ':';

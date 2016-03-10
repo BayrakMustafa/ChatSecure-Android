@@ -16,30 +16,36 @@
  */
 package info.guardianproject.otr.app.im.plugin.xmpp;
 
-import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
-import info.guardianproject.otr.app.im.plugin.ImConfigNames;
-import info.guardianproject.otr.app.im.plugin.ImPlugin;
-import info.guardianproject.otr.app.im.plugin.ImpsConfigNames;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
+import info.guardianproject.otr.app.im.plugin.ImConfigNames;
+import info.guardianproject.otr.app.im.plugin.ImPlugin;
+import info.guardianproject.otr.app.im.plugin.ImpsConfigNames;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-
-/** Simple example of writing a plug-in for the IM application. */
-public class LLXmppImPlugin extends Service implements ImPlugin {
+/**
+ * Simple example of writing a plug-in for the IM application.
+ */
+public class LLXmppImPlugin extends Service implements ImPlugin
+{
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent)
+    {
         return null;
     }
 
-    /** The implementation of IImPlugin defined through AIDL. */
-    public Map getProviderConfig() {
+    /**
+     * The implementation of IImPlugin defined through AIDL.
+     */
+    public Map getProviderConfig()
+    {
         HashMap<String, String> config = new HashMap<String, String>();
         // The protocol name MUST be IMPS now.
         config.put(ImConfigNames.PROTOCOL_NAME, "LLXMPP");
@@ -51,7 +57,8 @@ public class LLXmppImPlugin extends Service implements ImPlugin {
         return config;
     }
 
-    public Map getResourceMap() {
+    public Map getResourceMap()
+    {
         HashMap<Integer, Integer> resMapping = new HashMap<Integer, Integer>();
 
         resMapping.put(BrandingResourceIDs.STRING_MENU_VIEW_PROFILE,

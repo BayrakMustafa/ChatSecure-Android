@@ -17,26 +17,29 @@
 
 package info.guardianproject.otr.app.im.engine;
 
-import info.guardianproject.otr.app.im.ISubscriptionListener;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import info.guardianproject.otr.app.im.ISubscriptionListener;
+
 /**
  * ContactListManager manages the creating, removing and retrieving contact
  * lists.
  */
-public abstract class ContactListManager {
+public abstract class ContactListManager
+{
     /**
      * ContactListManager state that indicates the contact list(s) has not been
      * loaded.
      */
     public static final int LISTS_NOT_LOADED = 0;
 
-    /** ContactListManager state that indicates the contact list(s) is loading. */
+    /**
+     * ContactListManager state that indicates the contact list(s) is loading.
+     */
     public static final int LISTS_LOADING = 1;
 
     /**
@@ -76,7 +79,8 @@ public abstract class ContactListManager {
      *
      * @param conn The underlying protocol connection.
      */
-    protected ContactListManager() {
+    protected ContactListManager()
+    {
         mContactLists = new Vector<ContactList>();
         mContactListListeners = new CopyOnWriteArrayList<ContactListListener>();
         mBlockedList = new Vector<Contact>();
@@ -92,8 +96,10 @@ public abstract class ContactListManager {
      *
      * @param state the new state
      */
-    protected synchronized void setState(int state) {
-        if (state < LISTS_NOT_LOADED || state > LISTS_LOADED) {
+    protected synchronized void setState(int state)
+    {
+        if (state < LISTS_NOT_LOADED || state > LISTS_LOADED)
+        {
             throw new IllegalArgumentException();
         }
 
@@ -105,7 +111,8 @@ public abstract class ContactListManager {
      *
      * @return the current state of the manager
      */
-    public synchronized int getState() {
+    public synchronized int getState()
+    {
         return mState;
     }
 
@@ -115,8 +122,10 @@ public abstract class ContactListManager {
      *
      * @param listener the listener to add.
      */
-    public synchronized void addContactListListener(ContactListListener listener) {
-        if ((listener != null) && !mContactListListeners.contains(listener)) {
+    public synchronized void addContactListListener(ContactListListener listener)
+    {
+        if ((listener != null) && !mContactListListeners.contains(listener))
+        {
             mContactListListeners.add(listener);
         }
     }
@@ -126,7 +135,8 @@ public abstract class ContactListManager {
      *
      * @param listener the listener to remove.
      */
-    public synchronized void removeContactListListener(ContactListListener listener) {
+    public synchronized void removeContactListListener(ContactListListener listener)
+    {
         mContactListListeners.remove(listener);
     }
 
@@ -136,11 +146,13 @@ public abstract class ContactListManager {
      *
      * @param listener the ContactInvitationListener.
      */
-    public synchronized void setSubscriptionRequestListener(ISubscriptionListener listener) {
+    public synchronized void setSubscriptionRequestListener(ISubscriptionListener listener)
+    {
         mSubscriptionRequestListener = listener;
     }
 
-    public synchronized ISubscriptionListener getSubscriptionRequestListener() {
+    public synchronized ISubscriptionListener getSubscriptionRequestListener()
+    {
         return mSubscriptionRequestListener;
     }
 
@@ -149,7 +161,8 @@ public abstract class ContactListManager {
      *
      * @return a collection of the contact lists.
      */
-    public Collection<ContactList> getContactLists() {
+    public Collection<ContactList> getContactLists()
+    {
         return Collections.unmodifiableCollection(mContactLists);
     }
 
@@ -159,15 +172,18 @@ public abstract class ContactListManager {
      * @param address the address of the Contact.
      * @return the Contact or null if the Contact doesn't exist in any list.
      */
-    public Contact getContact(Address address) {
+    public Contact getContact(Address address)
+    {
         return getContact(address.getAddress());
     }
 
-    public Contact getContact(String address) {
-        for (int i = 0; i < mContactLists.size(); i++)       
+    public Contact getContact(String address)
+    {
+        for (int i = 0; i < mContactLists.size(); i++)
         {
             Contact c = mContactLists.get(i).getContact(normalizeAddress(address));
-            if (c != null) {
+            if (c != null)
+            {
                 return c;
             }
         }
@@ -190,11 +206,14 @@ public abstract class ContactListManager {
      *
      * @param contact the specified contact
      * @return true if the contact is contained in the lists of the manager,
-     *         otherwise, return false
+     * otherwise, return false
      */
-    public boolean containsContact(Contact contact) {
-        for (ContactList list : mContactLists) {
-            if (list.containsContact(contact)) {
+    public boolean containsContact(Contact contact)
+    {
+        for (ContactList list : mContactLists)
+        {
+            if (list.containsContact(contact))
+            {
                 return true;
             }
         }
@@ -208,9 +227,12 @@ public abstract class ContactListManager {
      * @param name the name of the contact list.
      * @return the ContactList or null if the contact list doesn't exist.
      */
-    public ContactList getContactList(String name) {
-        for (ContactList list : mContactLists) {
-            if (list.getName() != null && list.getName().equals(name)) {
+    public ContactList getContactList(String name)
+    {
+        for (ContactList list : mContactLists)
+        {
+            if (list.getName() != null && list.getName().equals(name))
+            {
                 return list;
             }
         }
@@ -223,9 +245,12 @@ public abstract class ContactListManager {
      * @param address the address of the contact list
      * @return the <code>ContactList</code> or null if the list doesn't exist
      */
-    public ContactList getContactList(Address address) {
-        for (ContactList list : mContactLists) {
-            if (list.getAddress().equals(address)) {
+    public ContactList getContactList(Address address)
+    {
+        for (ContactList list : mContactLists)
+        {
+            if (list.getAddress().equals(address))
+            {
                 return list;
             }
         }
@@ -239,7 +264,8 @@ public abstract class ContactListManager {
      * @return the default contact list.
      * @throws ImException
      */
-    public ContactList getDefaultContactList() throws ImException {
+    public ContactList getDefaultContactList() throws ImException
+    {
         checkState();
         return mDefaultContactList;
     }
@@ -250,7 +276,8 @@ public abstract class ContactListManager {
      * @param name the specific name of the contact list
      * @throws ImException
      */
-    public void createContactListAsync(String name) throws ImException {
+    public void createContactListAsync(String name) throws ImException
+    {
         createContactListAsync(name, null, false);
     }
 
@@ -258,24 +285,26 @@ public abstract class ContactListManager {
      * Create a contact list with specified name and whether it is to be created
      * as the default list.
      *
-     * @param name the specific name of the contact list
+     * @param name      the specific name of the contact list
      * @param isDefault whether the contact list is to be created as the default
-     *            list
+     *                  list
      * @throws ImException
      */
-    public void createContactListAsync(String name, boolean isDefault) throws ImException {
+    public void createContactListAsync(String name, boolean isDefault) throws ImException
+    {
         createContactListAsync(name, null, isDefault);
     }
 
     /**
      * Create a contact list with specified name and contacts asynchronously.
      *
-     * @param name the specific name of the contact list
+     * @param name     the specific name of the contact list
      * @param contacts the initial contacts of the contact list
      * @throws ImException
      */
     public void createContactListAsync(String name, Collection<Contact> contacts)
-            throws ImException {
+            throws ImException
+    {
         createContactListAsync(name, contacts, false);
     }
 
@@ -283,20 +312,23 @@ public abstract class ContactListManager {
      * Create a contact list with specified name and contacts asynchronously,
      * and whether it is to be created as the default contact list.
      *
-     * @param name the name of the contact list
-     * @param contacts the initial contacts of the list
+     * @param name      the name of the contact list
+     * @param contacts  the initial contacts of the list
      * @param isDefault whether the contact list is the default list
      * @throws ImException
      */
     public synchronized void createContactListAsync(String name, Collection<Contact> contacts,
-            boolean isDefault) throws ImException {
+                                                    boolean isDefault) throws ImException
+    {
         checkState();
 
-        if (getContactList(name) != null) {
+        if (getContactList(name) != null)
+        {
             throw new ImException(ImErrorInfo.CONTACT_LIST_EXISTS, "Contact list already exists");
         }
 
-        if (mContactLists.isEmpty()) {
+        if (mContactLists.isEmpty())
+        {
             isDefault = true;
         }
 
@@ -309,7 +341,8 @@ public abstract class ContactListManager {
      * @param name the specific name of the contact list
      * @throws ImException
      */
-    public void deleteContactListAsync(String name) throws ImException {
+    public void deleteContactListAsync(String name) throws ImException
+    {
         deleteContactListAsync(getContactList(name));
     }
 
@@ -319,17 +352,20 @@ public abstract class ContactListManager {
      * @param list the contact list to be deleted
      * @throws ImException if any error raised
      */
-    public synchronized void deleteContactListAsync(ContactList list) throws ImException {
+    public synchronized void deleteContactListAsync(ContactList list) throws ImException
+    {
         checkState();
 
-        if (null == list) {
+        if (null == list)
+        {
             throw new ImException(ImErrorInfo.CONTACT_LIST_NOT_FOUND, "Contact list doesn't exist");
         }
 
         doDeleteContactListAsync(list);
     }
 
-    public void blockContactAsync(Contact contact) throws ImException {
+    public void blockContactAsync(Contact contact) throws ImException
+    {
         blockContactAsync(contact.getAddress().getAddress());
     }
 
@@ -341,20 +377,24 @@ public abstract class ContactListManager {
      * @param address the address of the contact to block.
      * @throws ImException if an error occurs
      */
-    public void blockContactAsync(String address) throws ImException {
+    public void blockContactAsync(String address) throws ImException
+    {
         checkState();
 
-        if (isBlocked(address)) {
+        if (isBlocked(address))
+        {
             return;
         }
 
-        if (mBlockPending.contains(address)) {
+        if (mBlockPending.contains(address))
+        {
             return;
         }
         doBlockContactAsync(address, true);
     }
 
-    public void unblockContactAsync(Contact contact) throws ImException {
+    public void unblockContactAsync(Contact contact) throws ImException
+    {
         unblockContactAsync(contact.getAddress().getAddress());
     }
 
@@ -369,26 +409,31 @@ public abstract class ContactListManager {
      * @param address the address of the contact to unblock.
      * @throws ImException if the current state is illegal
      */
-    public void unblockContactAsync(String address) throws ImException {
+    public void unblockContactAsync(String address) throws ImException
+    {
         checkState();
 
-        if (!isBlocked(address)) {
+        if (!isBlocked(address))
+        {
             return;
         }
 
         doBlockContactAsync(address, false);
     }
 
-    protected void addContactToListAsync(Contact address, ContactList list) throws ImException {
+    protected void addContactToListAsync(Contact address, ContactList list) throws ImException
+    {
         checkState();
 
         doAddContactToListAsync(address, list);
     }
 
-    protected void removeContactFromListAsync(Contact contact, ContactList list) throws ImException {
+    protected void removeContactFromListAsync(Contact contact, ContactList list) throws ImException
+    {
         checkState();
 
-        if (mDeletePending.contains(contact)) {
+        if (mDeletePending.contains(contact))
+        {
             return;
         }
 
@@ -401,20 +446,24 @@ public abstract class ContactListManager {
      * @return
      * @throws ImException
      */
-    public void setContactName(String address, String name) throws ImException {
+    public void setContactName(String address, String name) throws ImException
+    {
         checkState();
 
-        doSetContactName(address,name);
-        updateCache(address,name); // used to refresh the display
+        doSetContactName(address, name);
+        updateCache(address, name); // used to refresh the display
     }
 
     protected abstract void doSetContactName(String address, String name) throws ImException;
 
-    protected void updateCache(String address, String name) {
+    protected void updateCache(String address, String name)
+    {
         // each contact list holds a cache
-        for (ContactList list : mContactLists) {
+        for (ContactList list : mContactLists)
+        {
             Contact contact = list.getContact(normalizeAddress(address));
-            if (contact != null) {
+            if (contact != null)
+            {
                 // refresh the cache
                 contact.setName(name);
                 list.insertToCache(contact);
@@ -428,7 +477,8 @@ public abstract class ContactListManager {
      * @return a unmodifiable list of blocked contacts.
      * @throws ImException
      */
-    public List<Contact> getBlockedList() throws ImException {
+    public List<Contact> getBlockedList() throws ImException
+    {
         checkState();
 
         return Collections.unmodifiableList(mBlockedList);
@@ -441,7 +491,8 @@ public abstract class ContactListManager {
      * @return true if it's blocked, false otherwise.
      * @throws ImException if contacts has not been loaded.
      */
-    public boolean isBlocked(Contact contact) throws ImException {
+    public boolean isBlocked(Contact contact) throws ImException
+    {
         return isBlocked(contact.getAddress().getAddress());
     }
 
@@ -452,13 +503,17 @@ public abstract class ContactListManager {
      * @return true if it's blocked, false otherwise.
      * @throws ImException if contacts has not been loaded.
      */
-    public synchronized boolean isBlocked(String address) throws ImException {
-        if (mState < BLOCKED_LIST_LOADED) {
+    public synchronized boolean isBlocked(String address) throws ImException
+    {
+        if (mState < BLOCKED_LIST_LOADED)
+        {
             // throw new ImException(ImErrorInfo.ILLEGAL_CONTACT_LIST_MANAGER_STATE,
             //   "Blocked list hasn't been loaded");
 
-            for (Contact c : mBlockedList) {
-                if (c.getAddress().getAddress().equals(address)) {
+            for (Contact c : mBlockedList)
+            {
+                if (c.getAddress().getAddress().equals(address))
+                {
                     return true;
                 }
             }
@@ -472,12 +527,15 @@ public abstract class ContactListManager {
      *
      * @throws ImException if the current state is not LIST_LOADED
      */
-    protected void checkState() throws ImException {
-        if (getConnection().getState() != ImConnection.LOGGED_IN) {
+    protected void checkState() throws ImException
+    {
+        if (getConnection().getState() != ImConnection.LOGGED_IN)
+        {
             throw new ImException(ImErrorInfo.CANT_CONNECT_TO_SERVER, "Can't connect to server");
         }
 
-        if (getState() != LISTS_LOADED) {
+        if (getState() != LISTS_LOADED)
+        {
             throw new ImException(ImErrorInfo.ILLEGAL_CONTACT_LIST_MANAGER_STATE,
                     "Illegal contact list manager state");
         }
@@ -500,13 +558,13 @@ public abstract class ContactListManager {
      * Block or unblock a contact.
      *
      * @param address the address of the contact to block or unblock.
-     * @param block <code>true</code> to block the contact; <code>false</code>
-     *            to unblock the contact.
+     * @param block   <code>true</code> to block the contact; <code>false</code>
+     *                to unblock the contact.
      */
     protected abstract void doBlockContactAsync(String address, boolean block);
 
     protected abstract void doCreateContactListAsync(String name, Collection<Contact> contacts,
-            boolean isDefault);
+                                                     boolean isDefault);
 
     protected abstract void doDeleteContactListAsync(ContactList list);
 
@@ -515,8 +573,10 @@ public abstract class ContactListManager {
      *
      * @param contacts the contacts who have updated presence information
      */
-    public void notifyContactsPresenceUpdated(Contact[] contacts) {
-        for (ContactListListener listener : mContactListListeners) {
+    public void notifyContactsPresenceUpdated(Contact[] contacts)
+    {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactsPresenceUpdate(contacts);
         }
     }
@@ -524,18 +584,23 @@ public abstract class ContactListManager {
     /**
      * Notify that a contact list related error has been raised.
      *
-     * @param type the type of the error
-     * @param error the raised error
+     * @param type     the type of the error
+     * @param error    the raised error
      * @param listName the list name, if any, associated with the error
-     * @param contact the contact, if any, associated with the error
+     * @param contact  the contact, if any, associated with the error
      */
-    protected void notifyContactError(int type, ImErrorInfo error, String listName, Contact contact) {
-        if (type == ContactListListener.ERROR_REMOVING_CONTACT) {
+    protected void notifyContactError(int type, ImErrorInfo error, String listName, Contact contact)
+    {
+        if (type == ContactListListener.ERROR_REMOVING_CONTACT)
+        {
             mDeletePending.remove(contact);
-        } else if (type == ContactListListener.ERROR_BLOCKING_CONTACT) {
+        }
+        else if (type == ContactListListener.ERROR_BLOCKING_CONTACT)
+        {
             mBlockPending.remove(contact.getAddress().getAddress());
         }
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactError(type, error, listName, contact);
         }
     }
@@ -545,17 +610,23 @@ public abstract class ContactListManager {
      *
      * @param list the loaded list
      */
-    protected void notifyContactListLoaded(ContactList list) {
-        for (ContactListListener listener : mContactListListeners) {
+    protected void notifyContactListLoaded(ContactList list)
+    {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactChange(ContactListListener.LIST_LOADED, list, null);
 
         }
     }
 
-    /** Notify that all contact lists has been loaded */
-    protected void notifyContactListsLoaded() {
+    /**
+     * Notify that all contact lists has been loaded
+     */
+    protected void notifyContactListsLoaded()
+    {
         setState(LISTS_LOADED);
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onAllContactListsLoaded();
         }
     }
@@ -563,21 +634,27 @@ public abstract class ContactListManager {
     /**
      * Notify that a contact has been added to or removed from a list.
      *
-     * @param list the updated contact list
-     * @param type the type of the update
+     * @param list    the updated contact list
+     * @param type    the type of the update
      * @param contact the involved contact, null if no contact involved.
      */
-    protected void notifyContactListUpdated(ContactList list, int type, Contact contact) {
-        synchronized (this) {
-            if (type == ContactListListener.LIST_CONTACT_ADDED) {
+    protected void notifyContactListUpdated(ContactList list, int type, Contact contact)
+    {
+        synchronized (this)
+        {
+            if (type == ContactListListener.LIST_CONTACT_ADDED)
+            {
                 list.insertToCache(contact);
-            } else if (type == ContactListListener.LIST_CONTACT_REMOVED) {
+            }
+            else if (type == ContactListListener.LIST_CONTACT_REMOVED)
+            {
                 list.removeFromCache(contact);
                 mDeletePending.remove(contact);
             }
         }
 
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactChange(type, list, contact);
         }
     }
@@ -588,10 +665,12 @@ public abstract class ContactListManager {
      * @param list
      * @param name the new name of the list
      */
-    protected void notifyContactListNameUpdated(ContactList list, String name) {
+    protected void notifyContactListNameUpdated(ContactList list, String name)
+    {
         list.mName = name;
 
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactChange(ContactListListener.LIST_RENAMED, list, null);
         }
     }
@@ -601,10 +680,14 @@ public abstract class ContactListManager {
      *
      * @param list the created list
      */
-    protected void notifyContactListCreated(ContactList list) {
-        synchronized (this) {
-            if (list.isDefault()) {
-                for (ContactList l : mContactLists) {
+    protected void notifyContactListCreated(ContactList list)
+    {
+        synchronized (this)
+        {
+            if (list.isDefault())
+            {
+                for (ContactList l : mContactLists)
+                {
                     l.setDefault(false);
                 }
                 mDefaultContactList = list;
@@ -612,7 +695,8 @@ public abstract class ContactListManager {
             mContactLists.add(list);
         }
 
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactChange(ContactListListener.LIST_CREATED, list, null);
         }
     }
@@ -622,15 +706,19 @@ public abstract class ContactListManager {
      *
      * @param list the deleted list
      */
-    protected void notifyContactListDeleted(ContactList list) {
-        synchronized (this) {
+    protected void notifyContactListDeleted(ContactList list)
+    {
+        synchronized (this)
+        {
             mContactLists.remove(list);
-            if (list.isDefault() && mContactLists.size() > 0) {
+            if (list.isDefault() && mContactLists.size() > 0)
+            {
                 mContactLists.get(0).setDefault(true);
             }
         }
 
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactChange(ContactListListener.LIST_DELETED, list, null);
         }
     }
@@ -640,19 +728,25 @@ public abstract class ContactListManager {
      *
      * @param contact the blocked/unblocked contact
      */
-    protected void notifyBlockContact(Contact contact, boolean blocked) {
-        synchronized (this) {
-            if (blocked) {
+    protected void notifyBlockContact(Contact contact, boolean blocked)
+    {
+        synchronized (this)
+        {
+            if (blocked)
+            {
                 mBlockedList.add(contact);
                 String addr = contact.getAddress().getAddress();
                 mBlockPending.remove(addr);
-            } else {
+            }
+            else
+            {
                 mBlockedList.remove(contact);
             }
         }
-        for (ContactListListener listener : mContactListListeners) {
+        for (ContactListListener listener : mContactListListeners)
+        {
             listener.onContactChange(blocked ? ContactListListener.CONTACT_BLOCKED
-                                            : ContactListListener.CONTACT_UNBLOCKED, null, contact);
+                    : ContactListListener.CONTACT_UNBLOCKED, null, contact);
         }
     }
 

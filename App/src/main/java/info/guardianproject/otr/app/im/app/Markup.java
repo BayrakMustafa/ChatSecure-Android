@@ -17,35 +17,36 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.plugin.BrandingResourceIDs;
-
-import android.graphics.drawable.Drawable;
-import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.text.util.Linkify;
 
-public class Markup {
+public class Markup
+{
     private BrandingResources mRes;
- //  private IntTrie mSmileys;
+    //  private IntTrie mSmileys;
 
-    public Markup(BrandingResources res) {
+    public Markup(BrandingResources res)
+    {
         mRes = res;
 //        mSmileys = new IntTrie(res.getStringArray(BrandingResourceIDs.STRING_ARRAY_SMILEY_TEXTS),
-  //              res.getSmileyIcons());
+        //              res.getSmileyIcons());
     }
 
-    public final CharSequence markup(CharSequence text) {
+    public final CharSequence markup(CharSequence text)
+    {
         SpannableString result;
 
-        if (text instanceof SpannableString) {
+        if (text instanceof SpannableString)
+        {
             result = (SpannableString) text;
-        } else {
+        }
+        else
+        {
             result = new SpannableString(text);
         }
 
         Linkify.addLinks(result, Linkify.ALL);
-  //      applyEmoticons(result);
+        //      applyEmoticons(result);
 
         return result;
     }

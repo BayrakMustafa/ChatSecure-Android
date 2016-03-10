@@ -20,6 +20,10 @@
 
 package net.java.otr4j.crypto;
 
+import net.java.otr4j.io.OtrInputStream;
+import net.java.otr4j.io.OtrOutputStream;
+import net.java.otr4j.io.SerializationUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,42 +32,48 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import net.java.otr4j.io.OtrInputStream;
-import net.java.otr4j.io.OtrOutputStream;
-import net.java.otr4j.io.SerializationUtils;
-
-public class SM {
-    static public class SMState {
+public class SM
+{
+    static public class SMState
+    {
         BigInteger secret, x2, x3, g1, g2, g3, g3o, p, q, pab, qab;
         public int nextExpected;
         boolean receivedQuestion;
         public int smProgState;
 
-        public SMState() {
+        public SMState()
+        {
             g1 = new BigInteger(1, SM.GENERATOR_S);
             smProgState = SM.PROG_OK;
         }
 
-        public boolean isReceivedQuestion() {
+        public boolean isReceivedQuestion()
+        {
             return receivedQuestion;
         }
     }
 
-    static public class SMException extends Exception {
+    static public class SMException extends Exception
+    {
         private static final long serialVersionUID = 1L;
 
-        public SMException() {
+        public SMException()
+        {
             super("");
         }
 
-        public SMException(Throwable t) {
+        public SMException(Throwable t)
+        {
             super(t.getMessage());
         }
 
-        public SMException(String s) {
+        public SMException(String s)
+        {
             super(s);
         }
-    };
+    }
+
+    ;
 
     public static final int EXPECT1 = 0;
     public static final int EXPECT2 = 1;
@@ -115,8 +125,11 @@ public class SM {
     public static final int MOD_LEN_BITS = 1536;
     public static final int MOD_LEN_BYTES = 192;
 
-    /** Generate a random exponent */
-    public static BigInteger randomExponent() {
+    /**
+     * Generate a random exponent
+     */
+    public static BigInteger randomExponent()
+    {
         SecureRandom sr = new SecureRandom();
         byte[] sb = new byte[MOD_LEN_BYTES];
         sr.nextBytes(sb);
@@ -127,53 +140,72 @@ public class SM {
      * Hash one or two BigIntegers. To hash only one BigInteger, b may be set to
      * NULL.
      */
-    public static BigInteger hash(int version, BigInteger a, BigInteger b) throws SMException {
-        try {
+    public static BigInteger hash(int version, BigInteger a, BigInteger b) throws SMException
+    {
+        try
+        {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update((byte) version);
             sha256.update(SerializationUtils.writeMpi(a));
             if (b != null)
+            {
                 sha256.update(SerializationUtils.writeMpi(b));
+            }
             return new BigInteger(1, sha256.digest());
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             throw new SMException("cannot find SHA-256");
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new SMException("cannot serialize bigint");
         }
     }
 
-    public static byte[] serialize(BigInteger[] ints) throws SMException {
-        try {
+    public static byte[] serialize(BigInteger[] ints) throws SMException
+    {
+        try
+        {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             OtrOutputStream oos = new OtrOutputStream(out);
             oos.writeInt(ints.length);
-            for (BigInteger i : ints) {
+            for (BigInteger i : ints)
+            {
                 oos.writeBigInt(i);
             }
             byte[] b = out.toByteArray();
             oos.close();
             return b;
-        } catch (IOException ex) {
+        }
+        catch (IOException ex)
+        {
             throw new SMException("cannot serialize bigints");
         }
     }
 
-    public static BigInteger[] unserialize(byte[] bytes) throws SMException {
-        try {
+    public static BigInteger[] unserialize(byte[] bytes) throws SMException
+    {
+        try
+        {
             ByteArrayInputStream in = new ByteArrayInputStream(bytes);
             OtrInputStream ois = new OtrInputStream(in);
             int len = ois.readInt();
-            if (len > 100) {
+            if (len > 100)
+            {
                 ois.close();
                 throw new SMException("Too many ints");
             }
             BigInteger[] ints = new BigInteger[len];
-            for (int i = 0; i < len; i++) {
+            for (int i = 0; i < len; i++)
+            {
                 ints[i] = ois.readBigInt();
             }
             ois.close();
             return ints;
-        } catch (IOException ex) {
+        }
+        catch (IOException ex)
+        {
             throw new SMException("cannot unserialize bigints");
         }
     }
@@ -182,7 +214,8 @@ public class SM {
      * Check that an BigInteger is in the right range to be a (non-unit) group
      * element
      */
-    public static boolean checkGroupElem(BigInteger g) {
+    public static boolean checkGroupElem(BigInteger g)
+    {
         return g.compareTo(BigInteger.valueOf(2)) < 0 || g.compareTo(SM.MODULUS_MINUS_2) > 0;
     }
 
@@ -190,7 +223,8 @@ public class SM {
      * Check that an BigInteger is in the right range to be a (non-zero)
      * exponent
      */
-    public static boolean checkExpon(BigInteger x) {
+    public static boolean checkExpon(BigInteger x)
+    {
         return x.compareTo(BigInteger.ONE) < 0 || x.compareTo(SM.ORDER_S) >= 0;
     }
 
@@ -200,7 +234,8 @@ public class SM {
      * @throws SMException
      */
     public static BigInteger[] proofKnowLog(BigInteger g, BigInteger x, int version)
-            throws SMException {
+            throws SMException
+    {
         BigInteger r = randomExponent();
         BigInteger temp = g.modPow(r, SM.MODULUS_S);
         BigInteger c = hash(version, temp, null);
@@ -219,7 +254,8 @@ public class SM {
      * @throws SMException
      */
     public static int checkKnowLog(BigInteger c, BigInteger d, BigInteger g, BigInteger x,
-            int version) throws SMException {
+                                   int version) throws SMException
+    {
 
         BigInteger gd = g.modPow(d, MODULUS_S);
         BigInteger xc = x.modPow(c, MODULUS_S);
@@ -235,7 +271,8 @@ public class SM {
      * @throws SMException
      */
     public static BigInteger[] proofEqualCoords(SMState state, BigInteger r, int version)
-            throws SMException {
+            throws SMException
+    {
         BigInteger r1 = randomExponent();
         BigInteger r2 = randomExponent();
 
@@ -267,7 +304,8 @@ public class SM {
      * @throws SMException
      */
     public static int checkEqualCoords(BigInteger c, BigInteger d1, BigInteger d2, BigInteger p,
-            BigInteger q, SMState state, int version) throws SMException {
+                                       BigInteger q, SMState state, int version) throws SMException
+    {
 
         /* To verify, we test that hash(g3^d1 * p^c, g1^d1 * g2^d2 * q^c) = c
          * If indeed c = hash(g3^r1, g1^r1 g2^r2), d1 = r1 - r*c,
@@ -299,7 +337,8 @@ public class SM {
      *
      * @throws SMException
      */
-    public static BigInteger[] proofEqualLogs(SMState state, int version) throws SMException {
+    public static BigInteger[] proofEqualLogs(SMState state, int version) throws SMException
+    {
         BigInteger r = randomExponent();
 
         /* Compute the value of c, as c = h(g1^r, (Qa/Qb)^r) */
@@ -323,7 +362,8 @@ public class SM {
      * @throws SMException
      */
     public static int checkEqualLogs(BigInteger c, BigInteger d, BigInteger r, SMState state,
-            int version) throws SMException {
+                                     int version) throws SMException
+    {
 
         /* Here, we recall the exponents used to create g3.
          * If we have previously seen g3o = g1^x where x is unknown
@@ -363,7 +403,8 @@ public class SM {
      *
      * @throws SMException
      */
-    public static byte[] step1(SMState astate, byte[] secret) throws SMException {
+    public static byte[] step1(SMState astate, byte[] secret) throws SMException
+    {
         /* Initialize the sm state or update the secret */
         //Util.checkBytes("secret", secret);
         BigInteger secret_mpi = new BigInteger(1, secret);
@@ -397,7 +438,8 @@ public class SM {
      * @throws SMException
      */
     public static void step2a(SMState bstate, byte[] input, boolean received_question)
-            throws SMException {
+            throws SMException
+    {
 
         /* Initialize the sm state if needed */
 
@@ -408,7 +450,8 @@ public class SM {
         BigInteger[] msg1 = unserialize(input);
 
         if (checkGroupElem(msg1[0]) || checkExpon(msg1[2]) || checkGroupElem(msg1[3])
-            || checkExpon(msg1[5])) {
+                || checkExpon(msg1[5]))
+        {
             throw new SMException("Invalid parameter");
         }
 
@@ -417,7 +460,8 @@ public class SM {
 
         /* Verify Alice's proofs */
         if (checkKnowLog(msg1[1], msg1[2], bstate.g1, msg1[0], 1) != 0
-            || checkKnowLog(msg1[4], msg1[5], bstate.g1, msg1[3], 2) != 0) {
+                || checkKnowLog(msg1[4], msg1[5], bstate.g1, msg1[3], 2) != 0)
+        {
             throw new SMException("Proof checking failed");
         }
 
@@ -448,7 +492,8 @@ public class SM {
      *
      * @throws SMException
      */
-    public static byte[] step2b(SMState bstate, byte[] secret) throws SMException {
+    public static byte[] step2b(SMState bstate, byte[] secret) throws SMException
+    {
         /* Convert the given secret to the proper form and store it */
         //Util.checkBytes("secret", secret);
         BigInteger secret_mpi = new BigInteger(1, secret);
@@ -503,14 +548,16 @@ public class SM {
      *
      * @throws SMException
      */
-    public static byte[] step3(SMState astate, byte[] input) throws SMException {
+    public static byte[] step3(SMState astate, byte[] input) throws SMException
+    {
         /* Read from input to find the mpis */
         astate.smProgState = PROG_CHEATED;
 
         BigInteger[] msg2 = unserialize(input);
         if (checkGroupElem(msg2[0]) || checkGroupElem(msg2[3]) || checkGroupElem(msg2[6])
-            || checkGroupElem(msg2[7]) || checkExpon(msg2[2]) || checkExpon(msg2[5])
-            || checkExpon(msg2[9]) || checkExpon(msg2[10])) {
+                || checkGroupElem(msg2[7]) || checkExpon(msg2[2]) || checkExpon(msg2[5])
+                || checkExpon(msg2[9]) || checkExpon(msg2[10]))
+        {
             throw new SMException("Invalid Parameter");
         }
 
@@ -521,7 +568,8 @@ public class SM {
 
         /* Verify Bob's knowledge of discreet log proofs */
         if (checkKnowLog(msg2[1], msg2[2], astate.g1, msg2[0], 3) != 0
-            || checkKnowLog(msg2[4], msg2[5], astate.g1, msg2[3], 4) != 0) {
+                || checkKnowLog(msg2[4], msg2[5], astate.g1, msg2[3], 4) != 0)
+        {
             throw new SMException("Proof checking failed");
         }
 
@@ -533,7 +581,9 @@ public class SM {
 
         /* Verify Bob's coordinate equality proof */
         if (checkEqualCoords(msg2[8], msg2[9], msg2[10], msg2[6], msg2[7], astate, 5) != 0)
+        {
             throw new SMException("Invalid Parameter");
+        }
 
         /* Calculate P and Q values for Alice */
         BigInteger r = randomExponent();
@@ -584,7 +634,8 @@ public class SM {
      *
      * @throws SMException
      */
-    public static byte[] step4(SMState bstate, byte[] input) throws SMException {
+    public static byte[] step4(SMState bstate, byte[] input) throws SMException
+    {
         /* Read from input to find the mpis */
         BigInteger[] msg3 = unserialize(input);
 
@@ -593,13 +644,16 @@ public class SM {
         BigInteger[] msg4 = new BigInteger[3];
 
         if (checkGroupElem(msg3[0]) || checkGroupElem(msg3[1]) || checkGroupElem(msg3[5])
-            || checkExpon(msg3[3]) || checkExpon(msg3[4]) || checkExpon(msg3[7])) {
+                || checkExpon(msg3[3]) || checkExpon(msg3[4]) || checkExpon(msg3[7]))
+        {
             throw new SMException("Invalid Parameter");
         }
 
         /* Verify Alice's coordinate equality proof */
         if (checkEqualCoords(msg3[2], msg3[3], msg3[4], msg3[0], msg3[1], bstate, 6) != 0)
+        {
             throw new SMException("Invalid Parameter");
+        }
 
         /* Find Pa/Pb and Qa/Qb */
         BigInteger inv = bstate.p.modInverse(MODULUS_S);
@@ -608,7 +662,8 @@ public class SM {
         bstate.qab = msg3[1].multiply(inv).mod(MODULUS_S);
 
         /* Verify Alice's log equality proof */
-        if (checkEqualLogs(msg3[6], msg3[7], msg3[5], bstate, 7) != 0) {
+        if (checkEqualLogs(msg3[6], msg3[7], msg3[5], bstate, 7) != 0)
+        {
             throw new SMException("Proof checking failed");
         }
 
@@ -639,18 +694,22 @@ public class SM {
      *
      * @throws SMException
      */
-    public static void step5(SMState astate, byte[] input) throws SMException {
+    public static void step5(SMState astate, byte[] input) throws SMException
+    {
         /* Read from input to find the mpis */
         BigInteger[] msg4 = unserialize(input);
         astate.smProgState = PROG_CHEATED;
 
-        if (checkGroupElem(msg4[0]) || checkExpon(msg4[2])) {
+        if (checkGroupElem(msg4[0]) || checkExpon(msg4[2]))
+        {
             throw new SMException("Invalid Parameter");
         }
 
         /* Verify Bob's log equality proof */
         if (checkEqualLogs(msg4[1], msg4[2], msg4[0], astate, 8) != 0)
+        {
             throw new SMException("Invalid Parameter");
+        }
 
         /* Calculate Rab and verify that secrets match */
 
@@ -658,7 +717,8 @@ public class SM {
         //Util.checkBytes("rab", rab.getValue());
         //Util.checkBytes("pab", astate.pab.getValue());
         int comp = rab.compareTo(astate.pab);
-        if (comp != 0) {
+        if (comp != 0)
+        {
             //System.out.println("checking failed");
         }
 

@@ -19,36 +19,40 @@
 
 <info.guardianproject.otr.app.im.app.ProviderListItem
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"    
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
     >
-         <LinearLayout
+
+    <LinearLayout
         android:id="@+id/underBubble"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        	android:layout_margin="6sp"    
-        
-        >    
-          <TextView android:id="@+id/providerName"
-              android:textAppearance="?android:attr/textAppearanceLarge"
-              android:singleLine="true"
-              android:ellipsize="marquee"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content" 
-              android:textColor="#ffffff"
-              android:fontFamily="sans-serif-light"              
-              />
-          
-            <TextView android:id="@+id/loginName"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:textColor="#ffffff"
-               android:fontFamily="sans-serif-light"               
-               />
-      </LinearLayout>
+        android:layout_margin="6sp"
+        android:orientation="vertical"
+
+        >
+
+        <TextView
+            android:id="@+id/providerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#ffffff"
+            />
+
+        <TextView
+            android:id="@+id/loginName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#ffffff"
+            />
+    </LinearLayout>
 </info.guardianproject.otr.app.im.app.ProviderListItem>

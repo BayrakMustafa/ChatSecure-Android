@@ -21,7 +21,8 @@ package info.guardianproject.otr.app.im.engine;
  * Interface that allows the implementing class to listen to invitation from
  * other users.
  */
-public interface InvitationListener {
+public interface InvitationListener
+{
     /**
      * Calls when an invitation to join a certain group from another user
      * received. The user should accept or reject the invitation by

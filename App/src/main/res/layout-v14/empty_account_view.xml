@@ -18,14 +18,14 @@
  */
 -->
 
-<TextView 
-    	android:id="@id/android:empty"
-    	xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/empty_account_message"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:fontFamily="sans-serif-light"
-        android:textSize="24sp"
-        android:textStyle="normal"
-        android:gravity="center_vertical|center_horizontal"/>
+<TextView
+    android:id="@id/android:empty"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fontFamily="sans-serif-light"
+    android:gravity="center_vertical|center_horizontal"
+    android:text="@string/empty_account_message"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:textSize="24sp"
+    android:textStyle="normal"/>

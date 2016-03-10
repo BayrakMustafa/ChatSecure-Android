@@ -18,27 +18,28 @@
  */
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    
-    android:background="?listBackground"
-     >
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
 
-        <ListView android:id="@+id/contactsList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            
+              android:background="?listBackground"
+    >
+
+    <ListView
+        android:id="@+id/contactsList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
         android:padding="0dp"
-            />
-<!-- 
-        <TextView android:id="@android:id/empty"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:gravity="top|center_horizontal"
-            android:focusable="false"
-            android:visibility="gone"
-            android:text="@string/empty_contact_list" />
-             -->
+        />
+    <!--
+            <TextView android:id="@android:id/empty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:gravity="top|center_horizontal"
+                android:focusable="false"
+                android:visibility="gone"
+                android:text="@string/empty_contact_list" />
+                 -->
 </LinearLayout>

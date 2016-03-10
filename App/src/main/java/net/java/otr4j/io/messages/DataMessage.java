@@ -9,8 +9,11 @@ import java.util.Arrays;
 
 import javax.crypto.interfaces.DHPublicKey;
 
-/** @author George Politis */
-public class DataMessage extends AbstractEncodedMessage {
+/**
+ * @author George Politis
+ */
+public class DataMessage extends AbstractEncodedMessage
+{
 
     // Fields.
     public byte[] mac;
@@ -25,7 +28,8 @@ public class DataMessage extends AbstractEncodedMessage {
 
     // Ctor.
     public DataMessage(int protocolVersion, int flags, int senderKeyID, int recipientKeyID,
-            DHPublicKey nextDH, byte[] ctr, byte[] encryptedMessage, byte[] mac, byte[] oldMacKeys) {
+                       DHPublicKey nextDH, byte[] ctr, byte[] encryptedMessage, byte[] mac, byte[] oldMacKeys)
+    {
         super(MESSAGE_DATA, protocolVersion);
 
         this.flags = flags;
@@ -38,19 +42,22 @@ public class DataMessage extends AbstractEncodedMessage {
         this.oldMACKeys = oldMacKeys;
     }
 
-    public DataMessage(MysteriousT t, byte[] mac, byte[] oldMacKeys) {
+    public DataMessage(MysteriousT t, byte[] mac, byte[] oldMacKeys)
+    {
         this(t.protocolVersion, t.flags, t.senderKeyID, t.recipientKeyID, t.nextDH, t.ctr,
                 t.encryptedMessage, mac, oldMacKeys);
     }
 
     // Methods.
-    public MysteriousT getT() {
+    public MysteriousT getT()
+    {
         return new MysteriousT(protocolVersion, flags, senderKeyID, recipientKeyID, nextDH, ctr,
                 encryptedMessage);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + Arrays.hashCode(ctr);
@@ -66,33 +73,60 @@ public class DataMessage extends AbstractEncodedMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         DataMessage other = (DataMessage) obj;
         if (!Arrays.equals(ctr, other.ctr))
+        {
             return false;
+        }
         if (!Arrays.equals(encryptedMessage, other.encryptedMessage))
+        {
             return false;
+        }
         if (flags != other.flags)
+        {
             return false;
+        }
         if (!Arrays.equals(mac, other.mac))
+        {
             return false;
-        if (nextDH == null) {
+        }
+        if (nextDH == null)
+        {
             if (other.nextDH != null)
+            {
                 return false;
-        } else if (!nextDH.equals(other.nextDH))
+            }
+        }
+        else if (!nextDH.equals(other.nextDH))
+        {
             return false;
+        }
         if (!Arrays.equals(oldMACKeys, other.oldMACKeys))
+        {
             return false;
+        }
         if (recipientKeyID != other.recipientKeyID)
+        {
             return false;
+        }
         if (senderKeyID != other.senderKeyID)
+        {
             return false;
+        }
         return true;
     }
 }

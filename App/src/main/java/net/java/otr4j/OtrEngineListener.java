@@ -8,6 +8,7 @@ import net.java.otr4j.session.SessionID;
  *
  * @author George Politis
  */
-public interface OtrEngineListener {
+public interface OtrEngineListener
+{
     public abstract void sessionStatusChanged(SessionID sessionID);
 }

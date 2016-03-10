@@ -17,10 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.IImConnection;
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.engine.ImConnection;
-import info.guardianproject.otr.app.im.provider.Imps;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -37,11 +33,17 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ProviderListItem extends LinearLayout {
+import info.guardianproject.otr.app.im.IImConnection;
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.engine.ImConnection;
+import info.guardianproject.otr.app.im.provider.Imps;
+
+public class ProviderListItem extends LinearLayout
+{
     private Activity mActivity;
     //private SignInManager mSignInManager;
     private ContentResolver mResolver;
-  //  private CompoundButton mSignInSwitch;
+    //  private CompoundButton mSignInSwitch;
 
     //private boolean mUserChanged = false;
     private boolean mIsSignedIn;
@@ -64,7 +66,8 @@ public class ProviderListItem extends LinearLayout {
     {
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             super.handleMessage(msg);
 
             //update notifications from async task
@@ -72,18 +75,20 @@ public class ProviderListItem extends LinearLayout {
 
     };
 
-    public ProviderListItem(Context context, Activity activity, SignInManager signInManager) {
+    public ProviderListItem(Context context, Activity activity, SignInManager signInManager)
+    {
         super(context);
         mActivity = activity;
         //mSignInManager = signInManager;
 
-        mApp = (ImApp)activity.getApplication();
+        mApp = (ImApp) activity.getApplication();
 
         mResolver = mApp.getContentResolver();
 
     }
 
-    public void init(Cursor c, boolean showLongName) {
+    public void init(Cursor c, boolean showLongName)
+    {
 
 
         mShowLongName = showLongName;
@@ -102,11 +107,12 @@ public class ProviderListItem extends LinearLayout {
         mAccountConnectionStatusColumn = c
                 .getColumnIndexOrThrow(Imps.Provider.ACCOUNT_CONNECTION_STATUS);
 
-        setOnClickListener(new OnClickListener ()
+        setOnClickListener(new OnClickListener()
         {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
 
 
                 Intent intent = new Intent(Intent.ACTION_EDIT, ContentUris.withAppendedId(
@@ -189,11 +195,13 @@ public class ProviderListItem extends LinearLayout {
     }
 
     @Override
-    protected void onAttachedToWindow() {
+    protected void onAttachedToWindow()
+    {
         super.onAttachedToWindow();
     }
 
-    public void bindView(Cursor cursor) {
+    public void bindView(Cursor cursor)
+    {
         final Resources r = getResources();
 
         final int providerId = cursor.getInt(mProviderIdColumn);
@@ -201,118 +209,128 @@ public class ProviderListItem extends LinearLayout {
         mAccountId = cursor.getLong(mActiveAccountIdColumn);
         setTag(mAccountId);
 
-        if (!cursor.isNull(mActiveAccountIdColumn)) {
+        if (!cursor.isNull(mActiveAccountIdColumn))
+        {
 
             final String activeUserName = cursor.getString(mActiveAccountUserNameColumn);
 
             final int connectionStatus = cursor.getInt(mAccountConnectionStatusColumn);
             final String presenceString = getPresenceString(cursor, getContext());
 
-            mHandler.postDelayed(new Runnable () {
-                public void run ()
-                {
-                    runBindTask(r, providerId, activeUserName, connectionStatus, presenceString);
-                }
-            }
+            mHandler.postDelayed(new Runnable()
+                                 {
+                                     public void run()
+                                     {
+                                         runBindTask(r, providerId, activeUserName, connectionStatus, presenceString);
+                                     }
+                                 }
                     , 200l);
 
         }
     }
 
     @Override
-    protected void onDetachedFromWindow() {
+    protected void onDetachedFromWindow()
+    {
 
         super.onDetachedFromWindow();
     }
 
     private void runBindTask(final Resources r, final int providerId, final String activeUserName,
-            final int dbConnectionStatus, final String presenceString) {
+                             final int dbConnectionStatus, final String presenceString)
+    {
 
-            String mProviderNameText;
-            String mSecondRowText;
+        String mProviderNameText;
+        String mSecondRowText;
 
-            try
+        try
+        {
+            Cursor pCursor = mResolver.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(providerId)}, null);
+
+            Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, mResolver,
+                    providerId, false /* keep updated */, mHandler /* no handler */);
+
+            String userDomain = settings.getDomain();
+            int connectionStatus = dbConnectionStatus;
+
+            IImConnection conn = mApp.getConnection(providerId);
+            if (conn == null)
             {
-                    Cursor pCursor = mResolver.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString( providerId)},null);
-
-                    Imps.ProviderSettings.QueryMap settings = new Imps.ProviderSettings.QueryMap(pCursor, mResolver,
-                            providerId,     false /* keep updated */, mHandler /* no handler */);
-
-                    String userDomain = settings.getDomain();
-                    int connectionStatus = dbConnectionStatus;
-
-                    IImConnection conn = mApp.getConnection(providerId);
-                    if (conn == null)
-                    {
-                        connectionStatus = ImConnection.DISCONNECTED;
-                    }
-                    else
-                    {
-                        try {
-                            connectionStatus = conn.getState();
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (mShowLongName)
-                        mProviderNameText = activeUserName + '@' + userDomain;
-                    else
-                        mProviderNameText = activeUserName;
-
-                    switch (connectionStatus) {
-
-                    case ImConnection.LOGGING_IN:
-                        mSecondRowText = r.getString(R.string.signing_in_wait);
-                        mIsSignedIn = true;
-
-                        break;
-
-                    case ImConnection.SUSPENDING:
-                    case ImConnection.SUSPENDED:
-                        mSecondRowText = r.getString(R.string.error_suspended_connection);
-                        mIsSignedIn = true;
-
-                        break;
-
-
-
-                    case ImConnection.LOGGED_IN:
-                        mIsSignedIn = true;
-                        mSecondRowText = computeSecondRowText(presenceString, r, settings, true);
-
-                        break;
-
-                    case ImConnection.LOGGING_OUT:
-                        mIsSignedIn = false;
-                        mSecondRowText = r.getString(R.string.signing_out_wait);
-
-                        break;
-
-                    default:
-
-                        mIsSignedIn = false;
-                        mSecondRowText = computeSecondRowText(presenceString, r, settings, true);
-                        break;
-                    }
-
-                    settings.close();
-                    pCursor.close();
-
-                    applyView(mProviderNameText, mIsSignedIn, mSecondRowText);
-                }
-                catch (NullPointerException npe)
+                connectionStatus = ImConnection.DISCONNECTED;
+            }
+            else
+            {
+                try
                 {
-                    Log.d(ImApp.LOG_TAG,"null on QueryMap (this shouldn't happen anymore, but just in case)",npe);
+                    connectionStatus = conn.getState();
                 }
+                catch (RemoteException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            if (mShowLongName)
+            {
+                mProviderNameText = activeUserName + '@' + userDomain;
+            }
+            else
+            {
+                mProviderNameText = activeUserName;
+            }
+
+            switch (connectionStatus)
+            {
+
+                case ImConnection.LOGGING_IN:
+                    mSecondRowText = r.getString(R.string.signing_in_wait);
+                    mIsSignedIn = true;
+
+                    break;
+
+                case ImConnection.SUSPENDING:
+                case ImConnection.SUSPENDED:
+                    mSecondRowText = r.getString(R.string.error_suspended_connection);
+                    mIsSignedIn = true;
+
+                    break;
 
 
+                case ImConnection.LOGGED_IN:
+                    mIsSignedIn = true;
+                    mSecondRowText = computeSecondRowText(presenceString, r, settings, true);
+
+                    break;
+
+                case ImConnection.LOGGING_OUT:
+                    mIsSignedIn = false;
+                    mSecondRowText = r.getString(R.string.signing_out_wait);
+
+                    break;
+
+                default:
+
+                    mIsSignedIn = false;
+                    mSecondRowText = computeSecondRowText(presenceString, r, settings, true);
+                    break;
+            }
+
+            settings.close();
+            pCursor.close();
+
+            applyView(mProviderNameText, mIsSignedIn, mSecondRowText);
+        }
+        catch (NullPointerException npe)
+        {
+            Log.d(ImApp.LOG_TAG, "null on QueryMap (this shouldn't happen anymore, but just in case)", npe);
+        }
 
 
     }
 
-    private void applyView(String providerNameText, boolean isSignedIn, String secondRowText) {
+    private void applyView(String providerNameText, boolean isSignedIn, String secondRowText)
+    {
 
         if (isSignedIn)
         {
@@ -328,9 +346,13 @@ public class ProviderListItem extends LinearLayout {
             mProviderName.setText(providerNameText);
 
             if (isSignedIn)
+            {
                 mProviderName.setTextColor(Color.WHITE);
+            }
             else
+            {
                 mProviderName.setTextColor(Color.LTGRAY);
+            }
 
 
             if (mLoginName != null)
@@ -338,9 +360,13 @@ public class ProviderListItem extends LinearLayout {
                 mLoginName.setText(secondRowText);
 
                 if (isSignedIn)
+                {
                     mLoginName.setTextColor(Color.WHITE);
+                }
                 else
+                {
                     mLoginName.setTextColor(Color.LTGRAY);
+                }
 
 
             }
@@ -349,7 +375,8 @@ public class ProviderListItem extends LinearLayout {
     }
 
     private String computeSecondRowText(String presenceString, Resources r,
-            final Imps.ProviderSettings.QueryMap settings, boolean showPresence) {
+                                        final Imps.ProviderSettings.QueryMap settings, boolean showPresence)
+    {
         String secondRowText;
         StringBuffer secondRowTextBuffer = new StringBuffer();
 
@@ -374,7 +401,9 @@ public class ProviderListItem extends LinearLayout {
 
 
         if (settings.getPort() != 5222 && settings.getPort() != 0)
+        {
             secondRowTextBuffer.append(':').append(settings.getPort());
+        }
 
 
         if (settings.getUseTor())
@@ -387,46 +416,47 @@ public class ProviderListItem extends LinearLayout {
         return secondRowText;
     }
 
-    public Long getAccountID ()
+    public Long getAccountID()
     {
         return mAccountId;
     }
 
 
-    private String getPresenceString(Cursor cursor, Context context) {
+    private String getPresenceString(Cursor cursor, Context context)
+    {
         int presenceStatus = cursor.getInt(mAccountPresenceStatusColumn);
 
-        switch (presenceStatus) {
+        switch (presenceStatus)
+        {
 
 
-        case Imps.Presence.AVAILABLE:
-            return context.getString(R.string.presence_available);
+            case Imps.Presence.AVAILABLE:
+                return context.getString(R.string.presence_available);
 
-        case Imps.Presence.IDLE:
-            return context.getString(R.string.presence_idle);
+            case Imps.Presence.IDLE:
+                return context.getString(R.string.presence_idle);
 
-        case Imps.Presence.AWAY:
-            return context.getString(R.string.presence_away);
+            case Imps.Presence.AWAY:
+                return context.getString(R.string.presence_away);
 
-        case Imps.Presence.DO_NOT_DISTURB:
+            case Imps.Presence.DO_NOT_DISTURB:
 
-            return context.getString(R.string.presence_busy);
+                return context.getString(R.string.presence_busy);
 
-        case Imps.Presence.INVISIBLE:
-            return context.getString(R.string.presence_invisible);
+            case Imps.Presence.INVISIBLE:
+                return context.getString(R.string.presence_invisible);
 
-        default:
-            return "";
+            default:
+                return "";
         }
     }
 
     public interface SignInManager
     {
-        public void signIn (long accountId);
-        public void signOut (long accountId);
+        public void signIn(long accountId);
+
+        public void signOut(long accountId);
     }
-
-
 
 
 }

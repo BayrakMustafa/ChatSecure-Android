@@ -19,9 +19,12 @@ package info.guardianproject.otr.app.im.provider;
 
 import info.guardianproject.otr.app.im.engine.ImErrorInfo;
 
-public class ImpsErrorInfo extends ImErrorInfo {
+public class ImpsErrorInfo extends ImErrorInfo
+{
 
-    /** The client error definition* */
+    /**
+     * The client error definition*
+     */
     public static final int UNAUTHORIZED = 401;
     public static final int BAD_PARAMETER = 402;
     public static final int FORBIDDEN = 403;
@@ -40,7 +43,9 @@ public class ImpsErrorInfo extends ImErrorInfo {
     public static final int UNAUTHORIZED_GROUP_MEMBERSHIP = 431;
     public static final int RESPONSE_TOO_LARGE = 432;
 
-    /** The server error definition* */
+    /**
+     * The server error definition*
+     */
     public static final int INTERNAL_SERVER_OR_NETWORK_ERROR = 500;
     public static final int NOT_IMPLMENTED = 501;
     public static final int SERVER_UNAVAILABLE = 503;
@@ -64,14 +69,18 @@ public class ImpsErrorInfo extends ImErrorInfo {
     public static final int MESSAGE_EXPIRED = 542;
     public static final int NO_MATCHING_DIGEST_SCHEME_SUPPORTED = 543;
 
-    /** The session error definition* */
+    /**
+     * The session error definition*
+     */
     public static final int SESSION_EXPIRED = 600;
     public static final int FORCED_LOGOUT = 601;
     public static final int ALREADY_LOGGED = 603;
     public static final int INVALID_SESSION = 604;
     public static final int NEW_VALUE_NOT_ACCEPTED = 605;
 
-    /** The presence and contact list error definition* */
+    /**
+     * The presence and contact list error definition*
+     */
     public static final int CONTACT_LIST_NOT_EXIST = 700;
     public static final int CONTACT_LIST_ALREADY_EXISTS = 701;
     public static final int INVALID_OR_UNSUPPORTED_USER_PROPERTIES = 702;
@@ -83,7 +92,9 @@ public class ImpsErrorInfo extends ImErrorInfo {
     public static final int MAX_NUMBER_OF_ATTRIBUTE_LISTS_REACHED = 755;
     public static final int AUTOMATIC_SUBSCRIPTION_NOT_SUPPORTED = 760;
 
-    /** The general error definition* */
+    /**
+     * The general error definition*
+     */
     public static final int MULTIPLE_ERRORS = 900;
     public static final int GENERAL_ADDRESS_ERROR = 901;
     public static final int NOT_ENOUGH_CREDIT_TO_COMPLETE_REQUESTED_OPERATION = 902;
@@ -91,7 +102,8 @@ public class ImpsErrorInfo extends ImErrorInfo {
 
     public static final int MSISDN_ERROR = 920;
 
-    ImpsErrorInfo(int code, String description) {
+    ImpsErrorInfo(int code, String description)
+    {
         super(code, description);
     }
     /* TODO private final Primitive mPrimitive;

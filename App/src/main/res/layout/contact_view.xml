@@ -18,81 +18,80 @@
  */
 -->
 <view xmlns:android="http://schemas.android.com/apk/res/android"
-    class="info.guardianproject.otr.app.im.app.ContactView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="3dp"	
-     >
-     
-			
+      class="info.guardianproject.otr.app.im.app.ContactView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="3dp"
+    >
+
+
     <LinearLayout
-        android:id="@+id/message_container" 
+        android:id="@+id/message_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="0dp"         
-        android:layout_marginLeft="62dp"     
+        android:padding="0dp"
+        android:layout_marginLeft="62dp"
         android:orientation="vertical"
         android:layout_gravity="center_vertical"
         >
-        
-                <org.ironrabbit.type.CustomTypefaceTextView
-                    android:id="@+id/line1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-light"
-                    android:layout_gravity="left"
-              		android:gravity="left"
-                    android:textAppearance="?android:attr/textAppearanceLarge"                    
-                    android:singleLine="true"
-                    android:textColor="?contactTextPrimary"
-                    
-                     />
-       
-                  <org.ironrabbit.type.CustomTypefaceTextView
-                android:id="@+id/line2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"         
-                
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?contactTextSecondary"
-                />
-                   <ImageView
+
+        <org.ironrabbit.type.CustomTypefaceTextView
+            android:id="@+id/line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:layout_gravity="left"
+            android:gravity="left"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:singleLine="true"
+            android:textColor="?contactTextPrimary"
+
+            />
+
+        <org.ironrabbit.type.CustomTypefaceTextView
+            android:id="@+id/line2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?contactTextSecondary"
+            />
+
+        <ImageView
             android:id="@+id/media_thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"                      
+            android:layout_height="wrap_content"
             android:layout_margin="3dp"
-             android:scaleType="centerCrop"     
-              android:focusableInTouchMode="false"
-                  
-             />
-                  
-                  
-    <ImageView
+            android:scaleType="centerCrop"
+            android:focusableInTouchMode="false"
+
+            />
+
+
+        <ImageView
             android:id="@+id/statusIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:scaleType="centerCrop" 
+            android:scaleType="centerCrop"
             android:padding="3dp"
             android:layout_marginTop="-32dp"
-              android:layout_gravity="right|bottom"
-              
-            />	
-            
-                   
-        
-          	</LinearLayout>
-          	
-    
-		<ImageView
-            android:id="@+id/avatar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:scaleType="centerCrop" 
-            android:layout_margin="0dp"
-            android:visibility="gone"            
-            android:layout_gravity="left|top"
-            />	
-            
-		 
-	        
+            android:layout_gravity="right|bottom"
+
+            />
+
+
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerCrop"
+        android:layout_margin="0dp"
+        android:visibility="gone"
+        android:layout_gravity="left|top"
+        />
+
+
 </view>

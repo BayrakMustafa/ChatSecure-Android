@@ -17,9 +17,6 @@
 
 package info.guardianproject.otr.app.im.app;
 
-import info.guardianproject.otr.app.im.R;
-import info.guardianproject.otr.app.im.app.ContactListFilterView.ContactListListener;
-import info.guardianproject.otr.app.im.provider.Imps;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -47,15 +44,22 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-/** Activity used to pick a contact. */
-public class ContactsPickerActivity extends ActionBarActivity  {
+import info.guardianproject.otr.app.im.R;
+import info.guardianproject.otr.app.im.app.ContactListFilterView.ContactListListener;
+import info.guardianproject.otr.app.im.provider.Imps;
+
+/**
+ * Activity used to pick a contact.
+ */
+public class ContactsPickerActivity extends ActionBarActivity
+{
     public final static String EXTRA_EXCLUDED_CONTACTS = "excludes";
 
     public final static String EXTRA_RESULT_USERNAME = "result";
     public final static String EXTRA_RESULT_PROVIDER = "provider";
     public final static String EXTRA_RESULT_ACCOUNT = "account";
     public final static String EXTRA_RESULT_MESSAGE = "message";
-    
+
 
     private int REQUEST_CODE_ADD_CONTACT = 9999;
 
@@ -85,25 +89,29 @@ public class ContactsPickerActivity extends ActionBarActivity  {
 
     private boolean mHideOffline = false;
     private boolean mShowInvitations = false;
-    
+
     @Override
-    public void onCreate(Bundle icicle) {
+    public void onCreate(Bundle icicle)
+    {
         super.onCreate(icicle);
 
-        ((ImApp)getApplication()).setAppTheme(this);
-        
+        ((ImApp) getApplication()).setAppTheme(this);
+
         setContentView(R.layout.contacts_picker_activity);
-        
+
         if (getIntent().getData() != null)
+        {
             mUri = getIntent().getData();
+        }
 
-        mListView = (ListView)findViewById(R.id.contactsList);
+        mListView = (ListView) findViewById(R.id.contactsList);
 
-        mListView.setOnItemClickListener(new OnItemClickListener ()
+        mListView.setOnItemClickListener(new OnItemClickListener()
         {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+            {
 
                 Cursor cursor = (Cursor) mAdapter.getItem(position);
                 Intent data = new Intent();
@@ -119,29 +127,29 @@ public class ContactsPickerActivity extends ActionBarActivity  {
 
 
         ContentResolver cr = getContentResolver();
-        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI,new String[] {Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE},Imps.ProviderSettings.PROVIDER + "=?",new String[] { Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)},null);
+        Cursor pCursor = cr.query(Imps.ProviderSettings.CONTENT_URI, new String[]{Imps.ProviderSettings.NAME, Imps.ProviderSettings.VALUE}, Imps.ProviderSettings.PROVIDER + "=?", new String[]{Long.toString(Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS)}, null);
         Imps.ProviderSettings.QueryMap globalSettings = new Imps.ProviderSettings.QueryMap(pCursor, cr, Imps.ProviderSettings.PROVIDER_ID_FOR_GLOBAL_SETTINGS, true, null);
         mHideOffline = globalSettings.getHideOfflineContacts();
 
         globalSettings.close();
-        
+
         if (getIntent() != null && getIntent().hasExtra("invitations"))
         {
-            mShowInvitations = getIntent().getBooleanExtra("invitations", false);            
+            mShowInvitations = getIntent().getBooleanExtra("invitations", false);
         }
-        
-        
+
 
         doFilterAsync("");
     }
 
 
-
     @Override
-    protected void onActivityResult(int request, int response, Intent data) {
+    protected void onActivityResult(int request, int response, Intent data)
+    {
         super.onActivityResult(request, response, data);
 
         if (response == RESULT_OK)
+        {
             if (request == REQUEST_CODE_ADD_CONTACT)
             {
                 String newContact = data.getExtras().getString(ContactsPickerActivity.EXTRA_RESULT_USERNAME);
@@ -149,7 +157,7 @@ public class ContactsPickerActivity extends ActionBarActivity  {
                 if (newContact != null)
                 {
                     Intent dataNew = new Intent();
-                    
+
                     long providerId = data.getExtras().getLong(ContactsPickerActivity.EXTRA_RESULT_PROVIDER);
 
                     dataNew.putExtra(EXTRA_RESULT_USERNAME, newContact);
@@ -160,21 +168,22 @@ public class ContactsPickerActivity extends ActionBarActivity  {
 
                 }
             }
+        }
 
 
     }
 
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.contact_list_menu, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
 
-        if (mSearchView != null )
+        if (mSearchView != null)
         {
             mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             mSearchView.setIconifiedByDefault(false);
@@ -201,19 +210,20 @@ public class ContactsPickerActivity extends ActionBarActivity  {
         }
 
 
-
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
 
-        case R.id.menu_invite_user:
-            Intent i = new Intent(ContactsPickerActivity.this, AddContactActivity.class);
+            case R.id.menu_invite_user:
+                Intent i = new Intent(ContactsPickerActivity.this, AddContactActivity.class);
 
-            this.startActivityForResult(i, REQUEST_CODE_ADD_CONTACT);
-            return true;
+                this.startActivityForResult(i, REQUEST_CODE_ADD_CONTACT);
+                return true;
 
 
         }
@@ -221,41 +231,45 @@ public class ContactsPickerActivity extends ActionBarActivity  {
     }
 
 
-    public void doFilterAsync (final String query)
+    public void doFilterAsync(final String query)
     {
 
-            doFilter(query);
+        doFilter(query);
     }
 
     boolean mAwaitingUpdate = false;
 
-    public synchronized void doFilter(String filterString) {
+    public synchronized void doFilter(String filterString)
+    {
 
         mSearchString = filterString;
 
-        if (mAdapter == null) {
+        if (mAdapter == null)
+        {
 
             mAdapter = new ContactAdapter(ContactsPickerActivity.this, R.layout.contact_view);
 
-           mListView.setAdapter(mAdapter);
+            mListView.setAdapter(mAdapter);
 
             mLoaderCallbacks = new MyLoaderCallbacks();
             getSupportLoaderManager().initLoader(LOADER_ID, null, mLoaderCallbacks);
-        } else {
+        }
+        else
+        {
 
             if (!mAwaitingUpdate)
             {
                 mAwaitingUpdate = true;
-                mHandler.postDelayed(new Runnable ()
+                mHandler.postDelayed(new Runnable()
                 {
 
-                    public void run ()
+                    public void run()
                     {
 
                         getSupportLoaderManager().restartLoader(LOADER_ID, null, mLoaderCallbacks);
                         mAwaitingUpdate = false;
                     }
-                },1000);
+                }, 1000);
             }
 
         }
@@ -264,25 +278,31 @@ public class ContactsPickerActivity extends ActionBarActivity  {
     private Cursor mCursor;
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         super.onDestroy();
 
         if (mCursor != null && (!mCursor.isClosed()))
+        {
             mCursor.close();
+        }
 
 
     }
 
-    private class ContactAdapter extends ResourceCursorAdapter {
+    private class ContactAdapter extends ResourceCursorAdapter
+    {
 
 
-        public ContactAdapter(Context context, int view) {
-            super(context, view, null,0);
+        public ContactAdapter(Context context, int view)
+        {
+            super(context, view, null, 0);
 
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        public View newView(Context context, Cursor cursor, ViewGroup parent)
+        {
 
             View view = super.newView(context, cursor, parent);
 
@@ -293,36 +313,39 @@ public class ContactsPickerActivity extends ActionBarActivity  {
             holder.mLine1 = (TextView) view.findViewById(R.id.line1);
             holder.mLine2 = (TextView) view.findViewById(R.id.line2);
 
-            holder.mAvatar = (ImageView)view.findViewById(R.id.avatar);
-            holder.mStatusIcon = (ImageView)view.findViewById(R.id.statusIcon);
+            holder.mAvatar = (ImageView) view.findViewById(R.id.avatar);
+            holder.mStatusIcon = (ImageView) view.findViewById(R.id.statusIcon);
 
             holder.mContainer = view.findViewById(R.id.message_container);
 
-            holder.mMediaThumb = (ImageView)view.findViewById(R.id.media_thumbnail);
+            holder.mMediaThumb = (ImageView) view.findViewById(R.id.media_thumbnail);
 
             view.setTag(holder);
 
-           return view;
-
+            return view;
 
 
         }
 
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
+        public void bindView(View view, Context context, Cursor cursor)
+        {
             ContactView v = (ContactView) view;
             v.bind(cursor, mSearchString, true);
 
         }
     }
 
-    class MyLoaderCallbacks implements LoaderCallbacks<Cursor> {
+    class MyLoaderCallbacks implements LoaderCallbacks<Cursor>
+    {
         @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        public Loader<Cursor> onCreateLoader(int id, Bundle args)
+        {
             StringBuilder buf = new StringBuilder();
 
-            if (mSearchString != null) {
+            if (mSearchString != null)
+            {
 
                 buf.append('(');
                 buf.append(Imps.Contacts.NICKNAME);
@@ -333,21 +356,21 @@ public class ContactsPickerActivity extends ActionBarActivity  {
                 buf.append(" LIKE ");
                 android.database.DatabaseUtils.appendValueToSql(buf, "%" + mSearchString + "%");
                 buf.append(')');
-                
+
             }
 
 //            normal types not temporary
-            buf.append(" AND ");  
+            buf.append(" AND ");
             buf.append(Imps.Contacts.TYPE).append('=').append(Imps.Contacts.TYPE_NORMAL);
 
             if (mShowInvitations)
             {
-                buf.append(" AND (");                
+                buf.append(" AND (");
                 buf.append(Imps.Contacts.SUBSCRIPTION_TYPE).append('=').append(Imps.Contacts.SUBSCRIPTION_TYPE_FROM);
                 buf.append(" )");
             }
 
-            if(mHideOffline)
+            if (mHideOffline)
             {
                 buf.append(" AND ");
                 buf.append(Imps.Contacts.PRESENCE_STATUS).append("!=").append(Imps.Presence.OFFLINE);
@@ -360,18 +383,18 @@ public class ContactsPickerActivity extends ActionBarActivity  {
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor newCursor) {
+        public void onLoadFinished(Loader<Cursor> loader, Cursor newCursor)
+        {
             mAdapter.swapCursor(newCursor);
-
 
 
         }
 
         @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
+        public void onLoaderReset(Loader<Cursor> loader)
+        {
 
             mAdapter.swapCursor(null);
-
 
 
         }

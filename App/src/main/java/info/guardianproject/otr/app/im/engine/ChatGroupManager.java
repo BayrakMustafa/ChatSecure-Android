@@ -21,12 +21,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.jivesoftware.smack.XMPPException;
-
 /**
  * ChatGroupManager manages the creating, removing and the member of ChatGroups.
  */
-public abstract class ChatGroupManager {
+public abstract class ChatGroupManager
+{
 
     protected HashMap<String, ChatGroup> mGroups;
 
@@ -36,7 +35,8 @@ public abstract class ChatGroupManager {
 
     protected InvitationListener mInvitationListener;
 
-    protected ChatGroupManager() {
+    protected ChatGroupManager()
+    {
         mGroups = new HashMap<String, ChatGroup>();
         mInvitations = new HashMap<String, Invitation>();
         mGroupListeners = new CopyOnWriteArrayList<GroupListener>();
@@ -48,7 +48,8 @@ public abstract class ChatGroupManager {
      *
      * @param listener the listener to be notified.
      */
-    public void addGroupListener(GroupListener listener) {
+    public void addGroupListener(GroupListener listener)
+    {
         mGroupListeners.add(listener);
     }
 
@@ -58,7 +59,8 @@ public abstract class ChatGroupManager {
      *
      * @param listener the listener to remove.
      */
-    public void removeGroupListener(GroupListener listener) {
+    public void removeGroupListener(GroupListener listener)
+    {
         mGroupListeners.remove(listener);
     }
 
@@ -68,7 +70,8 @@ public abstract class ChatGroupManager {
      *
      * @param listener the InvitationListener.
      */
-    public synchronized void setInvitationListener(InvitationListener listener) {
+    public synchronized void setInvitationListener(InvitationListener listener)
+    {
         mInvitationListener = listener;
     }
 
@@ -99,7 +102,7 @@ public abstract class ChatGroupManager {
      * member is added or any error occurs. Only the administrator of the
      * ChatGroup can add member to it.
      *
-     * @param group the ChatGroup to which the member will add.
+     * @param group   the ChatGroup to which the member will add.
      * @param contact the member to add.
      */
     protected abstract void addGroupMemberAsync(ChatGroup group, Contact contact);
@@ -110,7 +113,7 @@ public abstract class ChatGroupManager {
      * the member is added or any error occurs. Only the administrator of the
      * ChatGroup can remove its members.
      *
-     * @param group the ChatGroup whose member will be removed.
+     * @param group   the ChatGroup whose member will be removed.
      * @param contact the member to be removed.
      */
     protected abstract void removeGroupMemberAsync(ChatGroup group, Contact contact);
@@ -138,7 +141,7 @@ public abstract class ChatGroupManager {
      * receive an invitation with information of the group. Otherwise, the
      * registered GroupListeners will be notified if any error occurs.
      *
-     * @param group the ChatGroup.
+     * @param group   the ChatGroup.
      * @param invitee the invitee.
      */
     public abstract void inviteUserAsync(ChatGroup group, Contact invitee);
@@ -158,9 +161,11 @@ public abstract class ChatGroupManager {
      * @param inviteId the id of the invitation to accept.
      * @see #acceptInvitationAsync(Invitation)
      */
-    public void acceptInvitationAsync(String inviteId) {
+    public void acceptInvitationAsync(String inviteId)
+    {
         Invitation invitation = mInvitations.remove(inviteId);
-        if (invitation != null) {
+        if (invitation != null)
+        {
             acceptInvitationAsync(invitation);
         }
     }
@@ -171,9 +176,11 @@ public abstract class ChatGroupManager {
      * @param inviteId the id of the invitation to reject.
      * @see #rejectInvitationAsync(Invitation)
      */
-    public void rejectInvitationAsync(String inviteId) {
+    public void rejectInvitationAsync(String inviteId)
+    {
         Invitation invitation = mInvitations.remove(inviteId);
-        if (invitation != null) {
+        if (invitation != null)
+        {
             rejectInvitationAsync(invitation);
         }
     }
@@ -191,7 +198,8 @@ public abstract class ChatGroupManager {
      * @param address the address of the ChatGroup.
      * @return a ChatGroup.
      */
-    public ChatGroup getChatGroup(Address address) {
+    public ChatGroup getChatGroup(Address address)
+    {
         return mGroups.get(address.getBareAddress());
     }
 
@@ -199,45 +207,57 @@ public abstract class ChatGroupManager {
      * Notifies the GroupListeners that a ChatGroup has changed.
      *
      * @param groupAddress the address of group which has changed.
-     * @param joined a list of users that have joined the group.
-     * @param left a list of users that have left the group.
+     * @param joined       a list of users that have joined the group.
+     * @param left         a list of users that have left the group.
      */
     protected void notifyGroupChanged(Address groupAddress, ArrayList<Contact> joined,
-            ArrayList<Contact> left) {
+                                      ArrayList<Contact> left)
+    {
         ChatGroup group = mGroups.get(groupAddress.getAddress());
-        if (group == null) {
+        if (group == null)
+        {
             group = new ChatGroup(groupAddress, groupAddress.getUser(), this);
             mGroups.put(groupAddress.getAddress(), group);
         }
-        if (joined != null) {
-            for (Contact contact : joined) {
+        if (joined != null)
+        {
+            for (Contact contact : joined)
+            {
                 notifyMemberJoined(group, contact);
             }
         }
-        if (left != null) {
-            for (Contact contact : left) {
+        if (left != null)
+        {
+            for (Contact contact : left)
+            {
                 notifyMemberLeft(group, contact);
             }
         }
     }
 
-    protected synchronized void notifyGroupCreated(ChatGroup group) {
+    protected synchronized void notifyGroupCreated(ChatGroup group)
+    {
         mGroups.put(group.getAddress().getAddress(), group);
-        for (GroupListener listener : mGroupListeners) {
+        for (GroupListener listener : mGroupListeners)
+        {
             listener.onGroupCreated(group);
         }
     }
 
-    protected synchronized void notifyGroupDeleted(ChatGroup group) {
+    protected synchronized void notifyGroupDeleted(ChatGroup group)
+    {
         mGroups.remove(group.getAddress().getAddress());
-        for (GroupListener listener : mGroupListeners) {
+        for (GroupListener listener : mGroupListeners)
+        {
             listener.onGroupDeleted(group);
         }
     }
 
-    protected synchronized void notifyJoinedGroup(ChatGroup group) {
+    protected synchronized void notifyJoinedGroup(ChatGroup group)
+    {
         mGroups.put(group.getAddress().getAddress(), group);
-        for (GroupListener listener : mGroupListeners) {
+        for (GroupListener listener : mGroupListeners)
+        {
             listener.onJoinedGroup(group);
         }
     }
@@ -247,15 +267,19 @@ public abstract class ChatGroupManager {
      *
      * @param groupAddress the address of the group.
      */
-    protected synchronized void notifyLeftGroup(ChatGroup group) {
+    protected synchronized void notifyLeftGroup(ChatGroup group)
+    {
         mGroups.remove(group.getAddress().getAddress());
-        for (GroupListener listener : mGroupListeners) {
+        for (GroupListener listener : mGroupListeners)
+        {
             listener.onLeftGroup(group);
         }
     }
 
-    protected synchronized void notifyGroupError(int errorType, String groupName, ImErrorInfo error) {
-        for (GroupListener listener : mGroupListeners) {
+    protected synchronized void notifyGroupError(int errorType, String groupName, ImErrorInfo error)
+    {
+        for (GroupListener listener : mGroupListeners)
+        {
             listener.onGroupError(errorType, groupName, error);
         }
     }
@@ -264,9 +288,11 @@ public abstract class ChatGroupManager {
      * Notifies the InvitationListener that another user invited the current
      * logged user to join a group chat.
      */
-    protected synchronized void notifyGroupInvitation(Invitation invitation) {
+    protected synchronized void notifyGroupInvitation(Invitation invitation)
+    {
         mInvitations.put(invitation.getInviteID(), invitation);
-        if (mInvitationListener != null) {
+        if (mInvitationListener != null)
+        {
             mInvitationListener.onGroupInvitation(invitation);
         }
     }
@@ -274,20 +300,22 @@ public abstract class ChatGroupManager {
     /**
      * Notifies that a contact has joined into this group.
      *
-     * @param group the group into which the contact has joined.
+     * @param group   the group into which the contact has joined.
      * @param contact the contact who has joined into the group.
      */
-    protected void notifyMemberJoined(ChatGroup group, Contact contact) {
+    protected void notifyMemberJoined(ChatGroup group, Contact contact)
+    {
         group.notifyMemberJoined(contact);
     }
 
     /**
      * Notifies that a contact has left this group.
      *
-     * @param group the group which the contact has left.
+     * @param group   the group which the contact has left.
      * @param contact the contact who has left this group.
      */
-    protected void notifyMemberLeft(ChatGroup group, Contact contact) {
+    protected void notifyMemberLeft(ChatGroup group, Contact contact)
+    {
         group.notifyMemberLeft(contact);
     }
 
@@ -296,14 +324,16 @@ public abstract class ChatGroupManager {
      *
      * @param error the error information.
      */
-    protected void notifyGroupMemberError(ChatGroup group, ImErrorInfo error) {
+    protected void notifyGroupMemberError(ChatGroup group, ImErrorInfo error)
+    {
         group.notifyGroupMemberError(error);
     }
-    
+
     /**
      * ask the server what the default host is for MUC
+     *
      * @return
      */
-    public abstract String getDefaultMultiUserChatServer ();
-    
+    public abstract String getDefaultMultiUserChatServer();
+
 }

@@ -7,8 +7,11 @@ package net.java.otr4j.session;
 
 import info.guardianproject.otr.app.im.engine.Address;
 
-/** @author George Politis */
-public final class SessionID {
+/**
+ * @author George Politis
+ */
+public final class SessionID
+{
 
     private String mLocalUserId;
     private String mRemoteUserId;
@@ -18,46 +21,54 @@ public final class SessionID {
 
     public static final SessionID Empty = new SessionID(null, null, null);
 
-    public SessionID(String localUserId, String remoteUserId, String protocolName) {
-       mLocalUserId = localUserId;
-       mRemoteUserId = remoteUserId;
-       mProtocolName = protocolName;
-       mSessionId = Address.stripResource(mLocalUserId) + '_' + mProtocolName + '_' + Address.stripResource(mRemoteUserId);
+    public SessionID(String localUserId, String remoteUserId, String protocolName)
+    {
+        mLocalUserId = localUserId;
+        mRemoteUserId = remoteUserId;
+        mProtocolName = protocolName;
+        mSessionId = Address.stripResource(mLocalUserId) + '_' + mProtocolName + '_' + Address.stripResource(mRemoteUserId);
     }
 
-    public String getLocalUserId ()
+    public String getLocalUserId()
     {
         return mLocalUserId;
     }
 
-    public String getRemoteUserId ()
+    public String getRemoteUserId()
     {
         return mRemoteUserId;
     }
 
-    public String getProtocolName ()
+    public String getProtocolName()
     {
         return mProtocolName;
     }
 
-    public String toString() {
+    public String toString()
+    {
         return mSessionId;
 
     }
 
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
 
         if (obj == this)
+        {
             return true;
+        }
         if (obj == null || obj.getClass() != this.getClass())
+        {
             return false;
+        }
 
         SessionID sessionID = (SessionID) obj;
 
         return this.toString().equals(sessionID.toString());
     }
 
-    public int hashCode() {
+    public int hashCode()
+    {
         return this.toString().hashCode();
     }
 }

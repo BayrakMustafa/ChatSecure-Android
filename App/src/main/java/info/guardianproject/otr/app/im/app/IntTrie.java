@@ -17,30 +17,37 @@
 
 package info.guardianproject.otr.app.im.app;
 
-public class IntTrie {
+public class IntTrie
+{
     private Node mHead;
 
-    class Node {
+    class Node
+    {
         private Node mFirstChild;
         private Node mNextSibling;
         private char mKey;
         int mValue;
 
-        public final void add(String key, int value) {
+        public final void add(String key, int value)
+        {
             final int len = key.length();
             Node n = this;
             int index = 0;
 
-            while (index < len) {
+            while (index < len)
+            {
                 n = n.getOrCreateNode(key.charAt(index++));
             }
 
             n.mValue = value;
         }
 
-        private Node getOrCreateNode(char key) {
-            for (Node n = mFirstChild; n != null; n = n.mNextSibling) {
-                if (n.mKey == key) {
+        private Node getOrCreateNode(char key)
+        {
+            for (Node n = mFirstChild; n != null; n = n.mNextSibling)
+            {
+                if (n.mKey == key)
+                {
                     return n;
                 }
             }
@@ -54,9 +61,12 @@ public class IntTrie {
             return n;
         }
 
-        Node getNode(char key) {
-            for (Node n = mFirstChild; n != null; n = n.mNextSibling) {
-                if (n.mKey == key) {
+        Node getNode(char key)
+        {
+            for (Node n = mFirstChild; n != null; n = n.mNextSibling)
+            {
+                if (n.mKey == key)
+                {
                     return n;
                 }
             }
@@ -65,21 +75,25 @@ public class IntTrie {
         }
     }
 
-    public IntTrie(String[] dictionary, int[] values) {
+    public IntTrie(String[] dictionary, int[] values)
+    {
         final int len = dictionary.length;
 
-        if (len != values.length) {
+        if (len != values.length)
+        {
             throw new IllegalArgumentException("dictionary[] and values[] must be the same length");
         }
 
         mHead = new Node();
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++)
+        {
             mHead.add(dictionary[i], values[i]);
         }
     }
 
-    public Node getNode(char key) {
+    public Node getNode(char key)
+    {
         return mHead.getNode(key);
     }
 }

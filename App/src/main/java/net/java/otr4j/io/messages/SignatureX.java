@@ -8,15 +8,19 @@ package net.java.otr4j.io.messages;
 import java.security.PublicKey;
 import java.util.Arrays;
 
-/** @author George Politis */
-public class SignatureX {
+/**
+ * @author George Politis
+ */
+public class SignatureX
+{
     // Fields.
     public PublicKey longTermPublicKey;
     public int dhKeyID;
     public byte[] signature;
 
     // Ctor.
-    public SignatureX(PublicKey ourLongTermPublicKey, int ourKeyID, byte[] signature) {
+    public SignatureX(PublicKey ourLongTermPublicKey, int ourKeyID, byte[] signature)
+    {
         this.longTermPublicKey = ourLongTermPublicKey;
         this.dhKeyID = ourKeyID;
         this.signature = signature;
@@ -24,7 +28,8 @@ public class SignatureX {
 
     // Methods.
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         // TODO: Needs work.
         final int prime = 31;
         int result = 1;
@@ -35,24 +40,41 @@ public class SignatureX {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         // TODO: Needs work.
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         SignatureX other = (SignatureX) obj;
         if (dhKeyID != other.dhKeyID)
+        {
             return false;
-        if (longTermPublicKey == null) {
+        }
+        if (longTermPublicKey == null)
+        {
             if (other.longTermPublicKey != null)
+            {
                 return false;
-        } else if (!longTermPublicKey.equals(other.longTermPublicKey))
+            }
+        }
+        else if (!longTermPublicKey.equals(other.longTermPublicKey))
+        {
             return false;
+        }
         if (!Arrays.equals(signature, other.signature))
+        {
             return false;
+        }
         return true;
     }
 

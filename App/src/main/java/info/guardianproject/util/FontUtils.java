@@ -10,11 +10,14 @@ import android.widget.TextView;
 import java.util.EnumMap;
 import java.util.Map;
 
-public final class FontUtils {
-    private FontUtils() {
+public final class FontUtils
+{
+    private FontUtils()
+    {
     }
 
-    private enum FontType {
+    private enum FontType
+    {
         BOLD("fonts/Roboto/Roboto-Bold.ttf"),
         BOLD_ITALIC("fonts/Roboto/Roboto-BoldItalic.ttf"),
         NORMAL("fonts/Roboto/Roboto-Regular.ttf"),
@@ -22,11 +25,13 @@ public final class FontUtils {
 
         private final String path;
 
-        FontType(String path) {
+        FontType(String path)
+        {
             this.path = path;
         }
 
-        public String getPath() {
+        public String getPath()
+        {
             return path;
         }
     }
@@ -37,10 +42,12 @@ public final class FontUtils {
     /**
      * Creates Roboto typeface and puts it into cache
      */
-    private static Typeface getRobotoTypeface(Context context, FontType fontType) {
+    private static Typeface getRobotoTypeface(Context context, FontType fontType)
+    {
         String fontPath = fontType.getPath();
 
-        if (!typefaceCache.containsKey(fontType)) {
+        if (!typefaceCache.containsKey(fontType))
+        {
             typefaceCache.put(fontType, Typeface.createFromAsset(context.getAssets(), fontPath));
         }
 
@@ -52,15 +59,20 @@ public final class FontUtils {
      * <p/>
      * Will get Roboto-Bold for Typeface.BOLD etc
      */
-    private static Typeface getRobotoTypeface(Context context, Typeface originalTypeface) {
+    private static Typeface getRobotoTypeface(Context context, Typeface originalTypeface)
+    {
         FontType robotoFontType = null;
 
-        if (originalTypeface == null) {
+        if (originalTypeface == null)
+        {
             robotoFontType = FontType.NORMAL;
-        } else {
+        }
+        else
+        {
             int style = originalTypeface.getStyle();
 
-            switch (style) {
+            switch (style)
+            {
                 case Typeface.BOLD:
                     robotoFontType = FontType.BOLD;
                     break;
@@ -89,13 +101,18 @@ public final class FontUtils {
      * @param context - to reach assets
      * @param view    - root view to apply typeface to
      */
-    public static void setRobotoFont(Context context, View view) {
+    public static void setRobotoFont(Context context, View view)
+    {
 
-        if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+        if (view instanceof ViewGroup)
+        {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++)
+            {
                 setRobotoFont(context, ((ViewGroup) view).getChildAt(i));
             }
-        } else if (view instanceof TextView) {
+        }
+        else if (view instanceof TextView)
+        {
             Typeface currentTypeface = ((TextView) view).getTypeface();
             ((TextView) view).setTypeface(getRobotoTypeface(context, currentTypeface));
         }

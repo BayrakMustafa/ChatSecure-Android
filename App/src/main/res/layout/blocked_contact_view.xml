@@ -19,31 +19,33 @@
 -->
 
 <view xmlns:android="http://schemas.android.com/apk/res/android"
-    class="info.guardianproject.otr.app.im.app.BlockedContactView"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:paddingLeft="9dip"
-    android:paddingRight="9dip">
+      class="info.guardianproject.otr.app.im.app.BlockedContactView"
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="?android:attr/listPreferredItemHeight"
+      android:paddingLeft="9dip"
+      android:paddingRight="9dip">
 
     <FrameLayout
         android:layout_gravity="center_vertical"
         android:layout_width="60dip"
         android:layout_height="60dip">
 
-        <ImageView android:id="@+id/avatar"
+        <ImageView
+            android:id="@+id/avatar"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:padding="2dip"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"/>
 
         <!-- Draw the circle-slash over top of the user's avatar -->
-        <ImageView android:id="@+id/blocked"
+        <ImageView
+            android:id="@+id/blocked"
             android:src="@drawable/ic_im_block"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"/>
     </FrameLayout>
 
     <LinearLayout
@@ -53,18 +55,20 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <TextView android:id="@+id/line1"
+        <TextView
+            android:id="@+id/line1"
             android:maxLines="1"
             android:layout_width="fill_parent"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
 
-        <TextView android:id="@+id/line2"
+        <TextView
+            android:id="@+id/line2"
             android:maxLines="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     </LinearLayout>
 

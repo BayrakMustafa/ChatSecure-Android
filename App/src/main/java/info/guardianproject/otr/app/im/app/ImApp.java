@@ -88,7 +88,8 @@ import info.guardianproject.otr.app.im.service.ImServiceConstants;
 import info.guardianproject.util.AssetUtil;
 import info.guardianproject.util.Debug;
 
-public class ImApp extends Application {
+public class ImApp extends Application
+{
 
     public static final String LOG_TAG = "GB.ImApp";
 
@@ -141,7 +142,9 @@ public class ImApp extends Application {
      */
     ArrayList<Message> mQueue = new ArrayList<Message>();
 
-    /** A flag indicates that we have called tomServiceStarted start the service. */
+    /**
+     * A flag indicates that we have called tomServiceStarted start the service.
+     */
 //    private boolean mServiceStarted;
     private Context mApplicationContext;
     private Resources mPrivateResources;
@@ -159,15 +162,16 @@ public class ImApp extends Application {
     public static final int EVENT_USER_PRESENCE_UPDATED = 300;
     public static final int EVENT_UPDATE_USER_PRESENCE_ERROR = 301;
 
-    private static final String[] PROVIDER_PROJECTION = { Imps.Provider._ID, Imps.Provider.NAME,
-                                                         Imps.Provider.FULLNAME,
-                                                         Imps.Provider.SIGNUP_URL, };
+    private static final String[] PROVIDER_PROJECTION = {Imps.Provider._ID, Imps.Provider.NAME,
+            Imps.Provider.FULLNAME,
+            Imps.Provider.SIGNUP_URL,};
 
-    private static final String[] ACCOUNT_PROJECTION = { Imps.Account._ID, Imps.Account.PROVIDER,
-                                                        Imps.Account.NAME, Imps.Account.USERNAME,
-                                                        Imps.Account.PASSWORD, };
+    private static final String[] ACCOUNT_PROJECTION = {Imps.Account._ID, Imps.Account.PROVIDER,
+            Imps.Account.NAME, Imps.Account.USERNAME,
+            Imps.Account.PASSWORD,};
 
-    static final void log(String log) {
+    static final void log(String log)
+    {
         Log.d(LOG_TAG, log);
     }
 
@@ -208,10 +212,11 @@ public class ImApp extends Application {
         sImApp.onCreate();
     }
 */
-
     @Override
-    public Resources getResources() {
-        if (mApplicationContext == this) {
+    public Resources getResources()
+    {
+        if (mApplicationContext == this)
+        {
             return super.getResources();
         }
 
@@ -219,8 +224,10 @@ public class ImApp extends Application {
     }
 
     @Override
-    public ContentResolver getContentResolver() {
-        if (mApplicationContext == this) {
+    public ContentResolver getContentResolver()
+    {
+        if (mApplicationContext == this)
+        {
             return super.getContentResolver();
         }
 
@@ -229,10 +236,12 @@ public class ImApp extends Application {
 
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig)
+    {
         super.onConfigurationChanged(newConfig);
 
-        if (locale != null) {
+        if (locale != null)
+        {
             // We have to create a new configuration, because changing the passed-in Configuration
             // object causes an infinite relaunch loop in Android 4.2 (JB MR1)
             Configuration myConfig = new Configuration(newConfig);
@@ -244,7 +253,8 @@ public class ImApp extends Application {
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate()
+    {
         super.onCreate();
 
         sImApp = this;
@@ -264,27 +274,27 @@ public class ImApp extends Application {
 
         mBroadcaster = new Broadcaster();
 
-        setAppTheme(null,null);
+        setAppTheme(null, null);
 
         checkLocale();
     }
 
     private boolean mThemeDark = false;
 
-    public boolean isThemeDark ()
+    public boolean isThemeDark()
     {
         return mThemeDark;
     }
-    
-    public void setAppTheme (Activity activity)
+
+    public void setAppTheme(Activity activity)
     {
         setAppTheme(activity, null);
     }
-    
+
     private final static int COLOR_TOOLBAR_DARK = Color.parseColor("#263238");
     private final static int COLOR_TOOLBAR_LIGHT = Color.parseColor("#B0BEC5");
 
-    public void setAppTheme (Activity activity, Toolbar toolbar)
+    public void setAppTheme(Activity activity, Toolbar toolbar)
     {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -300,17 +310,19 @@ public class ImApp extends Application {
                 activity.setTheme(R.style.AppThemeDark);
                 if (activity instanceof ActionBarActivity)
                 {
-                    ActionBar ab = ((ActionBarActivity)activity).getSupportActionBar();
-                    
+                    ActionBar ab = ((ActionBarActivity) activity).getSupportActionBar();
+
                     if (ab != null)
                     {
-                        ab.setBackgroundDrawable(new ColorDrawable(COLOR_TOOLBAR_DARK));                        
+                        ab.setBackgroundDrawable(new ColorDrawable(COLOR_TOOLBAR_DARK));
                     }
                 }
-            }      
-            if (toolbar != null)                
+            }
+            if (toolbar != null)
+            {
                 toolbar.setBackgroundColor(COLOR_TOOLBAR_DARK);
-      
+            }
+
         }
         else
         {
@@ -322,19 +334,21 @@ public class ImApp extends Application {
                 activity.setTheme(R.style.AppTheme);
                 if (activity instanceof ActionBarActivity)
                 {
-                    ActionBar ab = ((ActionBarActivity)activity).getSupportActionBar();
-                    
+                    ActionBar ab = ((ActionBarActivity) activity).getSupportActionBar();
+
                     if (ab != null)
                     {
-                        ab.setBackgroundDrawable(new ColorDrawable(COLOR_TOOLBAR_LIGHT));                        
+                        ab.setBackgroundDrawable(new ColorDrawable(COLOR_TOOLBAR_LIGHT));
                     }
                 }
             }
-            
+
             if (toolbar != null)
+            {
                 toolbar.setBackgroundColor(COLOR_TOOLBAR_LIGHT);
-            
-            
+            }
+
+
         }
 
         Configuration config = getResources().getConfiguration();
@@ -343,15 +357,18 @@ public class ImApp extends Application {
         if (mImService != null)
         {
             boolean debugOn = settings.getBoolean("prefDebug", false);
-            try {
+            try
+            {
                 mImService.enableDebugLogging(debugOn);
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 e.printStackTrace();
             }
         }
     }
 
-    public void checkLocale ()
+    public void checkLocale()
     {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -360,11 +377,14 @@ public class ImApp extends Application {
         String lang = settings.getString(getString(R.string.key_default_locale_pref), "");
 
 
-        if ("".equals(lang)) {
+        if ("".equals(lang))
+        {
             Properties props = AssetUtil.getProperties("chatsecure.properties", this);
-            if (props != null) {
+            if (props != null)
+            {
                 String configuredLocale = props.getProperty("locale");
-                if (configuredLocale != null && !"CHOOSE".equals(configuredLocale)) {
+                if (configuredLocale != null && !"CHOOSE".equals(configuredLocale))
+                {
                     lang = configuredLocale;
                     Editor editor = settings.edit();
                     editor.putString(getString(R.string.key_default_locale_pref), lang);
@@ -373,7 +393,8 @@ public class ImApp extends Application {
             }
         }
 
-        if (!"".equals(lang) && !config.locale.getLanguage().equals(lang)) {
+        if (!"".equals(lang) && !config.locale.getLanguage().equals(lang))
+        {
             locale = new Locale(lang);
             config.locale = locale;
             Locale.setDefault(locale);
@@ -384,18 +405,27 @@ public class ImApp extends Application {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public void setNewLocale(Context context, String language) {
+    public void setNewLocale(Context context, String language)
+    {
         /* handle locales with the country in it, i.e. zh_CN, zh_TW, etc */
         String localeSplit[] = language.split("_");
         if (localeSplit.length > 1)
+        {
             locale = new Locale(localeSplit[0], localeSplit[1]);
+        }
         else
+        {
             locale = new Locale(language);
+        }
         Configuration config = getResources().getConfiguration();
         if (Build.VERSION.SDK_INT >= 17)
+        {
             config.setLocale(locale);
+        }
         else
+        {
             config.locale = locale;
+        }
         Locale.setDefault(locale);
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
 
@@ -409,28 +439,32 @@ public class ImApp extends Application {
     }
 
     /**
-    @Override
-    public void onTerminate() {
-        stopImServiceIfInactive();
-        if (mImService != null) {
-            try {
-                mImService.removeConnectionCreatedListener(mConnCreationListener);
-            } catch (RemoteException e) {
-                Log.w(LOG_TAG, "failed to remove ConnectionCreatedListener");
-            }
-        }
+     * @Override public void onTerminate() {
+     * stopImServiceIfInactive();
+     * if (mImService != null) {
+     * try {
+     * mImService.removeConnectionCreatedListener(mConnCreationListener);
+     * } catch (RemoteException e) {
+     * Log.w(LOG_TAG, "failed to remove ConnectionCreatedListener");
+     * }
+     * }
+     * <p/>
+     * Imps.clearPassphrase(this);
+     * super.onTerminate();
+     * }
+     */
 
-        Imps.clearPassphrase(this);
-        super.onTerminate();
-    }*/
-
-    public synchronized void startImServiceIfNeed() {
+    public synchronized void startImServiceIfNeed()
+    {
         startImServiceIfNeed(false);
     }
 
-    public synchronized void startImServiceIfNeed(boolean isBoot) {
+    public synchronized void startImServiceIfNeed(boolean isBoot)
+    {
         if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+        {
             log("start ImService");
+        }
 
         Intent serviceIntent = new Intent();
         serviceIntent.setComponent(ImServiceConstants.IM_SERVICE_COMPONENT);
@@ -439,31 +473,39 @@ public class ImApp extends Application {
         if (mImService == null)
         {
             mApplicationContext.startService(serviceIntent);
-            if (!isBoot) {
+            if (!isBoot)
+            {
                 mConnectionListener = new MyConnListener(new Handler());
             }
         }
 
         if (mImServiceConn != null && !isBoot)
+        {
             mApplicationContext
-                .bindService(serviceIntent, mImServiceConn, Context.BIND_AUTO_CREATE);
+                    .bindService(serviceIntent, mImServiceConn, Context.BIND_AUTO_CREATE);
+        }
 
 
     }
 
-    public boolean hasActiveConnections ()
+    public boolean hasActiveConnections()
     {
         return !mConnections.isEmpty();
 
     }
 
-    public synchronized void stopImServiceIfInactive() {
+    public synchronized void stopImServiceIfInactive()
+    {
 
-        if (!hasActiveConnections()) {
+        if (!hasActiveConnections())
+        {
             if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("stop ImService because there's no active connections");
+            }
 
-            if (mImService != null) {
+            if (mImService != null)
+            {
                 mApplicationContext.unbindService(mImServiceConn);
                 mImService = null;
             }
@@ -477,9 +519,12 @@ public class ImApp extends Application {
 
     public synchronized void forceStopImService()
     {
-        if (mImService != null) {
+        if (mImService != null)
+        {
             if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("stop ImService");
+            }
 
             mApplicationContext.unbindService(mImServiceConn);
             mImService = null;
@@ -491,16 +536,22 @@ public class ImApp extends Application {
         }
     }
 
-    private ServiceConnection mImServiceConn = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
+    private ServiceConnection mImServiceConn = new ServiceConnection()
+    {
+        public void onServiceConnected(ComponentName className, IBinder service)
+        {
             if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("service connected");
+            }
 
             mImService = IRemoteImService.Stub.asInterface(service);
             fetchActiveConnections();
 
-            synchronized (mQueue) {
-                for (Message msg : mQueue) {
+            synchronized (mQueue)
+            {
+                for (Message msg : mQueue)
+                {
                     msg.sendToTarget();
                 }
                 mQueue.clear();
@@ -515,21 +566,26 @@ public class ImApp extends Application {
             }*/
         }
 
-        public void onServiceDisconnected(ComponentName className) {
+        public void onServiceDisconnected(ComponentName className)
+        {
             if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("service disconnected");
+            }
 
             mConnections.clear();
             mImService = null;
         }
     };
 
-    public boolean serviceConnected() {
+    public boolean serviceConnected()
+    {
         return mImService != null;
     }
 
- //   public boolean isBackgroundDataEnabled() { //"background data" is a deprectaed concept
-    public static boolean isNetworkAvailableAndConnected (Context context) {
+    //   public boolean isBackgroundDataEnabled() { //"background data" is a deprectaed concept
+    public static boolean isNetworkAvailableAndConnected(Context context)
+    {
         ConnectivityManager manager = (ConnectivityManager) context
                 .getSystemService(CONNECTIVITY_SERVICE);
 
@@ -537,21 +593,25 @@ public class ImApp extends Application {
 
         if (nInfo != null)
         {
-            Log.d(LOG_TAG,"isNetworkAvailableAndConnected? available=" + nInfo.isAvailable() + " connected=" + nInfo.isConnected());
+            Log.d(LOG_TAG, "isNetworkAvailableAndConnected? available=" + nInfo.isAvailable() + " connected=" + nInfo.isConnected());
             return nInfo.isAvailable() && nInfo.isConnected();
         }
         else
+        {
             return false; //no network info is a bad idea
+        }
     }
 
     public static long insertOrUpdateAccount(ContentResolver cr, long providerId, String userName,
-            String pw) {
+                                             String pw)
+    {
         String selection = Imps.Account.PROVIDER + "=? AND " + Imps.Account.USERNAME + "=?";
-        String[] selectionArgs = { Long.toString(providerId), userName };
+        String[] selectionArgs = {Long.toString(providerId), userName};
 
         Cursor c = cr.query(Imps.Account.CONTENT_URI, ACCOUNT_PROJECTION, selection, selectionArgs,
                 null);
-        if (c != null && c.moveToFirst()) {
+        if (c != null && c.moveToFirst())
+        {
             long id = c.getLong(c.getColumnIndexOrThrow(Imps.Account._ID));
 
             ContentValues values = new ContentValues(1);
@@ -561,36 +621,45 @@ public class ImApp extends Application {
 
             c.close();
             return id;
-        } else {
+        }
+        else
+        {
             ContentValues values = new ContentValues(4);
             values.put(Imps.Account.PROVIDER, providerId);
             values.put(Imps.Account.NAME, userName);
             values.put(Imps.Account.USERNAME, userName);
             values.put(Imps.Account.PASSWORD, pw);
 
-            if (pw != null && pw.length() > 0) {
+            if (pw != null && pw.length() > 0)
+            {
                 values.put(Imps.Account.KEEP_SIGNED_IN, true);
             }
 
             Uri result = cr.insert(Imps.Account.CONTENT_URI, values);
             if (c != null)
+            {
                 c.close();
+            }
             return ContentUris.parseId(result);
         }
     }
 
-    /** Used to reset the provider settings if a reload is required. */
+    /**
+     * Used to reset the provider settings if a reload is required.
+     */
     /*
     public void resetProviderSettings() {
         mProviders = null;
     }*/
 
     // For testing
-    public void setImProviderSettings(HashMap<Long, ProviderDef> providers) {
+    public void setImProviderSettings(HashMap<Long, ProviderDef> providers)
+    {
         mProviders = providers;
     }
 
-    private void loadImProviderSettings() {
+    private void loadImProviderSettings()
+    {
 
         mProviders = new HashMap<Long, ProviderDef>();
         ContentResolver cr = getContentResolver();
@@ -599,29 +668,37 @@ public class ImApp extends Application {
         selectionArgs[0] = ImApp.IMPS_CATEGORY;
 
         Cursor c = cr.query(Imps.Provider.CONTENT_URI, PROVIDER_PROJECTION, Imps.Provider.CATEGORY
-                                                                            + "=?", selectionArgs,
+                        + "=?", selectionArgs,
                 null);
-        if (c == null) {
+        if (c == null)
+        {
             return;
         }
 
-        try {
-            while (c.moveToNext()) {
+        try
+        {
+            while (c.moveToNext())
+            {
                 long id = c.getLong(0);
                 String providerName = c.getString(1);
                 String fullName = c.getString(2);
                 String signUpUrl = c.getString(3);
 
                 if (mProviders == null) // mProviders has been reset
+                {
                     break;
+                }
                 mProviders.put(id, new ProviderDef(id, providerName, fullName, signUpUrl));
             }
-        } finally {
+        }
+        finally
+        {
             c.close();
         }
     }
 
-    private void loadDefaultBrandingRes() {
+    private void loadDefaultBrandingRes()
+    {
         HashMap<Integer, Integer> resMapping = new HashMap<Integer, Integer>();
 
         resMapping.put(BrandingResourceIDs.DRAWABLE_LOGO, R.drawable.ic_launcher);
@@ -680,18 +757,21 @@ public class ImApp extends Application {
         mDefaultBrandingResources = new BrandingResources(this, resMapping, null /* default res */);
     }
 
-    private void loadThirdPartyResources() {
+    private void loadThirdPartyResources()
+    {
         ImPluginHelper helper = ImPluginHelper.getInstance(this);
         helper.loadAvailablePlugins();
         ArrayList<ImPlugin> pluginList = helper.getPluginObjects();
         ArrayList<ImPluginInfo> infoList = helper.getPluginsInfo();
         int N = pluginList.size();
         PackageManager pm = getPackageManager();
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < N; i++)
+        {
             ImPlugin plugin = pluginList.get(i);
             ImPluginInfo pluginInfo = infoList.get(i);
 
-            try {
+            try
+            {
                 Resources packageRes = pm.getResourcesForApplication(pluginInfo.mPackageName);
 
                 Map<Integer, Integer> resMap = plugin.getResourceMap();
@@ -701,40 +781,50 @@ public class ImApp extends Application {
                 BrandingResources res = new BrandingResources(packageRes, resMap,
                         mDefaultBrandingResources);
                 mBrandingResources.put(pluginInfo.mProviderName, res);
-            } catch (NameNotFoundException e) {
+            }
+            catch (NameNotFoundException e)
+            {
                 Log.e(LOG_TAG, "Failed to load third party resources.", e);
             }
         }
     }
 
-    public long getProviderId(String name) {
+    public long getProviderId(String name)
+    {
         loadImProviderSettings();
-        for (ProviderDef provider : mProviders.values()) {
-            if (provider.mName.equals(name)) {
+        for (ProviderDef provider : mProviders.values())
+        {
+            if (provider.mName.equals(name))
+            {
                 return provider.mId;
             }
         }
         return -1;
     }
 
-    public ProviderDef getProvider(long id) {
+    public ProviderDef getProvider(long id)
+    {
         loadImProviderSettings();
         return mProviders.get(id);
     }
 
-    public List<ProviderDef> getProviders() {
+    public List<ProviderDef> getProviders()
+    {
         loadImProviderSettings();
         ArrayList<ProviderDef> result = new ArrayList<ProviderDef>();
         result.addAll(mProviders.values());
         return result;
     }
 
-    public BrandingResources getBrandingResource(long providerId) {
+    public BrandingResources getBrandingResource(long providerId)
+    {
         ProviderDef provider = getProvider(providerId);
-        if (provider == null) {
+        if (provider == null)
+        {
             return mDefaultBrandingResources;
         }
-        if (mBrandingResources == null) {
+        if (mBrandingResources == null)
+        {
             mBrandingResources = new HashMap<String, BrandingResources>();
             loadThirdPartyResources();
         }
@@ -742,22 +832,27 @@ public class ImApp extends Application {
         return res == null ? mDefaultBrandingResources : res;
     }
 
-    public IImConnection createConnection(long providerId, long accountId) throws RemoteException {
+    public IImConnection createConnection(long providerId, long accountId) throws RemoteException
+    {
 
-        if (mImService == null) {
+        if (mImService == null)
+        {
             // Service hasn't been connected or has died.
             return null;
         }
 
         IImConnection conn = getConnection(providerId);
-        if (conn == null) {
+        if (conn == null)
+        {
             conn = mImService.createConnection(providerId, accountId);
         }
         return conn;
     }
 
-    public IImConnection getConnection(long providerId) {
-        synchronized (mConnections) {
+    public IImConnection getConnection(long providerId)
+    {
+        synchronized (mConnections)
+        {
 
             IImConnection im = mConnections.get(providerId);
 
@@ -780,14 +875,21 @@ public class ImApp extends Application {
         }
     }
 
-    public IImConnection getConnectionByAccount(long accountId) {
-        synchronized (mConnections) {
-            for (IImConnection conn : mConnections.values()) {
-                try {
-                    if (conn.getAccountId() == accountId) {
+    public IImConnection getConnectionByAccount(long accountId)
+    {
+        synchronized (mConnections)
+        {
+            for (IImConnection conn : mConnections.values())
+            {
+                try
+                {
+                    if (conn.getAccountId() == accountId)
+                    {
                         return conn;
                     }
-                } catch (RemoteException e) {
+                }
+                catch (RemoteException e)
+                {
                     // No server!
                 }
             }
@@ -795,24 +897,30 @@ public class ImApp extends Application {
         }
     }
 
-    public Collection<IImConnection> getActiveConnections() {
+    public Collection<IImConnection> getActiveConnections()
+    {
 
         return mConnections.values();
     }
 
-    public void callWhenServiceConnected(Handler target, Runnable callback) {
+    public void callWhenServiceConnected(Handler target, Runnable callback)
+    {
         Message msg = Message.obtain(target, callback);
-        if (serviceConnected() && msg != null) {
+        if (serviceConnected() && msg != null)
+        {
             msg.sendToTarget();
-        } else {
+        }
+        else
+        {
             startImServiceIfNeed();
-            synchronized (mQueue) {
+            synchronized (mQueue)
+            {
                 mQueue.add(msg);
             }
         }
     }
 
-    public void deleteAccount (long accountId, long providerId)
+    public void deleteAccount(long accountId, long providerId)
     {
         ContentResolver resolver = getContentResolver();
 
@@ -828,30 +936,36 @@ public class ImApp extends Application {
         resolver.delete(builder.build(), null, null);
 
 
-
     }
 
-    public void removePendingCall(Handler target) {
-        synchronized (mQueue) {
+    public void removePendingCall(Handler target)
+    {
+        synchronized (mQueue)
+        {
             Iterator<Message> iter = mQueue.iterator();
-            while (iter.hasNext()) {
+            while (iter.hasNext())
+            {
                 Message msg = iter.next();
-                if (msg.getTarget() == target) {
+                if (msg.getTarget() == target)
+                {
                     iter.remove();
                 }
             }
         }
     }
 
-    public void registerForBroadcastEvent(int what, Handler target) {
+    public void registerForBroadcastEvent(int what, Handler target)
+    {
         mBroadcaster.request(what, target, what);
     }
 
-    public void unregisterForBroadcastEvent(int what, Handler target) {
+    public void unregisterForBroadcastEvent(int what, Handler target)
+    {
         mBroadcaster.cancelRequest(what, target, what);
     }
 
-    public void registerForConnEvents(Handler handler) {
+    public void registerForConnEvents(Handler handler)
+    {
         mBroadcaster.request(EVENT_CONNECTION_CREATED, handler, EVENT_CONNECTION_CREATED);
         mBroadcaster.request(EVENT_CONNECTION_LOGGING_IN, handler, EVENT_CONNECTION_LOGGING_IN);
         mBroadcaster.request(EVENT_CONNECTION_LOGGED_IN, handler, EVENT_CONNECTION_LOGGED_IN);
@@ -863,7 +977,8 @@ public class ImApp extends Application {
                 EVENT_UPDATE_USER_PRESENCE_ERROR);
     }
 
-    public void unregisterForConnEvents(Handler handler) {
+    public void unregisterForConnEvents(Handler handler)
+    {
         mBroadcaster.cancelRequest(EVENT_CONNECTION_CREATED, handler, EVENT_CONNECTION_CREATED);
         mBroadcaster.cancelRequest(EVENT_CONNECTION_LOGGING_IN, handler,
                 EVENT_CONNECTION_LOGGING_IN);
@@ -879,8 +994,10 @@ public class ImApp extends Application {
                 EVENT_UPDATE_USER_PRESENCE_ERROR);
     }
 
-    void broadcastConnEvent(int what, long providerId, ImErrorInfo error) {
-        if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+    void broadcastConnEvent(int what, long providerId, ImErrorInfo error)
+    {
+        if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+        {
             log("broadcasting connection event " + what + ", provider id " + providerId);
         }
         android.os.Message msg = android.os.Message.obtain(null, what, (int) (providerId >> 32),
@@ -888,161 +1005,210 @@ public class ImApp extends Application {
         mBroadcaster.broadcast(msg);
     }
 
-    public void dismissNotifications(long providerId) {
-        if (mImService != null) {
-            try {
-                mImService.dismissNotifications(providerId);
-            } catch (RemoteException e) {
-            }
-        }
-    }
-
-    public void dismissChatNotification(long providerId, String username) {
-        if (mImService != null) {
-            try {
-                mImService.dismissChatNotification(providerId, username);
-            } catch (RemoteException e) {
-            }
-        }
-    }
-
-    private void fetchActiveConnections() {
+    public void dismissNotifications(long providerId)
+    {
         if (mImService != null)
         {
-            try {
+            try
+            {
+                mImService.dismissNotifications(providerId);
+            }
+            catch (RemoteException e)
+            {
+            }
+        }
+    }
+
+    public void dismissChatNotification(long providerId, String username)
+    {
+        if (mImService != null)
+        {
+            try
+            {
+                mImService.dismissChatNotification(providerId, username);
+            }
+            catch (RemoteException e)
+            {
+            }
+        }
+    }
+
+    private void fetchActiveConnections()
+    {
+        if (mImService != null)
+        {
+            try
+            {
                 // register the listener before fetch so that we won't miss any connection.
                 mImService.addConnectionCreatedListener(mConnCreationListener);
-                synchronized (mConnections) {
+                synchronized (mConnections)
+                {
 
-                    for (IBinder binder : (List<IBinder>) mImService.getActiveConnections()) {
+                    for (IBinder binder : (List<IBinder>) mImService.getActiveConnections())
+                    {
                         IImConnection conn = IImConnection.Stub.asInterface(binder);
                         long providerId = conn.getProviderId();
-                    //    if (!mConnections.containsKey(providerId)) {
-                            mConnections.put(providerId, conn);
-                            conn.registerConnectionListener(mConnectionListener);
-                      //  }
+                        //    if (!mConnections.containsKey(providerId)) {
+                        mConnections.put(providerId, conn);
+                        conn.registerConnectionListener(mConnectionListener);
+                        //  }
                     }
                 }
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 Log.e(LOG_TAG, "fetching active connections", e);
             }
         }
     }
 
-    private final IConnectionCreationListener mConnCreationListener = new IConnectionCreationListener.Stub() {
-        public void onConnectionCreated(IImConnection conn) throws RemoteException {
+    private final IConnectionCreationListener mConnCreationListener = new IConnectionCreationListener.Stub()
+    {
+        public void onConnectionCreated(IImConnection conn) throws RemoteException
+        {
             long providerId = conn.getProviderId();
-            synchronized (mConnections) {
-              //  if (!mConnections.containsKey(providerId)) {
-                    mConnections.put(providerId, conn);
-                    conn.registerConnectionListener(mConnectionListener);
-               // }
+            synchronized (mConnections)
+            {
+                //  if (!mConnections.containsKey(providerId)) {
+                mConnections.put(providerId, conn);
+                conn.registerConnectionListener(mConnectionListener);
+                // }
             }
             broadcastConnEvent(EVENT_CONNECTION_CREATED, providerId, null);
         }
     };
 
-    private final class MyConnListener extends ConnectionListenerAdapter {
-        public MyConnListener(Handler handler) {
+    private final class MyConnListener extends ConnectionListenerAdapter
+    {
+        public MyConnListener(Handler handler)
+        {
             super(handler);
         }
 
         @Override
-        public void onConnectionStateChange(IImConnection conn, int state, ImErrorInfo error) {
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+        public void onConnectionStateChange(IImConnection conn, int state, ImErrorInfo error)
+        {
+            if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("onConnectionStateChange(" + state + ", " + error + ")");
             }
 
-            try {
+            try
+            {
 
-               // fetchActiveConnections();
+                // fetchActiveConnections();
 
                 int what = -1;
                 long providerId = conn.getProviderId();
-                switch (state) {
-                case ImConnection.LOGGED_IN:
-                    what = EVENT_CONNECTION_LOGGED_IN;
-                    break;
+                switch (state)
+                {
+                    case ImConnection.LOGGED_IN:
+                        what = EVENT_CONNECTION_LOGGED_IN;
+                        break;
 
-                case ImConnection.LOGGING_IN:
-                    what = EVENT_CONNECTION_LOGGING_IN;
-                    break;
+                    case ImConnection.LOGGING_IN:
+                        what = EVENT_CONNECTION_LOGGING_IN;
+                        break;
 
-                case ImConnection.LOGGING_OUT:
-                    // NOTE: if this logic is changed, the logic in ImConnectionAdapter.ConnectionAdapterListener must be changed to match
-                    what = EVENT_CONNECTION_LOGGING_OUT;
+                    case ImConnection.LOGGING_OUT:
+                        // NOTE: if this logic is changed, the logic in ImConnectionAdapter.ConnectionAdapterListener must be changed to match
+                        what = EVENT_CONNECTION_LOGGING_OUT;
 
-                    break;
+                        break;
 
-                case ImConnection.DISCONNECTED:
-                    // NOTE: if this logic is changed, the logic in ImConnectionAdapter.ConnectionAdapterListener must be changed to match
-                    what = EVENT_CONNECTION_DISCONNECTED;
-               //     mConnections.remove(providerId);
-                    // stop the service if there isn't an active connection anymore.
-                    stopImServiceIfInactive();
+                    case ImConnection.DISCONNECTED:
+                        // NOTE: if this logic is changed, the logic in ImConnectionAdapter.ConnectionAdapterListener must be changed to match
+                        what = EVENT_CONNECTION_DISCONNECTED;
+                        //     mConnections.remove(providerId);
+                        // stop the service if there isn't an active connection anymore.
+                        stopImServiceIfInactive();
 
-                    break;
+                        break;
 
-                case ImConnection.SUSPENDED:
-                    what = EVENT_CONNECTION_SUSPENDED;
-                    break;
+                    case ImConnection.SUSPENDED:
+                        what = EVENT_CONNECTION_SUSPENDED;
+                        break;
                 }
-                if (what != -1) {
+                if (what != -1)
+                {
                     broadcastConnEvent(what, providerId, error);
                 }
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 Log.e(LOG_TAG, "onConnectionStateChange", e);
             }
         }
 
         @Override
-        public void onUpdateSelfPresenceError(IImConnection connection, ImErrorInfo error) {
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+        public void onUpdateSelfPresenceError(IImConnection connection, ImErrorInfo error)
+        {
+            if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("onUpdateUserPresenceError(" + error + ")");
             }
-            try {
+            try
+            {
                 long providerId = connection.getProviderId();
                 broadcastConnEvent(EVENT_UPDATE_USER_PRESENCE_ERROR, providerId, error);
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 Log.e(LOG_TAG, "onUpdateUserPresenceError", e);
             }
         }
 
         @Override
-        public void onSelfPresenceUpdated(IImConnection connection) {
+        public void onSelfPresenceUpdated(IImConnection connection)
+        {
             if (Log.isLoggable(LOG_TAG, Log.DEBUG))
+            {
                 log("onUserPresenceUpdated");
+            }
 
-            try {
+            try
+            {
                 long providerId = connection.getProviderId();
                 broadcastConnEvent(EVENT_USER_PRESENCE_UPDATED, providerId, null);
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 Log.e(LOG_TAG, "onUserPresenceUpdated", e);
             }
         }
     }
 
-    public IRemoteImService getRemoteImService() {
+    public IRemoteImService getRemoteImService()
+    {
         return mImService;
     }
 
 
-    public IChatSession getChatSession(long providerId, String remoteAddress) {
+    public IChatSession getChatSession(long providerId, String remoteAddress)
+    {
         IImConnection conn = getConnection(providerId);
 
         IChatSessionManager chatSessionManager = null;
-        if (conn != null) {
-            try {
+        if (conn != null)
+        {
+            try
+            {
                 chatSessionManager = conn.getChatSessionManager();
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 Log.e(LOG_TAG, "error in getting ChatSessionManager", e);
             }
         }
 
-        if (chatSessionManager != null) {
-            try {
+        if (chatSessionManager != null)
+        {
+            try
+            {
                 return chatSessionManager.getChatSession(remoteAddress);
-            } catch (RemoteException e) {
+            }
+            catch (RemoteException e)
+            {
                 Log.e(LOG_TAG, "error in getting ChatSession", e);
             }
         }
@@ -1050,30 +1216,34 @@ public class ImApp extends Application {
         return null;
     }
 
-    public void maybeInit(Activity activity) {
+    public void maybeInit(Activity activity)
+    {
         startImServiceIfNeed();
-        setAppTheme(activity,null);
+        setAppTheme(activity, null);
         ImPluginHelper.getInstance(this).loadAvailablePlugins();
     }
 
-    public void checkForCrashes(final Activity activity) {
-        CrashManager.register(activity, ImApp.HOCKEY_APP_ID, new CrashManagerListener() {
+    public void checkForCrashes(final Activity activity)
+    {
+        CrashManager.register(activity, ImApp.HOCKEY_APP_ID, new CrashManagerListener()
+        {
             @Override
-            public String getDescription() {
+            public String getDescription()
+            {
                 return Debug.getTrail(activity);
             }
         });
     }
 
 
-    private void initTrustManager ()
+    private void initTrustManager()
     {
-        PinningTrustManager trustPinning = new PinningTrustManager(SystemKeyStore.getInstance(this),XMPPCertPins.getPinList(), 0);
+        PinningTrustManager trustPinning = new PinningTrustManager(SystemKeyStore.getInstance(this), XMPPCertPins.getPinList(), 0);
         mTrustManager = new MemorizingTrustManager(this, trustPinning);
 
     }
 
-    public MemorizingTrustManager getTrustManager ()
+    public MemorizingTrustManager getTrustManager()
     {
         return mTrustManager;
     }

@@ -16,20 +16,33 @@
  */
 package info.guardianproject.otr.app.im.plugin;
 
-/** Defines the configuration names for the IM engine. */
-public interface ImConfigNames {
-    /** The name of the protocol. */
+/**
+ * Defines the configuration names for the IM engine.
+ */
+public interface ImConfigNames
+{
+    /**
+     * The name of the protocol.
+     */
     public static final String PROTOCOL_NAME = "im.protocol";
 
-    /** The default domain. */
+    /**
+     * The default domain.
+     */
     public static final String DEFAULT_DOMAIN = "im.default-domain";
 
-    /** The path of the plugin. */
+    /**
+     * The path of the plugin.
+     */
     public static final String PLUGIN_PATH = "im.plugin.path";
 
-    /** The class name of the plugin implementation. */
+    /**
+     * The class name of the plugin implementation.
+     */
     public static final String PLUGIN_CLASS = "im.plugin.class";
 
-    /** The version of the plugin. */
+    /**
+     * The version of the plugin.
+     */
     public static final String PLUGIN_VERSION = "im.plugin.version";
 }

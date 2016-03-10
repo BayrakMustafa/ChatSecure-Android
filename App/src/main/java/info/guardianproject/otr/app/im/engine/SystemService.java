@@ -16,14 +16,18 @@
  */
 package info.guardianproject.otr.app.im.engine;
 
-/** The interface to access system service objects. */
-public abstract class SystemService {
+/**
+ * The interface to access system service objects.
+ */
+public abstract class SystemService
+{
     /**
      * Gets the default instance of the system service.
      *
      * @return the default instance of the system service.
      */
-    public static SystemService getDefault() {
+    public static SystemService getDefault()
+    {
         // TODO return AndroidSystemService.getInstance();
         return null;
     }
